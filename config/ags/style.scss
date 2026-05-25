@@ -1,0 +1,57 @@
+// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
+$fg-color: #{"@theme_fg_color"};
+$bg-color: #{"@theme_bg_color"};
+
+window.Bar {
+  background: transparent;
+  color: $fg-color;
+  font-weight: bold;
+
+  > centerbox {
+    background: $bg-color;
+    border-radius: 10px;
+    margin: 8px;
+  }
+
+  button {
+    border-radius: 8px;
+    margin: 2px;
+  }
+
+.mic {
+  padding: 0 8px;
+  &.idle   { color: #888888; }
+  &.in-use { color: #ff9500; }
+  &.muted  { color: #ff5555; animation: pulse 1.5s ease-in-out infinite; }
+}
+
+.dot {
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 9999px;
+  background-color: transparent;
+}
+.dot.show {
+  background-color: #ff9500;
+  box-shadow: 0 0 4px #ff9500;
+}
+
+
+.launcher-box {
+  padding: 12px;
+  background-color: #1a1a1aee;
+  border-radius: 12px;
+  min-width: 400px;
+}
+.app-item {
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.app-item image { margin-right: 8px; }
+
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+}
