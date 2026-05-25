@@ -1,0 +1,43 @@
+# pacman.txt — official-repo packages (Arch / CachyOS)
+# One package per line. Lines starting with # and blank lines are ignored.
+# Install all:  grep -vE '^\s*(#|$)' pacman.txt | sudo pacman -S --needed -
+
+# --- Hyprland compositor + first-party ecosystem ---------------------------
+hyprland
+hyprpaper
+hyprlock
+hypridle
+hyprpicker
+xdg-desktop-portal-hyprland
+
+# --- Core desktop pieces ---------------------------------------------------
+kitty                       # terminal
+swaync                      # notification daemon (placeholder; AGS may replace)
+polkit-gnome                # polkit authentication agent
+thunar                      # file manager
+
+# --- Screenshot / clipboard ------------------------------------------------
+grim
+slurp
+wl-clipboard
+cliphist
+
+# --- Audio (PipeWire stack) ------------------------------------------------
+pipewire
+pipewire-pulse
+wireplumber
+
+# --- Fonts -----------------------------------------------------------------
+ttf-jetbrains-mono-nerd
+
+# --- System utilities ------------------------------------------------------
+openssh                     # SSH access to the machine
+brightnessctl               # backlight control (multimedia keys)
+playerctl                   # media key control
+
+# --- AGS build dependency --------------------------------------------------
+dart-sass                   # 'sass' binary; AGS compiles SCSS with it
+
+# --- VM guest integration (only needed inside the VM) ----------------------
+qemu-guest-agent
+spice-vdagent
