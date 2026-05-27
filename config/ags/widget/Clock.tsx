@@ -4,17 +4,22 @@
 // CalendarPopover: exported separately, mounted as singleton in app.ts.
 
 import app from "ags/gtk4/app"
+import GLib from "gi://GLib"
 import { Astal, Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import Popover from "./Popover"
+
+// Pre-seed createPoll so the bar shows the correct time on first paint
+// instead of an empty string for up to 60s while the first poll fires.
+const now = GLib.DateTime.new_now_local()
 
 // ── Clock widget (renders in the bar) ─────────────────────────────────────
 
 export default function Clock() {
   // REQ-CL-01: HH:MM updated every 60s
-  const time = createPoll("", 60_000, "date '+%H:%M'")
+  const time = createPoll(now.format("%H:%M") ?? "", 60_000, "date '+%H:%M'")
   // REQ-CL-02: weekday + abbreviated month + date
-  const date = createPoll("", 60_000, "date '+%a · %b %-d'")
+  const date = createPoll(now.format("%a · %b %-d") ?? "", 60_000, "date '+%a · %b %-d'")
 
   return (
     <button
