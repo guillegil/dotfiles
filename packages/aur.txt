@@ -1,17 +1,17 @@
 # aur.txt — AUR packages (install with paru or yay)
 # One package per line. Lines starting with # and blank lines are ignored.
-# Install all:  grep -vE '^\s*(#|$)' aur.txt | paru -S --needed -
+# Install all:  grep -vE '^\s*(#|$)' aur.txt | xargs -r paru -S --needed
 
 # --- AGS (Aylur's GTK Shell) -----------------------------------------------
 aylurs-gtk-shell-git        # AGS itself; pulls in the core Astal libraries
 
-# --- Astal service libraries ----------------------------------------------
+# --- Astal service libraries (required by current widgets) -----------------
 libastal-wireplumber-git    # audio service — used by the microphone widget
 libastal-apps-git           # application list service — used by the launcher
 
-# --- Likely-needed soon (uncomment when you build these widgets) -----------
-# libastal-notifd-git       # make AGS the notification daemon (custom rules/DND)
-# libastal-bluetooth-git    # BlueZ service — for a custom Bluetooth manager
-# libastal-network-git      # network service — for a custom network widget
-# libastal-battery-git      # battery service — for a battery widget
-# libastal-mpris-git        # media-player service — now-playing widget
+# --- Astal service libraries (enabled for upcoming widgets) ----------------
+libastal-notifd-git         # AGS as notification daemon (custom rules/DND)
+libastal-bluetooth-git      # BlueZ service — Bluetooth manager widget
+libastal-network-git        # network service — network widget
+libastal-battery-git        # battery service — battery widget
+libastal-mpris-git          # media-player service — now-playing widget

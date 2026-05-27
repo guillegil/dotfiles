@@ -65,7 +65,8 @@ install_packages() {
     if [[ -f "$PACMAN_LIST" ]]; then
         c_info "pacman packages from $(basename "$PACMAN_LIST")"
         # --needed skips already-installed packages; comments/blank lines ignored
-        grep -vE '^\s*(#|$)' "$PACMAN_LIST" | sudo pacman -S --needed --noconfirm -
+        grep -vE '^\s*(#|$)' "$PACMAN_LIST" \
+            | xargs -r sudo pacman -S --needed --noconfirm
         c_ok "official-repo packages done"
     else
         c_warn "no $PACMAN_LIST — skipping official packages"
@@ -83,11 +84,34 @@ install_packages() {
         else
             c_info "AUR packages via $helper from $(basename "$AUR_LIST")"
             grep -vE '^\s*(#|$)' "$AUR_LIST" \
-                | "$helper" -S --needed --noconfirm -
+                | xargs -r "$helper" -S --needed --noconfirm
             c_ok "AUR packages done"
         fi
     else
         c_warn "no $AUR_LIST — skipping AUR packages"
+    fi
+}
+
+# --- system services -------------------------------------------------------
+
+enable_services() {
+    c_info "Enabling system services"
+
+    if ! command -v systemctl >/dev/null 2>&1; then
+        c_warn "systemctl not found — skipping service enabling"
+        return
+    fi
+
+    # Display manager — needed to actually log into Hyprland
+    if pacman -Q sddm >/dev/null 2>&1; then
+        if systemctl is-enabled sddm.service >/dev/null 2>&1; then
+            c_ok "sddm.service already enabled"
+        else
+            sudo systemctl enable sddm.service
+            c_ok "enabled sddm.service"
+        fi
+    else
+        c_warn "sddm not installed — skipping enable"
     fi
 }
 
@@ -137,6 +161,7 @@ link_configs() {
 c_info "Dotfiles repo: $DOTFILES"
 
 (( DO_PACKAGES )) && install_packages
+(( DO_PACKAGES )) && enable_services
 (( DO_LINK ))     && link_configs
 
 if [[ -d "$BACKUP_DIR" ]]; then

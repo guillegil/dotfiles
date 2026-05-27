@@ -1,6 +1,6 @@
 # pacman.txt — official-repo packages (Arch / CachyOS)
 # One package per line. Lines starting with # and blank lines are ignored.
-# Install all:  grep -vE '^\s*(#|$)' pacman.txt | sudo pacman -S --needed -
+# Install all:  grep -vE '^\s*(#|$)' pacman.txt | xargs -r sudo pacman -S --needed
 
 # --- Hyprland compositor + first-party ecosystem ---------------------------
 hyprland
@@ -9,6 +9,9 @@ hyprlock
 hypridle
 hyprpicker
 xdg-desktop-portal-hyprland
+
+# --- Display manager -------------------------------------------------------
+sddm                        # login screen; enabled by install.sh
 
 # --- Core desktop pieces ---------------------------------------------------
 kitty                       # terminal
