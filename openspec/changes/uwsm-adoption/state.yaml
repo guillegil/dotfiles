@@ -8,7 +8,7 @@ phases:
   design:    { status: complete }
   tasks:     { status: complete }
   apply:     { status: complete }
-  verify:    { status: pending }
+  verify:    { status: pending_user_runtime, static: pass, warnings: 1, critical: 0 }
   archive:   { status: pending }
 artifact_store: hybrid
 delivery_strategy: ask-on-risk
@@ -37,6 +37,13 @@ notes: |
     4. Run sdd-verify uwsm-adoption against specs.md.
     5. Run sdd-archive uwsm-adoption.
     6. THEN resume desktop-redesign starting at Slice A.
+
+  Fix applied after runtime verification found CRITICAL drop-in bug
+  (commit 9e2538d): the original [Autologin]-only drop-in was ignored by
+  SDDM for manual login. Corrected to two-section form with [General]
+  DefaultSession= (greeter preselection) + [Autologin] Session= (autologin
+  fallback). User must re-run install.sh to upgrade the existing drop-in,
+  then re-check 5.1 (SDDM greeter preselection) and 5.10 (drop-in content).
 estimated_changed_lines: 63
 estimated_files_touched: 3
 chained_prs_recommended: false

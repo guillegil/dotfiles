@@ -1,6 +1,6 @@
 # Apply Progress: uwsm-adoption
 
-## Status: complete (Phases 1–4)
+## Status: complete (Phases 1–4 + drop-in fix)
 
 ## Tasks completed
 
@@ -35,6 +35,7 @@
 ## Commits created
 
 - `6bd4810` feat(uwsm): adopt uwsm for systemd-managed Hyprland session
+- `9e2538d` fix(uwsm): use [General] DefaultSession= in SDDM drop-in for manual login preselection
 
 ## Verification checks (all pass)
 
@@ -54,6 +55,23 @@ None. Implementation matches design exactly, including:
 - ADR-3: `[Autologin]\nSession=hyprland-uwsm.desktop` exact content
 - Idempotency contract satisfied (write-if-differs)
 - Non-fatal guards on `enable_hyprpolkitagent()`
+
+## Fix: drop-in writer correction (follow-up to 6bd4810)
+
+**Bug:** `write_sddm_default_session()` in 6bd4810 wrote only `[Autologin]\nSession=hyprland-uwsm.desktop`. SDDM only processes the `[Autologin]` section when autologin is enabled (i.e. `User=` is also set). For users doing a manual password login — the common case — SDDM reads `[General] DefaultSession=` to preselect a session in the greeter. The `[Autologin]`-only drop-in caused SDDM to show the alphabetically-first session (`hyprland.desktop`, the bare entry) instead of the uwsm entry on a fresh install. The spec scenario "Fresh install — SDDM defaults to uwsm session" failed at runtime.
+
+**Fix (9e2538d):** Updated `write_sddm_default_session()` to write both sections:
+```
+[General]
+DefaultSession=hyprland-uwsm.desktop
+
+[Autologin]
+Session=hyprland-uwsm.desktop
+```
+
+This ensures greeter preselection works for manual login (via `[General]`) and also covers users who later enable autologin (via `[Autologin]`). The existing single-section drop-in is treated as stale content and replaced on next `install.sh` run (write-if-differs semantics are preserved).
+
+Spec, design (ADR-3), and tasks updated in the same commit to reflect the correction.
 
 ## Notes
 
