@@ -13,8 +13,24 @@ phases:
 artifact_store: hybrid
 delivery_strategy: ask-on-risk
 chain_strategy: stacked-to-main
+sequencing:
+  blocked_by: uwsm-adoption
+  reason: |
+    uwsm-adoption (planned, apply pending) wraps the autostart block this
+    change's Slice D will edit (swaync removal). uwsm-adoption must
+    complete apply + verify + archive BEFORE Slice A of desktop-redesign
+    resumes, otherwise the autostart logic is rewritten twice.
 notes: |
   Slice A0 code lives at config/ags/service/hyprland.ts (committed but
   not smoke-tested). Last orchestrator session diverted to debug a
   VirtualBox display stack before the smoke test ran; that work is
   captured in engram under topic keys dotfiles/hotfix/*.
+
+  Resume order for the bare-metal agent:
+    1. sdd-init (refresh skill registry + project context on new host).
+    2. sdd-apply uwsm-adoption → sdd-verify → sdd-archive.
+    3. Smoke-test Slice A0 (config/ags/service/hyprland.ts polls
+       Hyprland Socket2 — confirm activeWorkspace updates when switching
+       workspaces; activeTitle updates when focusing a window).
+    4. sdd-continue (Slice A: BarShell + Bar Aurora + Workspaces + fonts).
+    5. Continue through Slices B, C, D as stacked PRs to main.
