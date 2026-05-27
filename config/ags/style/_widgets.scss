@@ -110,6 +110,56 @@
   padding: 0 12px;
 }
 
+// ── ActiveWindow chip (REQ-AW-01..03) ────────────────────────────────────────
+.active-window {
+  max-width: 220px;
+}
+
+// ── LauncherPill button (REQ-LP-01..02) ──────────────────────────────────────
+.launcher-pill {
+  min-height: 44px;
+  min-width:  44px;
+  background: var(--bg2);
+  border-radius: var(--radius-inner);
+  color:       var(--accent);
+  padding:     2px 10px;
+  font-size:   14px;
+}
+
+// ── Clock chip (REQ-CL-01..04) ───────────────────────────────────────────────
+.clock {
+  padding:    2px 8px;
+  min-height: 30px;
+}
+
+.clock-time {
+  font-family: var(--font-mono);
+  font-size:   13px;
+  font-weight: 600;
+  color:       var(--text);
+}
+
+.clock-date {
+  font-family: var(--font-mono);
+  font-size:   9px;
+  color:       var(--dim);
+}
+
+// ── CalendarPopover (REQ-CL-03) ──────────────────────────────────────────────
+.calendar-popover {
+  padding: 8px;
+}
+
+.calendar-widget {
+  font-family: var(--font-sans);
+  color:       var(--text);
+}
+
+// Today cell highlighted via accent color (GTK Calendar CSS node)
+calendar.calendar-widget > header {
+  color: var(--accent);
+}
+
 // ── Keyframe animations ───────────────────────────────────────────────────────
 @keyframes pulse {
   0%, 100% { opacity: 1; }

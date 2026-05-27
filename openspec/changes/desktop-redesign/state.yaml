@@ -7,7 +7,7 @@ phases:
   spec:      { status: complete }
   design:    { status: complete }
   tasks:     { status: complete }
-  apply:     { status: in_progress, completed_slices: [A0, A], pending_slices: [B, C, D] }
+  apply:     { status: in_progress, completed_slices: [A0, A, B], pending_slices: [C, D] }
   verify:    { status: pending }
   archive:   { status: pending }
 artifact_store: hybrid
@@ -38,9 +38,12 @@ notes: |
 
   Task 1.22 (gsettings animations off motion-off check) deferred to verify phase.
 
+  Slice B complete on bare-metal — Clock+Calendar, ActiveWindow, LauncherPill, Mic+Launcher
+  restyle. Runtime smoke deferred to user (task 2.8).
+  Also fixed pre-existing :root in _typography.scss → * (GTK4 CSS subset compliance).
+
   Next steps:
-    1. Decide PR strategy: open Slice A PR now to main, OR continue local through
-       Slices B/C/D and PR each in turn (per cached chain_strategy: stacked-to-main).
-    2. sdd-continue → Slice B: Clock, ActiveWindow, LauncherPill, Mic restyle, Launcher restyle.
-    3. Continue through Slices C, D as stacked PRs to main.
+    1. User runs smoke test (task 2.8): ags run → verify Clock ticks, Calendar opens, LauncherPill.
+    2. sdd-continue → Slice C: Volume, Battery, Network widgets.
+    3. Continue through Slice D as stacked commit to main.
     4. After Slice D: sdd-verify desktop-redesign (incl. task 1.22) → sdd-archive.

@@ -1,13 +1,17 @@
 // Bar.tsx — Pillbox edge-to-edge bar (REQ-BS-01..05; ADR-7)
 // Single BarShell per monitor, full monitor width. GTK CenterBox provides
 // the three sections (left / center / right) = space-between distribution.
-// Left: [Workspaces]. Center: placeholder for Clock (Slice B).
-// Right: [Mic] + placeholders for Volume, Battery, Network, NotificationsBell (Slices B/C/D).
+// Left:   [Workspaces | LauncherPill | ActiveWindow]  (Slice A + B)
+// Center: [Clock]                                     (Slice B)
+// Right:  [Mic] + placeholders for Volume, Battery, Network, Bell (Slice C/D)
 
 import { Gtk, Gdk } from "ags/gtk4"
 import BarShell from "./BarShell"
 import Workspaces from "./Workspaces"
 import Mic from "./Mic"
+import ActiveWindow from "./ActiveWindow"
+import LauncherPill from "./LauncherPill"
+import Clock from "./Clock"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return (
@@ -16,14 +20,16 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         {/* Left section — start child */}
         <box $type="start" cssClasses={["bar-section"]} spacing={4}>
           <Workspaces />
+          <LauncherPill />
+          <ActiveWindow />
         </box>
 
-        {/* Center section — center child */}
+        {/* Center section — center child (REQ-CL-01..04) */}
         <box $type="center" cssClasses={["bar-section"]} spacing={4}>
-          <label label="-" cssClasses={["w"]} />
+          <Clock />
         </box>
 
-        {/* Right section — end child */}
+        {/* Right section — end child; Volume/Battery/Network/Bell in Slice C/D */}
         <box $type="end" cssClasses={["bar-section"]} spacing={4}>
           <Mic />
           <label label="vol" cssClasses={["w"]} />

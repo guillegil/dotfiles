@@ -2,7 +2,8 @@
 // Bar chips, numerals, data labels → --font-mono (JetBrains Mono)
 // Popover prose, calendar labels → --font-sans (IBM Plex Sans)
 
-:root {
+// GTK4 does not support :root — use universal selector (same as _tokens.scss)
+* {
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
   --font-sans: "IBM Plex Sans", "Noto Sans", sans-serif;
 
