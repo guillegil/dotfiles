@@ -94,6 +94,36 @@ install_packages() {
 
 # --- system services -------------------------------------------------------
 
+write_sddm_default_session() {
+    local drop_in="/etc/sddm.conf.d/10-default-session.conf"
+    local expected
+    expected="$(printf '[Autologin]\nSession=hyprland-uwsm.desktop\n')"
+
+    if [[ -f "$drop_in" && "$(sudo cat "$drop_in")" == "$expected" ]]; then
+        c_ok "SDDM drop-in already up to date — skipped."
+        return 1
+    fi
+
+    printf '%s' "$expected" | sudo install -D -m 0644 /dev/stdin "$drop_in"
+    c_ok "SDDM default session set to hyprland-uwsm."
+    return 0
+}
+
+enable_hyprpolkitagent() {
+    if ! pacman -Q hyprpolkitagent >/dev/null 2>&1; then
+        c_warn "hyprpolkitagent not installed — skipping user-unit enable"
+        return 0
+    fi
+
+    if ! systemctl --user show-environment >/dev/null 2>&1; then
+        c_warn "user bus unreachable — run 'systemctl --user enable hyprpolkitagent.service' after first login"
+        return 0
+    fi
+
+    systemctl --user enable hyprpolkitagent.service
+    c_ok "enabled hyprpolkitagent.service"
+}
+
 enable_services() {
     c_info "Enabling system services"
 
@@ -104,11 +134,20 @@ enable_services() {
 
     # Display manager — needed to actually log into Hyprland
     if pacman -Q sddm >/dev/null 2>&1; then
+        local first_time_uwsm=1
+        write_sddm_default_session && first_time_uwsm=0
+
         if systemctl is-enabled sddm.service >/dev/null 2>&1; then
             c_ok "sddm.service already enabled"
         else
             sudo systemctl enable sddm.service
             c_ok "enabled sddm.service"
+        fi
+
+        enable_hyprpolkitagent
+
+        if (( first_time_uwsm == 0 )); then
+            c_warn "Log out and back in to switch to the uwsm-managed Hyprland session."
         fi
     else
         c_warn "sddm not installed — skipping enable"

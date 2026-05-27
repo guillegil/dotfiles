@@ -9,6 +9,7 @@ hyprlock
 hypridle
 hyprpicker
 xdg-desktop-portal-hyprland
+uwsm
 
 # --- Display manager -------------------------------------------------------
 sddm                        # login screen; enabled by install.sh
@@ -16,7 +17,7 @@ sddm                        # login screen; enabled by install.sh
 # --- Core desktop pieces ---------------------------------------------------
 kitty                       # terminal
 swaync                      # notification daemon (placeholder; AGS may replace)
-polkit-gnome                # polkit authentication agent
+hyprpolkitagent             # polkit agent; enabled by install.sh
 thunar                      # file manager
 
 # --- Screenshot / clipboard ------------------------------------------------

@@ -43,11 +43,12 @@ local menu        = "rofi -show drun"
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function ()
-   hl.exec_cmd("ags run")
+   hl.exec_cmd("uwsm app -- ags run")
    hl.exec_cmd("swaync")
    -- hyprpaper disabled until hyprpaper.conf exists; misc.background_color used instead
-   hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
-   hl.exec_cmd("wl-paste --watch cliphist store")
+   -- polkit agent: hyprpolkitagent runs as a systemd user service
+   -- (enabled by install.sh: `systemctl --user enable hyprpolkitagent.service`)
+   hl.exec_cmd("uwsm app -- wl-paste --watch cliphist store")
 end)
 
 
