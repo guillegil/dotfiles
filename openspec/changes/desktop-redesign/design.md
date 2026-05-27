@@ -79,8 +79,8 @@ config/ags/
 ├── service/
 │   └── hyprland.ts                 [new] hyprctl + socket2 → GObject wrapper
 └── widget/
-    ├── Bar.tsx                     [rewrite] Aurora 3-module: left/center/right shells
-    ├── BarShell.tsx                [new] floating glass container wrapper
+    ├── Bar.tsx                     [rewrite] Pillbox edge-to-edge: single window with left/center/right internal sections
+    ├── BarShell.tsx                [new] edge-to-edge glass container wrapper
     ├── Workspaces.tsx              [new] dot/pill morph via min-width transition
     ├── ActiveWindow.tsx            [new]
     ├── LauncherPill.tsx            [new]
@@ -564,7 +564,7 @@ Revised slice cuts (aligned with the file-tree boundaries):
 - `style.scss` (one-line entry)
 - `lib/motion.ts` + `lib/a11y.ts`
 - `widget/BarShell.tsx`
-- `widget/Bar.tsx` (Aurora layout, may render placeholder children initially)
+- `widget/Bar.tsx` (Pillbox layout, may render placeholder children initially)
 - `widget/Popover.tsx` (generic wrapper)
 - `service/hyprland.ts`
 - `widget/Workspaces.tsx` (proves the Hyprland service path)

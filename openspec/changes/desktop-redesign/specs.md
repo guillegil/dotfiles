@@ -93,17 +93,18 @@ The token system SHALL expose a `[data-theme="latte"]` selector with all surface
 ## 2. bar-shell
 
 ### Purpose
-The Aurora 3-module floating bar surface: three independent BarShell containers (left / center / right) positioned at the top of each monitor with Hyprland-compositor blur applied.
+The Pillbox edge-to-edge bar surface: a single full-width BarShell container at the top of each monitor with Hyprland-compositor blur applied. Internally organized into three flex sections (left / center / right) for widget grouping.
 
 ### Requirements
 
-#### REQ-BS-01: Aurora 3-Module Layout
-`Bar.tsx` SHALL render three independent floating BarShell modules — left, center, right — horizontally distributed along the top edge. Each module is a separate GTK Layer Shell window or a positioned container. The bar height MUST NOT exceed 30px in any resting state.
+#### REQ-BS-01: Pillbox Edge-to-Edge Layout
+`Bar.tsx` SHALL render a single full-width BarShell window anchored to the top edge of each monitor. The window MUST span the full monitor width edge-to-edge (no horizontal margins). Internally, it MUST be organized into three flex sections (left / center / right) via `justify-content: space-between`. The bar height MUST NOT exceed 30px in any resting state.
 
-##### Scenario: Three modules present
-- GIVEN AGS starts with the Aurora layout
+##### Scenario: Single edge-to-edge bar
+- GIVEN AGS starts with the Pillbox layout
 - WHEN the top bar is rendered
-- THEN three visually separated glass-surface containers appear at the top of the monitor
+- THEN one continuous glass-surface bar spans the full monitor width at the top
+- AND its internal contents are arranged in three groups: left, center, right
 
 ##### Scenario: Height constraint
 - GIVEN the bar is rendered
@@ -111,12 +112,14 @@ The Aurora 3-module floating bar surface: three independent BarShell containers 
 - THEN it is ≤30px
 
 #### REQ-BS-02: Glass Shell Composition
-Each BarShell MUST apply: `background: var(--bg)` (rgba at 0.82 alpha Mocha / 0.92 Latte), `border: 1px solid` precomputed tinted border (7% --text mix), `border-radius: var(--radius)` (14px), shadow `0 8px 28px -8px rgba(0,0,0,0.45)` plus inset highlight. MUST NOT use CSS `backdrop-filter` (GTK4 does not support it; blur comes from Hyprland layerrule).
+The BarShell MUST apply: `background: var(--bg)` (rgba at 0.82 alpha Mocha / 0.92 Latte), `border-bottom: 1px solid` precomputed tinted border (6% --text mix), NO `border-radius` (edge-to-edge surface), NO `box-shadow` (no floating elevation). MUST NOT use CSS `backdrop-filter` (GTK4 does not support it; blur comes from Hyprland layerrule).
 
 ##### Scenario: Glass appearance without backdrop-filter
 - GIVEN the compiled bar-shell CSS is inspected
 - WHEN the `.bar-shell` rule is found
 - THEN `backdrop-filter` does not appear; background uses rgba with alpha
+- AND no `border-radius` is set on `.bar-shell`
+- AND no `box-shadow` is set on `.bar-shell`
 
 #### REQ-BS-03: Hyprland Blur Layerrule
 `config/hypr/hyprland.lua` SHALL add `hl.layerrule("blur", "ags")` and `hl.layerrule("ignorezero", "ags")`. These lines MUST appear in the same commit as the BarShell changes.
@@ -134,13 +137,14 @@ The bar MUST render identically on every connected monitor. All monitors share t
 - WHEN AGS starts
 - THEN a bar appears on both monitors with identical layout and state
 
-#### REQ-BS-05: Module Gap
-The three Aurora modules SHALL have a gap of 10–12px between them (not a single continuous bar).
+#### REQ-BS-05: Internal Section Spacing
+The three internal flex sections SHALL be distributed via `justify-content: space-between`. Within each section, adjacent widgets SHALL have a `gap: 4px`. Visual group separators (`Sep` divider) MAY be used between unrelated widget clusters within a section.
 
-##### Scenario: Visual gap
-- GIVEN the three modules are rendered
-- WHEN the pixel distance between module edges is measured
-- THEN it is between 10px and 12px
+##### Scenario: Internal section layout
+- GIVEN the Pillbox bar is rendered with widgets in all three sections
+- WHEN the layout is measured
+- THEN the three sections distribute via space-between
+- AND adjacent widgets within a section sit 4px apart
 
 ---
 
@@ -576,7 +580,7 @@ If `gtk-enable-animations` changes at runtime (e.g., user toggles it in GNOME ac
 | `config/ags/style/_motion.scss` | New |
 | `config/ags/style/_glass.scss` | New |
 | `config/ags/style.scss` | Modified (imports partials) |
-| `config/ags/widget/Bar.tsx` | Modified (Aurora 3-module) |
+| `config/ags/widget/Bar.tsx` | Modified (Pillbox edge-to-edge) |
 | `config/ags/widget/BarShell.tsx` | New |
 | `config/ags/widget/Workspaces.tsx` | New |
 | `config/ags/widget/ActiveWindow.tsx` | New |
