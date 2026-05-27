@@ -61,42 +61,42 @@ Chain strategy: stacked-to-main
 *Satisfies: REQ-TT-01..06, REQ-BS-01..05, REQ-WS-01..04, REQ-MG-01..03 + ADR-1..5, ADR-9*
 
 ### 1a. Package list
-- [ ] 1.1 Append `ttf-ibm-plex` to `packages/pacman.txt`. **small** (`config/packages/pacman.txt`)
-- [ ] 1.2 Append `ttf-material-symbols-variable-git` to `packages/aur.txt`. **small** (`packages/aur.txt`)
+- [x] 1.1 Append `ttf-ibm-plex` to `packages/pacman.txt`. **small** (`config/packages/pacman.txt`)
+- [x] 1.2 Append `ttf-material-symbols-variable-git` to `packages/aur.txt`. **small** (`packages/aur.txt`)
 
 ### 1b. SCSS token system
-- [ ] 1.3 Create `config/ags/style/_tokens.scss`: Catppuccin Mocha palette vars on `:root` + `[data-theme="mocha"]`; all `color.mix()` helpers precomputed at build time; Latte override block `[data-theme="latte"]` (REQ-TT-01, REQ-TT-02, REQ-TT-06). **medium** (~120 lines)
-- [ ] 1.4 Create `config/ags/style/_typography.scss`: `--font-mono` (JetBrains Mono), `--font-sans` (IBM Plex Sans); `.tabular` utility class with `font-variant-numeric: tabular-nums`; heading/body weight vars (REQ-TT-04, REQ-TT-05). **small** (~40 lines)
-- [ ] 1.5 Create `config/ags/style/_motion.scss`: `.motion-off, .motion-off *` selector with `transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important` (REQ-MG-02; ADR-4). **small** (~20 lines)
-- [ ] 1.6 Create `config/ags/style/_glass.scss`: `.bar-shell` rule (rgba bg at 0.82 alpha, precomputed 6% tinted `border-bottom` only, NO `border-radius`, NO `box-shadow` — edge-to-edge Pillbox surface); `.popover` rule (full glass: rgba bg, tinted border, `border-radius: var(--radius)`, soft shadow); NO `backdrop-filter` anywhere (REQ-BS-02). **small** (~40 lines)
-- [ ] 1.7 Create `config/ags/style/_widgets.scss`: `.w`, `.w--chip`, `.w-sep` base classes; workspace `.ws-target` + `.ws` + `.ws.active` rules (ADR-9); `:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }` for all interactive widgets (REQ-A11Y-02). **medium** (~80 lines)
-- [ ] 1.8 Create `config/ags/style/_index.scss`: `@forward` all 5 partials in dependency order (tokens → typography → motion → glass → widgets). **small** (~8 lines)
-- [ ] 1.9 Modify `config/ags/style.scss`: replace current content with `@use "./style/index";` (thin entry). **small** (~2 lines)
+- [x] 1.3 Create `config/ags/style/_tokens.scss`: Catppuccin Mocha palette vars on `:root` + `[data-theme="mocha"]`; all `color.mix()` helpers precomputed at build time; Latte override block `[data-theme="latte"]` (REQ-TT-01, REQ-TT-02, REQ-TT-06). **medium** (~120 lines)
+- [x] 1.4 Create `config/ags/style/_typography.scss`: `--font-mono` (JetBrains Mono), `--font-sans` (IBM Plex Sans); `.tabular` utility class with `font-variant-numeric: tabular-nums`; heading/body weight vars (REQ-TT-04, REQ-TT-05). **small** (~40 lines)
+- [x] 1.5 Create `config/ags/style/_motion.scss`: `.motion-off, .motion-off *` selector with `transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important` (REQ-MG-02; ADR-4). **small** (~20 lines)
+- [x] 1.6 Create `config/ags/style/_glass.scss`: `.bar-shell` rule (rgba bg at 0.82 alpha, precomputed 6% tinted `border-bottom` only, NO `border-radius`, NO `box-shadow` — edge-to-edge Pillbox surface); `.popover` rule (full glass: rgba bg, tinted border, `border-radius: var(--radius)`, soft shadow); NO `backdrop-filter` anywhere (REQ-BS-02). **small** (~40 lines)
+- [x] 1.7 Create `config/ags/style/_widgets.scss`: `.w`, `.w--chip`, `.w-sep` base classes; workspace `.ws-target` + `.ws` + `.ws.active` rules (ADR-9); `:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }` for all interactive widgets (REQ-A11Y-02). **medium** (~80 lines)
+- [x] 1.8 Create `config/ags/style/_index.scss`: `@forward` all 5 partials in dependency order (tokens → typography → motion → glass → widgets). **small** (~8 lines)
+- [x] 1.9 Modify `config/ags/style.scss`: replace current content with `@use "./style/index";` (thin entry). **small** (~2 lines)
 
 ### 1c. Lib: motion gate + a11y helpers
-- [ ] 1.10 Create `config/ags/lib/motion.ts`: `initMotionGate()` reads `Gtk.Settings.get_default().gtk_enable_animations`; applies `.motion-on`/`.motion-off` to all AGS windows; subscribes to `notify::gtk-enable-animations` + `app.connect("window-added", …)` for runtime updates (REQ-MG-01, REQ-MG-03; ADR-4). **small** (~40 lines)
-- [ ] 1.11 Create `config/ags/lib/a11y.ts`: `setAccessibleName(widget, name)` helper; `focusPad(widget)` that ensures ≥44px hit area via CSS min-width/height (REQ-A11Y-01, REQ-A11Y-03; ADR-6 caveat). **small** (~35 lines)
+- [x] 1.10 Create `config/ags/lib/motion.ts`: `initMotionGate()` reads `Gtk.Settings.get_default().gtk_enable_animations`; applies `.motion-on`/`.motion-off` to all AGS windows; subscribes to `notify::gtk-enable-animations` + `app.connect("window-added", …)` for runtime updates (REQ-MG-01, REQ-MG-03; ADR-4). **small** (~40 lines)
+- [x] 1.11 Create `config/ags/lib/a11y.ts`: `setAccessibleName(widget, name)` helper; `focusPad(widget)` that ensures ≥44px hit area via CSS min-width/height (REQ-A11Y-01, REQ-A11Y-03; ADR-6 caveat). **small** (~35 lines)
 
 ### 1d. Hyprland service wrapper
-- [ ] 1.12 Create `config/ags/service/hyprland.ts`: GObject subclass with `workspaces: number[]`, `activeWorkspace: number`, `activeTitle: string`, `activeClass: string` bindable properties; init via `hyprctl -j workspaces` + `hyprctl -j activewindow`; live updates via `Gio.SocketClient` reading `.socket2.sock` parsing `workspace>>N`, `activewindow>>CLASS,TITLE` events; `dispatch(cmd, ...args)` method (ADR-2; REQ-WS-01, REQ-AW-01). **large** (~120 lines)
-- [ ] 1.13 Smoke test `service/hyprland.ts` in isolation: `ags run` starts, workspaces property reflects `hyprctl workspaces` output, switching workspace updates `activeWorkspace` within one frame. **small** (manual verification)
+- [x] 1.12 Create `config/ags/service/hyprland.ts`: GObject subclass with `workspaces: number[]`, `activeWorkspace: number`, `activeTitle: string`, `activeClass: string` bindable properties; init via `hyprctl -j workspaces` + `hyprctl -j activewindow`; live updates via `Gio.SocketClient` reading `.socket2.sock` parsing `workspace>>N`, `activewindow>>CLASS,TITLE` events; `dispatch(cmd, ...args)` method (ADR-2; REQ-WS-01, REQ-AW-01). **large** (~120 lines)
+- [x] 1.13 Smoke test `service/hyprland.ts` in isolation: `ags run` starts, workspaces property reflects `hyprctl workspaces` output, switching workspace updates `activeWorkspace` within one frame. **small** (manual verification — done in prior Slice A0 session)
 
 ### 1e. Shell widgets
-- [ ] 1.14 Create `config/ags/widget/BarShell.tsx`: single full-width edge-to-edge `Astal.Window` with `.bar-shell` CSS class, anchored TOP|LEFT|RIGHT (full monitor width), `exclusivity={Astal.Exclusivity.EXCLUSIVE}`, accepting `children` prop; no logic (REQ-BS-01, REQ-BS-02; ADR-3). **small** (~30 lines)
-- [ ] 1.15 Create `config/ags/widget/Popover.tsx`: generic layer-shell popover window (~30 lines); props: `name`, `anchor`, `margins`, `accessibleName`, `children`; Esc-to-close via `onKeyPressed`; `cssClasses={["popover"]}`; `accessibleRole={Gtk.AccessibleRole.DIALOG}` (ADR-6). **small** (~35 lines)
-- [ ] 1.16 Rewrite `config/ags/widget/Bar.tsx`: Pillbox edge-to-edge layout — single `BarShell` window full monitor width, with three internal flex sections via `justify-content: space-between`. Left section: `[Workspaces, LauncherPill]`; center section: `[Clock]` (placeholder for NowPlaying area in future slices); right section: `[Mic, Volume, Battery, Network, NotificationsBell]`; height ≤30px via CSS `max-height: 30px`; adjacent widgets within each section have `gap: 4px` (REQ-BS-01, REQ-BS-05; ADR-7). Render placeholder `<label label="…"/>` for not-yet-implemented widgets in this slice. **medium** (~80 lines)
-- [ ] 1.17 Create `config/ags/widget/Workspaces.tsx`: renders workspace buttons from `createBinding(hyprland, "workspaces")`; each button uses `.ws-target` outer + `.ws`/`.ws.active` inner; click calls `hyprland.dispatch("workspace", String(n))`; scroll-up/down cycles workspaces; `accessible-name="Workspaces"` on container; per-dot `accessible-label="Workspace N"` + `accessible-role=button` + ≥44px hit target via `.ws-target` (REQ-WS-01..04; ADR-9). **medium** (~75 lines)
+- [x] 1.14 Create `config/ags/widget/BarShell.tsx`: single full-width edge-to-edge `Astal.Window` with `.bar-shell` CSS class, anchored TOP|LEFT|RIGHT (full monitor width), `exclusivity={Astal.Exclusivity.EXCLUSIVE}`, accepting `children` prop; no logic (REQ-BS-01, REQ-BS-02; ADR-3). **small** (~30 lines)
+- [x] 1.15 Create `config/ags/widget/Popover.tsx`: generic layer-shell popover window (~30 lines); props: `name`, `anchor`, `margins`, `accessibleName`, `children`; Esc-to-close via `onKeyPressed`; `cssClasses={["popover"]}`; `accessibleRole={Gtk.AccessibleRole.DIALOG}` (ADR-6). **small** (~35 lines)
+- [x] 1.16 Rewrite `config/ags/widget/Bar.tsx`: Pillbox edge-to-edge layout — single `BarShell` window full monitor width, with three internal flex sections via `justify-content: space-between`. Left section: `[Workspaces, LauncherPill]`; center section: `[Clock]` (placeholder for NowPlaying area in future slices); right section: `[Mic, Volume, Battery, Network, NotificationsBell]`; height ≤30px via CSS `max-height: 30px`; adjacent widgets within each section have `gap: 4px` (REQ-BS-01, REQ-BS-05; ADR-7). Render placeholder `<label label="…"/>` for not-yet-implemented widgets in this slice. **medium** (~80 lines)
+- [x] 1.17 Create `config/ags/widget/Workspaces.tsx`: renders workspace buttons from `createBinding(hyprland, "workspaces")`; each button uses `.ws-target` outer + `.ws`/`.ws.active` inner; click calls `hyprland.dispatch("workspace", String(n))`; scroll-up/down cycles workspaces; `accessible-name="Workspaces"` on container; per-dot `accessible-label="Workspace N"` + `accessible-role=button` + ≥44px hit target via `.ws-target` (REQ-WS-01..04; ADR-9). **medium** (~75 lines)
 
 ### 1f. Hyprland Lua — layerrules only
-- [ ] 1.18 Modify `config/hypr/hyprland.lua`: add two `hl.layer_rule({…})` blocks immediately after the `hl.on("hyprland.start", …)` block (line ~52); add `blur=true` and `ignore_zero=true` rules for namespace `^ags$` (REQ-BS-03; ADR-5). Keep swaync autostart line intact in this slice. **small** (~3 lines added)
+- [x] 1.18 Modify `config/hypr/hyprland.lua`: add two `hl.layer_rule({…})` blocks immediately after the `hl.on("hyprland.start", …)` block (line ~52); add `blur=true` and `ignore_zero=true` rules for namespace `^ags$` (REQ-BS-03; ADR-5). Keep swaync autostart line intact in this slice. **small** (~3 lines added)
 
 ### 1g. App entrypoint
-- [ ] 1.19 Modify `config/ags/app.ts`: add `initMotionGate()` call; keep existing `app.get_monitors().map(Bar)` call; keep `Launcher()` singleton mount; do NOT add `NotificationsPanel()` yet (that's Slice D) (ADR-7). **small** (~10 lines modified)
+- [x] 1.19 Modify `config/ags/app.ts`: add `initMotionGate()` call; keep existing `app.get_monitors().map(Bar)` call; keep `Launcher()` singleton mount; do NOT add `NotificationsPanel()` yet (that's Slice D) (ADR-7). **small** (~10 lines modified)
 
 ### 1h. Slice A verification
-- [ ] 1.20 `ags run` — bar renders with 3 floating modules; Hyprland blur visible behind bar; workspace dots present; switching workspace triggers pill morph; no `color-mix(` in compiled CSS (`rg 'color-mix\(' ~/.cache/ags/`); no `backdrop-filter` in compiled CSS. **small** (manual smoke test)
-- [ ] 1.21 Check `_tokens.scss` compiled output: no hex literals outside token file (`rg -n '#[0-9a-fA-F]{3,8}' config/ags/style/_widgets.scss` → zero matches). **small**
-- [ ] 1.22 Disable animations in GNOME settings (`gsettings set org.gnome.desktop.interface enable-animations false`): verify `.motion-off` class on root; workspace switch is instant. **small** (manual)
+- [ ] 1.20 `ags run` — bar renders with 3 floating modules; Hyprland blur visible behind bar; workspace dots present; switching workspace triggers pill morph; no `color-mix(` in compiled CSS (`rg 'color-mix\(' ~/.cache/ags/`); no `backdrop-filter` in compiled CSS. **small** (manual smoke test — USER ACTION REQUIRED)
+- [x] 1.21 Check `_tokens.scss` compiled output: no hex literals outside token file (`rg -n '#[0-9a-fA-F]{3,8}' config/ags/style/_widgets.scss` → zero matches). **small** (VERIFIED — zero matches)
+- [ ] 1.22 Disable animations in GNOME settings (`gsettings set org.gnome.desktop.interface enable-animations false`): verify `.motion-off` class on root; workspace switch is instant. **small** (manual — USER ACTION REQUIRED)
 
 ---
 

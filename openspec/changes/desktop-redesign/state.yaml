@@ -7,7 +7,7 @@ phases:
   spec:      { status: complete }
   design:    { status: complete }
   tasks:     { status: complete }
-  apply:     { status: in_progress, completed_slices: [A0], pending_slices: [A, B, C, D] }
+  apply:     { status: in_progress, completed_slices: [A0, A], pending_slices: [B, C, D] }
   verify:    { status: pending }
   archive:   { status: pending }
 artifact_store: hybrid
@@ -16,9 +16,15 @@ chain_strategy: stacked-to-main
 sequencing: {}
 notes: |
   Released 2026-05-27 — uwsm-adoption archived (session-management capability complete).
-  Blocked-by constraint lifted. Resume order remains:
-    1. Smoke-test Slice A0 (config/ags/service/hyprland.ts polls
-       Hyprland Socket2 — confirm activeWorkspace updates when switching
-       workspaces; activeTitle updates when focusing a window).
-    2. sdd-continue (Slice A: BarShell + Bar Aurora + Workspaces + fonts).
-    3. Continue through Slices B, C, D as stacked PRs to main.
+  Blocked-by constraint lifted.
+
+  Slice A complete on bare-metal — Pillbox edge-to-edge shell shipped (REQ-BS-01..05 satisfied).
+  Committed as 996960f. Static verification: dart-sass compiles clean, no color-mix() or
+  backdrop-filter in output CSS, .bar-shell has no border-radius or box-shadow,
+  hl.layer_rule blur+ignorezero added, ags bundle compiles clean.
+  Runtime smoke test (ags quit; uwsm app -- ags run) is pending user action.
+
+  Next steps:
+    1. User runs ags smoke test (tasks 1.20, 1.21, 1.22 — manual steps).
+    2. sdd-continue → Slice B: Clock, ActiveWindow, LauncherPill, Mic restyle, Launcher restyle.
+    3. Continue through Slices C, D as stacked PRs to main.
