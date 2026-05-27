@@ -19,12 +19,28 @@ notes: |
   Blocked-by constraint lifted.
 
   Slice A complete on bare-metal — Pillbox edge-to-edge shell shipped (REQ-BS-01..05 satisfied).
-  Committed as 996960f. Static verification: dart-sass compiles clean, no color-mix() or
-  backdrop-filter in output CSS, .bar-shell has no border-radius or box-shadow,
-  hl.layer_rule blur+ignorezero added, ags bundle compiles clean.
-  Runtime smoke test (ags quit; uwsm app -- ags run) is pending user action.
+  Runtime smoke test PASSED on bare-metal CachyOS host:
+    - Single full-width BarShell renders edge-to-edge
+    - Workspaces dot/pill morph centered + functional (click + scroll dispatch)
+    - Hyprland compositor blur visible behind bar (hl.layer_rule)
+    - No CSS errors in stderr (/tmp/ags-debug.log empty after fixes)
+    - Mic widget visible (its full restyle is REQ-MC-* in Slice B)
+    - Placeholders 'vol/bat/net/bell' render as expected (Slices B/C/D will replace)
+
+  Slice A required 5 post-apply fixes:
+    1. b7d6d1e — flatten Workspaces binding (nested Accessor → createComputed)
+    2. b7d6d1e — drop bar-shell max-height (clipped 44px a11y hit zone)
+    3. bf28224 / c0f0c1c — hyprland layer_rule field is ignore_alpha (not ignorezero)
+    4. bcc5a66 — GTK4 CSS subset: replaced :root + [data-theme=...] with *;
+                  removed display:flex/align-items/justify-content; dropped !important
+    5. bcc5a66 — Workspaces uses <For> from gnim (not .as(arr => arr.map(...)))
+    6. 53d9b28 — center inner dot/pill box halign/valign to prevent vertical stretch
+
+  Task 1.22 (gsettings animations off motion-off check) deferred to verify phase.
 
   Next steps:
-    1. User runs ags smoke test (tasks 1.20, 1.21, 1.22 — manual steps).
+    1. Decide PR strategy: open Slice A PR now to main, OR continue local through
+       Slices B/C/D and PR each in turn (per cached chain_strategy: stacked-to-main).
     2. sdd-continue → Slice B: Clock, ActiveWindow, LauncherPill, Mic restyle, Launcher restyle.
     3. Continue through Slices C, D as stacked PRs to main.
+    4. After Slice D: sdd-verify desktop-redesign (incl. task 1.22) → sdd-archive.

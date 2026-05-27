@@ -88,15 +88,15 @@ Chain strategy: stacked-to-main
 - [x] 1.17 Create `config/ags/widget/Workspaces.tsx`: renders workspace buttons from `createBinding(hyprland, "workspaces")`; each button uses `.ws-target` outer + `.ws`/`.ws.active` inner; click calls `hyprland.dispatch("workspace", String(n))`; scroll-up/down cycles workspaces; `accessible-name="Workspaces"` on container; per-dot `accessible-label="Workspace N"` + `accessible-role=button` + ≥44px hit target via `.ws-target` (REQ-WS-01..04; ADR-9). **medium** (~75 lines)
 
 ### 1f. Hyprland Lua — layerrules only
-- [x] 1.18 Modify `config/hypr/hyprland.lua`: add two `hl.layer_rule({…})` blocks immediately after the `hl.on("hyprland.start", …)` block (line ~52); add `blur=true` and `ignore_zero=true` rules for namespace `^ags$` (REQ-BS-03; ADR-5). Keep swaync autostart line intact in this slice. **small** (~3 lines added)
+- [x] 1.18 Modify `config/hypr/hyprland.lua`: add two `hl.layer_rule({…})` blocks immediately after the `hl.on("hyprland.start", …)` block (line ~52); add `blur=true` and `ignore_alpha=true` rules for namespace `^ags$` (REQ-BS-03; ADR-5). Keep swaync autostart line intact in this slice. **small** (~3 lines added). NOTE: Lua API field name is `ignore_alpha` (not `ignorezero` as conf-style) — see engram `dotfiles/hyprland/lua-api-quirks`.
 
 ### 1g. App entrypoint
 - [x] 1.19 Modify `config/ags/app.ts`: add `initMotionGate()` call; keep existing `app.get_monitors().map(Bar)` call; keep `Launcher()` singleton mount; do NOT add `NotificationsPanel()` yet (that's Slice D) (ADR-7). **small** (~10 lines modified)
 
 ### 1h. Slice A verification
-- [ ] 1.20 `ags run` — bar renders with 3 floating modules; Hyprland blur visible behind bar; workspace dots present; switching workspace triggers pill morph; no `color-mix(` in compiled CSS (`rg 'color-mix\(' ~/.cache/ags/`); no `backdrop-filter` in compiled CSS. **small** (manual smoke test — USER ACTION REQUIRED)
+- [x] 1.20 `ags run` — Pillbox edge-to-edge bar renders; Hyprland blur visible behind bar; workspace dots/pill present and centered; switching workspace triggers pill morph; no `color-mix(` literal in source SCSS (verified via `rg 'color-mix\(' config/ags/style/` — only one match is inside a SCSS comment); no `backdrop-filter` (verified via `rg`). **small** (manual smoke test — PASSED on bare-metal 2026-05-27)
 - [x] 1.21 Check `_tokens.scss` compiled output: no hex literals outside token file (`rg -n '#[0-9a-fA-F]{3,8}' config/ags/style/_widgets.scss` → zero matches). **small** (VERIFIED — zero matches)
-- [ ] 1.22 Disable animations in GNOME settings (`gsettings set org.gnome.desktop.interface enable-animations false`): verify `.motion-off` class on root; workspace switch is instant. **small** (manual — USER ACTION REQUIRED)
+- [ ] 1.22 Disable animations in GNOME settings (`gsettings set org.gnome.desktop.interface enable-animations false`): verify `.motion-off` class on root; workspace switch is instant. **small** (manual — DEFERRED, optional a11y check, will run at desktop-redesign verify phase before archive)
 
 ---
 
