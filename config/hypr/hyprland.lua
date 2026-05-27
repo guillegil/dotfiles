@@ -15,17 +15,11 @@
 ------------------
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
--- VM caveat: virtio-gpu reports scale "auto" = 2 on a 1280x800 surface, giving
--- only 640x400 usable workspace. Pinning scale = 1 quadruples usable space.
--- Higher modes (1920x1080) advertise as available but fail at applyCommit on
--- this virtio-gpu — resize the QEMU/virt-manager window or change the display
--- model on the host to get a larger scanout surface. On bare-metal, revert
--- scale to "auto".
 hl.monitor({
     output   = "",
     mode     = "preferred",
     position = "auto",
-    scale    = 1,
+    scale    = "auto",
 })
 
 
@@ -52,11 +46,6 @@ hl.on("hyprland.start", function ()
    hl.exec_cmd("ags run")
    hl.exec_cmd("swaync")
    -- hyprpaper disabled until hyprpaper.conf exists; misc.background_color used instead
-   -- VBoxClient: VirtualBox guest integration (display resize, clipboard, time
-   -- sync). Requires `virtualbox-guest-utils`. Harmless on bare-metal: the
-   -- binary exits with "VBoxGuest kernel driver not found" and Hyprland keeps
-   -- going. Swap for `spice-vdagent` if/when we move to qemu/virt-manager.
-   hl.exec_cmd("VBoxClient-all")
    hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
    hl.exec_cmd("wl-paste --watch cliphist store")
 end)
@@ -70,14 +59,6 @@ end)
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
-
--- VM software rendering — virtio GPU on this host does not support DMA-BUF buffer
--- attach, so GTK4 (GSK) and GLES clients (kitty, ags) get wl_surface.attach errors.
--- Forcing llvmpipe + GSK cairo backend makes everything render via CPU. Remove these
--- when running on bare-metal hardware with a real GPU.
-hl.env("LIBGL_ALWAYS_SOFTWARE", "1")
-hl.env("GALLIUM_DRIVER", "llvmpipe")
-hl.env("GSK_RENDERER", "cairo")
 
 
 -----------------------

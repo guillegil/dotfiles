@@ -41,10 +41,10 @@ playerctl                   # media key control
 # --- AGS build dependency --------------------------------------------------
 dart-sass                   # 'sass' binary; AGS compiles SCSS with it
 
-# --- VM guest integration (only needed inside the VM) ----------------------
-# VirtualBox is the current host; keep QEMU/SPICE entries commented for when
-# we move to qemu/virt-manager. virtualbox-guest-utils enables host->guest
-# resize, clipboard, and time sync via VBoxClient.
-virtualbox-guest-utils
-# qemu-guest-agent
-# spice-vdagent
+# --- VM guest integration --------------------------------------------------
+# Uncomment whichever matches your hypervisor when running this dotfiles
+# inside a VM. All three are no-ops on bare-metal so they can be left
+# commented in the default checkout.
+# virtualbox-guest-utils   # VirtualBox + VBoxClient
+# qemu-guest-agent         # QEMU/KVM
+# spice-vdagent            # SPICE channel (used with qemu/virt-manager)
