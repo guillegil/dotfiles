@@ -3,13 +3,17 @@
 // Each button: .ws-target outer hit zone (44px), .ws/.ws.active inner dot/pill.
 // Click → hyprland.dispatch("workspace", n). Scroll up/down cycles workspaces.
 
-import { createBinding } from "ags"
-import { Gtk, Gdk } from "ags/gtk4"
+import { createBinding, createComputed } from "ags"
+import { Gtk } from "ags/gtk4"
 import hyprland from "../service/hyprland"
 
 export default function Workspaces() {
   const workspaces = createBinding(hyprland, "workspaces")
   const active = createBinding(hyprland, "activeWorkspace")
+  const items = createComputed(
+    [workspaces, active],
+    (ids, activeId) => ids.map(id => ({ id, active: id === activeId })),
+  )
 
   return (
     <box
@@ -33,26 +37,22 @@ export default function Workspaces() {
         self.add_controller(scroll)
       }}
     >
-      {workspaces.as(ids =>
-        ids.map(id =>
-          active.as(activeId => (
-            <button
-              cssClasses={["ws-target"]}
-              onClicked={() => hyprland.dispatch("workspace", String(id))}
-              accessibleRole={Gtk.AccessibleRole.BUTTON}
-              $={(self) => {
-                self.update_property(
-                  [Gtk.AccessibleProperty.LABEL],
-                  [`Workspace ${id}`],
-                )
-              }}
-            >
-              <box
-                cssClasses={activeId === id ? ["ws", "active"] : ["ws"]}
-              />
-            </button>
-          ))
-        )
+      {items.as(list =>
+        list.map(({ id, active }) => (
+          <button
+            cssClasses={["ws-target"]}
+            onClicked={() => hyprland.dispatch("workspace", String(id))}
+            accessibleRole={Gtk.AccessibleRole.BUTTON}
+            $={(self) => {
+              self.update_property(
+                [Gtk.AccessibleProperty.LABEL],
+                [`Workspace ${id}`],
+              )
+            }}
+          >
+            <box cssClasses={active ? ["ws", "active"] : ["ws"]} />
+          </button>
+        )),
       )}
     </box>
   )

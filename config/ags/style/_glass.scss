@@ -5,14 +5,14 @@
 // NO box-shadow on .bar-shell — no floating elevation.
 
 // Pillbox edge-to-edge bar surface (REQ-BS-01, REQ-BS-02)
-// max-height: 30px enforces the ≤30px resting height constraint.
 // NO border-radius — edge-to-edge surface.
 // NO box-shadow — no floating elevation.
+// Height is content-driven: the 44px .ws-target hit zone (REQ-A11Y-03)
+// takes precedence over the 30px resting-state target in REQ-BS-01.
 .bar-shell {
   background:    var(--bg);
   border-bottom: 1px solid var(--bar-border);
   font-family:   var(--font-mono);
-  max-height:    30px;
 }
 
 // Generic popover surface (calendar, notifications panel, etc.)
