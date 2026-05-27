@@ -64,8 +64,8 @@ install_packages() {
     # Official repositories
     if [[ -f "$PACMAN_LIST" ]]; then
         c_info "pacman packages from $(basename "$PACMAN_LIST")"
-        # --needed skips already-installed packages; comments/blank lines ignored
-        grep -vE '^\s*(#|$)' "$PACMAN_LIST" \
+        # awk strips inline comments and blank lines; --needed skips installed pkgs
+        awk '{ sub(/#.*$/, ""); if (NF) print $1 }' "$PACMAN_LIST" \
             | xargs -r sudo pacman -S --needed --noconfirm
         c_ok "official-repo packages done"
     else
@@ -83,7 +83,7 @@ install_packages() {
             c_warn "no AUR helper (paru/yay) found — skipping AUR packages"
         else
             c_info "AUR packages via $helper from $(basename "$AUR_LIST")"
-            grep -vE '^\s*(#|$)' "$AUR_LIST" \
+            awk '{ sub(/#.*$/, ""); if (NF) print $1 }' "$AUR_LIST" \
                 | xargs -r "$helper" -S --needed --noconfirm
             c_ok "AUR packages done"
         fi
