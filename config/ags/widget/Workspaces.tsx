@@ -52,7 +52,11 @@ export default function Workspaces() {
               )
             }}
           >
-            <box cssClasses={active ? ["ws", "active"] : ["ws"]} />
+            <box
+              cssClasses={active ? ["ws", "active"] : ["ws"]}
+              halign={Gtk.Align.CENTER}
+              valign={Gtk.Align.CENTER}
+            />
           </button>
         )}
       </For>
