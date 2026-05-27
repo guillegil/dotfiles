@@ -1,0 +1,20 @@
+change: desktop-redesign
+status: in_progress
+current_phase: apply
+phases:
+  explore:   { status: complete }
+  proposal:  { status: complete }
+  spec:      { status: complete }
+  design:    { status: complete }
+  tasks:     { status: complete }
+  apply:     { status: in_progress, completed_slices: [A0], pending_slices: [A, B, C, D] }
+  verify:    { status: pending }
+  archive:   { status: pending }
+artifact_store: hybrid
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+notes: |
+  Slice A0 code lives at config/ags/service/hyprland.ts (committed but
+  not smoke-tested). Last orchestrator session diverted to debug a
+  VirtualBox display stack before the smoke test ran; that work is
+  captured in engram under topic keys dotfiles/hotfix/*.
