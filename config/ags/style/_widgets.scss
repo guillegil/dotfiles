@@ -29,15 +29,14 @@
 
 // ── Workspaces dot/pill morph (ADR-9) ────────────────────────────────────────
 // Outer hit-target wrapper — 44×44px invisible tap zone (REQ-A11Y-01)
+// GTK4 widgets center their children via halign/valign on the widget itself,
+// NOT via CSS flex (GTK4 does not implement flexbox).
 .ws-target {
-  min-width:       44px;
-  min-height:      44px;
-  padding:         0;
-  border:          0;
-  background:      transparent;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
+  min-width:  44px;
+  min-height: 44px;
+  padding:    0;
+  border:     0;
+  background: transparent;
 }
 
 // Inner dot/pill

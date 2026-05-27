@@ -3,7 +3,7 @@
 // Each button: .ws-target outer hit zone (44px), .ws/.ws.active inner dot/pill.
 // Click → hyprland.dispatch("workspace", n). Scroll up/down cycles workspaces.
 
-import { createBinding, createComputed } from "ags"
+import { createBinding, createComputed, For } from "ags"
 import { Gtk } from "ags/gtk4"
 import hyprland from "../service/hyprland"
 
@@ -37,10 +37,12 @@ export default function Workspaces() {
         self.add_controller(scroll)
       }}
     >
-      {items.as(list =>
-        list.map(({ id, active }) => (
+      <For each={items}>
+        {({ id, active }) => (
           <button
             cssClasses={["ws-target"]}
+            halign={Gtk.Align.CENTER}
+            valign={Gtk.Align.CENTER}
             onClicked={() => hyprland.dispatch("workspace", String(id))}
             accessibleRole={Gtk.AccessibleRole.BUTTON}
             $={(self) => {
@@ -52,8 +54,8 @@ export default function Workspaces() {
           >
             <box cssClasses={active ? ["ws", "active"] : ["ws"]} />
           </button>
-        )),
-      )}
+        )}
+      </For>
     </box>
   )
 }
