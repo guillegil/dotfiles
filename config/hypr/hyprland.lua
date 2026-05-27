@@ -71,14 +71,6 @@ end)
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 
--- VM software rendering — virtio GPU on this host does not support DMA-BUF buffer
--- attach, so GTK4 (GSK) and GLES clients (kitty, ags) get wl_surface.attach errors.
--- Forcing llvmpipe + GSK cairo backend makes everything render via CPU. Remove these
--- when running on bare-metal hardware with a real GPU.
-hl.env("LIBGL_ALWAYS_SOFTWARE", "1")
-hl.env("GALLIUM_DRIVER", "llvmpipe")
-hl.env("GSK_RENDERER", "cairo")
-
 
 -----------------------
 ----- PERMISSIONS -----
