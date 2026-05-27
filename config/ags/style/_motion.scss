@@ -1,0 +1,11 @@
+// _motion.scss — reduced-motion gate (REQ-MG-02; ADR-4)
+// When lib/motion.ts detects gtk-enable-animations=false it adds .motion-off
+// to every AGS window. This selector collapses all transitions/animations
+// to imperceptibly fast durations without removing them entirely.
+
+.motion-off,
+.motion-off * {
+  transition-duration:       0.01ms !important;
+  animation-duration:        0.01ms !important;
+  animation-iteration-count: 1 !important;
+}

@@ -1,0 +1,25 @@
+// _glass.scss — glass surface recipes
+// CONSTRAINT: NO backdrop-filter anywhere — GTK4 does not support it.
+// Blur is achieved via Hyprland hl.layer_rule (ADR-5).
+// NO border-radius on .bar-shell — Pillbox is edge-to-edge (REQ-BS-02).
+// NO box-shadow on .bar-shell — no floating elevation.
+
+// Pillbox edge-to-edge bar surface (REQ-BS-01, REQ-BS-02)
+// max-height: 30px enforces the ≤30px resting height constraint.
+// NO border-radius — edge-to-edge surface.
+// NO box-shadow — no floating elevation.
+.bar-shell {
+  background:    var(--bg);
+  border-bottom: 1px solid var(--bar-border);
+  font-family:   var(--font-mono);
+  max-height:    30px;
+}
+
+// Generic popover surface (calendar, notifications panel, etc.)
+.popover {
+  background:    var(--bg);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-popover);
+  box-shadow:    0 4px 24px rgba(0, 0, 0, 0.4);
+  font-family:   var(--font-mono);
+}

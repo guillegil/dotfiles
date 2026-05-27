@@ -1,0 +1,7 @@
+// _index.scss — forwards all partials in dependency order
+// tokens → typography → motion → glass → widgets
+@forward "tokens";
+@forward "typography";
+@forward "motion";
+@forward "glass";
+@forward "widgets";

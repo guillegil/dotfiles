@@ -1,0 +1,17 @@
+// _typography.scss — font system tokens
+// Bar chips, numerals, data labels → --font-mono (JetBrains Mono)
+// Popover prose, calendar labels → --font-sans (IBM Plex Sans)
+
+:root {
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  --font-sans: "IBM Plex Sans", "Noto Sans", sans-serif;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold:   700;
+}
+
+// Tabular numerals utility class — prevents digit-width reflow (REQ-TT-05)
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

@@ -15,3 +15,6 @@ libastal-bluetooth-git      # BlueZ service — Bluetooth manager widget
 libastal-network-git        # network service — network widget
 libastal-battery-git        # battery service — battery widget
 libastal-mpris-git          # media-player service — now-playing widget
+
+# --- Fonts (icon + sans) ---------------------------------------------------
+ttf-material-symbols-variable-git   # Material Symbols icon font

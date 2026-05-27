@@ -33,6 +33,7 @@ wireplumber
 
 # --- Fonts -----------------------------------------------------------------
 ttf-jetbrains-mono-nerd
+ttf-ibm-plex                # IBM Plex Sans (popover prose font)
 
 # --- System utilities ------------------------------------------------------
 openssh                     # SSH access to the machine

@@ -1,0 +1,158 @@
+// _tokens.scss — Catppuccin Mocha palette + design tokens
+// All color.mix() calls resolve at build time via dart-sass. Never emit color-mix() to CSS.
+@use "sass:color";
+
+// ── Catppuccin Mocha raw values ───────────────────────────────────────────────
+$mocha-rosewater: #f5e0dc;
+$mocha-flamingo:  #f2cdcd;
+$mocha-pink:      #f5c2e7;
+$mocha-mauve:     #cba6f7;
+$mocha-red:       #f38ba8;
+$mocha-maroon:    #eba0ac;
+$mocha-peach:     #fab387;
+$mocha-yellow:    #f9e2af;
+$mocha-green:     #a6e3a1;
+$mocha-teal:      #94e2d5;
+$mocha-sky:       #89dceb;
+$mocha-sapphire:  #74c7ec;
+$mocha-blue:      #89b4fa;
+$mocha-lavender:  #b4befe;
+$mocha-text:      #cdd6f4;
+$mocha-subtext1:  #bac2de;
+$mocha-subtext0:  #a6adc8;
+$mocha-overlay2:  #9399b2;
+$mocha-overlay1:  #7f849c;
+$mocha-overlay0:  #6c7086;
+$mocha-surface2:  #585b70;
+$mocha-surface1:  #45475a;
+$mocha-surface0:  #313244;
+$mocha-base:      #1e1e2e;
+$mocha-mantle:    #181825;
+$mocha-crust:     #11111b;
+
+// ── Catppuccin Latte raw values ───────────────────────────────────────────────
+$latte-rosewater: #dc8a78;
+$latte-flamingo:  #dd7878;
+$latte-pink:      #ea76cb;
+$latte-mauve:     #8839ef;
+$latte-red:       #d20f39;
+$latte-maroon:    #e64553;
+$latte-peach:     #fe640b;
+$latte-yellow:    #df8e1d;
+$latte-green:     #40a02b;
+$latte-teal:      #179299;
+$latte-sky:       #04a5e5;
+$latte-sapphire:  #209fb5;
+$latte-blue:      #1e66f5;
+$latte-lavender:  #7287fd;
+$latte-text:      #4c4f69;
+$latte-subtext1:  #5c5f77;
+$latte-subtext0:  #6c6f85;
+$latte-overlay2:  #7c7f93;
+$latte-overlay1:  #8c8fa1;
+$latte-overlay0:  #9ca0b0;
+$latte-surface2:  #acb0be;
+$latte-surface1:  #ccd0da;
+$latte-surface0:  #e6e9ef;
+$latte-base:      #eff1f5;
+$latte-mantle:    #e8eaf0;
+$latte-crust:     #dce0e8;
+
+// ── Mocha build-time alpha helpers ───────────────────────────────────────────
+// bar background at 0.82 alpha
+$mocha-bg-alpha:       rgba($mocha-base, 0.82);
+// tinted border: 6% text mixed into base (resolved at build time)
+$mocha-border-tint:    color.mix($mocha-text, $mocha-base, 6%);
+
+// ── Latte build-time alpha helpers ───────────────────────────────────────────
+$latte-bg-alpha:       rgba($latte-base, 0.92);
+$latte-border-tint:    color.mix($latte-text, $latte-base, 6%);
+
+// ── Mocha CSS custom properties ───────────────────────────────────────────────
+:root,
+[data-theme="mocha"] {
+  // Palette
+  --rosewater: #{$mocha-rosewater};
+  --flamingo:  #{$mocha-flamingo};
+  --pink:      #{$mocha-pink};
+  --mauve:     #{$mocha-mauve};
+  --red:       #{$mocha-red};
+  --maroon:    #{$mocha-maroon};
+  --peach:     #{$mocha-peach};
+  --yellow:    #{$mocha-yellow};
+  --green:     #{$mocha-green};
+  --teal:      #{$mocha-teal};
+  --sky:       #{$mocha-sky};
+  --sapphire:  #{$mocha-sapphire};
+  --blue:      #{$mocha-blue};
+  --lavender:  #{$mocha-lavender};
+  --text:      #{$mocha-text};
+  --subtext1:  #{$mocha-subtext1};
+  --subtext0:  #{$mocha-subtext0};
+  --overlay2:  #{$mocha-overlay2};
+  --overlay1:  #{$mocha-overlay1};
+  --overlay0:  #{$mocha-overlay0};
+  --surface2:  #{$mocha-surface2};
+  --surface1:  #{$mocha-surface1};
+  --surface0:  #{$mocha-surface0};
+  --base:      #{$mocha-base};
+  --mantle:    #{$mocha-mantle};
+  --crust:     #{$mocha-crust};
+
+  // Semantic aliases
+  --bg:        #{$mocha-bg-alpha};
+  --bg2:       #{$mocha-surface0};
+  --bg3:       #{$mocha-surface1};
+  --dim:       #{$mocha-overlay1};
+  --accent:    #{$mocha-mauve};
+  --bar-border: #{$mocha-border-tint};
+
+  // Shape
+  --radius:        14px;
+  --radius-inner:  10px;
+  --radius-popover: 14px;
+  --radius-hero:   18px;
+  --pad:           8px;
+
+  // Motion
+  --t-fast:  0.12s;
+  --t-base:  0.15s;
+  --t-morph: 0.18s;
+}
+
+// ── Latte overrides ───────────────────────────────────────────────────────────
+[data-theme="latte"] {
+  --rosewater: #{$latte-rosewater};
+  --flamingo:  #{$latte-flamingo};
+  --pink:      #{$latte-pink};
+  --mauve:     #{$latte-mauve};
+  --red:       #{$latte-red};
+  --maroon:    #{$latte-maroon};
+  --peach:     #{$latte-peach};
+  --yellow:    #{$latte-yellow};
+  --green:     #{$latte-green};
+  --teal:      #{$latte-teal};
+  --sky:       #{$latte-sky};
+  --sapphire:  #{$latte-sapphire};
+  --blue:      #{$latte-blue};
+  --lavender:  #{$latte-lavender};
+  --text:      #{$latte-text};
+  --subtext1:  #{$latte-subtext1};
+  --subtext0:  #{$latte-subtext0};
+  --overlay2:  #{$latte-overlay2};
+  --overlay1:  #{$latte-overlay1};
+  --overlay0:  #{$latte-overlay0};
+  --surface2:  #{$latte-surface2};
+  --surface1:  #{$latte-surface1};
+  --surface0:  #{$latte-surface0};
+  --base:      #{$latte-base};
+  --mantle:    #{$latte-mantle};
+  --crust:     #{$latte-crust};
+
+  --bg:        #{$latte-bg-alpha};
+  --bg2:       #{$latte-surface0};
+  --bg3:       #{$latte-surface1};
+  --dim:       #{$latte-overlay1};
+  --accent:    #{$latte-mauve};
+  --bar-border: #{$latte-border-tint};
+}
