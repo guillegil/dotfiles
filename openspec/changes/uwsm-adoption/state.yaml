@@ -1,0 +1,42 @@
+change: uwsm-adoption
+status: planning_complete
+current_phase: apply
+phases:
+  explore:   { status: complete }
+  proposal:  { status: complete }
+  spec:      { status: complete }
+  design:    { status: complete }
+  tasks:     { status: complete }
+  apply:     { status: pending, blocked_by: bare-metal-environment }
+  verify:    { status: pending }
+  archive:   { status: pending }
+artifact_store: hybrid
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+sequencing:
+  must_ship_before: desktop-redesign-slice-a
+  reason: |
+    desktop-redesign Slice D removes swaync. If uwsm-adoption ships after
+    desktop-redesign, the autostart wrapping has to be done twice. Per
+    proposal + design ADR-4, uwsm-adoption must complete apply + verify
+    BEFORE the agent resumes desktop-redesign apply.
+notes: |
+  Planning artifacts written on the VirtualBox VM session before the
+  user's migration to bare-metal CachyOS. Apply was DELIBERATELY skipped
+  on the VM because:
+    - VBox virtio-gpu has applyCommit issues with aquamarine that would
+      mask any uwsm-related modeset behavior.
+    - SDDM session selection on the VM is irrelevant — the user is moving
+      to a new install.
+    - uwsm session lifecycle (logout/login + service activation timing)
+      must be tested on the real target host.
+  The bare-metal agent should:
+    1. Clone the repo on the new CachyOS install.
+    2. Run sdd-init to refresh skill registry + project context.
+    3. Run sdd-apply uwsm-adoption — follows tasks.md 1.1..6.x in order.
+    4. Run sdd-verify uwsm-adoption against specs.md.
+    5. Run sdd-archive uwsm-adoption.
+    6. THEN resume desktop-redesign starting at Slice A.
+estimated_changed_lines: 63
+estimated_files_touched: 3
+chained_prs_recommended: false
