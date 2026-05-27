@@ -15,11 +15,17 @@
 ------------------
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
+-- VM caveat: virtio-gpu reports scale "auto" = 2 on a 1280x800 surface, giving
+-- only 640x400 usable workspace. Pinning scale = 1 quadruples usable space.
+-- Higher modes (1920x1080) advertise as available but fail at applyCommit on
+-- this virtio-gpu — resize the QEMU/virt-manager window or change the display
+-- model on the host to get a larger scanout surface. On bare-metal, revert
+-- scale to "auto".
 hl.monitor({
     output   = "",
     mode     = "preferred",
     position = "auto",
-    scale    = "auto",
+    scale    = 1,
 })
 
 
@@ -42,10 +48,15 @@ local menu        = "rofi -show drun"
 -- Autostart necessary processes (like notifications daemons, status bars, etc.)
 -- Or execute your favorite apps at launch like this:
 --
-hl.on("hyprland.start", function () 
+hl.on("hyprland.start", function ()
    hl.exec_cmd("ags run")
    hl.exec_cmd("swaync")
-   hl.exec_cmd("hyprpaper")
+   -- hyprpaper disabled until hyprpaper.conf exists; misc.background_color used instead
+   -- VBoxClient: VirtualBox guest integration (display resize, clipboard, time
+   -- sync). Requires `virtualbox-guest-utils`. Harmless on bare-metal: the
+   -- binary exits with "VBoxGuest kernel driver not found" and Hyprland keeps
+   -- going. Swap for `spice-vdagent` if/when we move to qemu/virt-manager.
+   hl.exec_cmd("VBoxClient-all")
    hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
    hl.exec_cmd("wl-paste --watch cliphist store")
 end)
@@ -59,6 +70,14 @@ end)
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
+
+-- VM software rendering — virtio GPU on this host does not support DMA-BUF buffer
+-- attach, so GTK4 (GSK) and GLES clients (kitty, ags) get wl_surface.attach errors.
+-- Forcing llvmpipe + GSK cairo backend makes everything render via CPU. Remove these
+-- when running on bare-metal hardware with a real GPU.
+hl.env("LIBGL_ALWAYS_SOFTWARE", "1")
+hl.env("GALLIUM_DRIVER", "llvmpipe")
+hl.env("GSK_RENDERER", "cairo")
 
 
 -----------------------
@@ -207,8 +226,10 @@ hl.config({
 
 hl.config({
     misc = {
-        force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
-        disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
+        force_default_wallpaper = 0,
+        disable_hyprland_logo   = true,
+        -- 32-bit ARGB: alpha 0xff = opaque, else Hyprland renders the void (black).
+        background_color        = 0xff1e1e2e, -- Catppuccin Mocha base (stopgap until hyprpaper.conf exists)
     },
 })
 

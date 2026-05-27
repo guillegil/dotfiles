@@ -22,8 +22,13 @@ export default function Launcher() {
       keymode={Astal.Keymode.ON_DEMAND}
       anchor={Astal.WindowAnchor.TOP}
       application={app}
-      onKeyPressed={(_, key) => {
-        if (key === Gdk.KEY_Escape) app.toggle_window("launcher")
+      $={self => {
+        const controller = new Gtk.EventControllerKey()
+        controller.connect("key-pressed", (_c, keyval) => {
+          if (keyval === Gdk.KEY_Escape) app.toggle_window("launcher")
+          return false
+        })
+        self.add_controller(controller)
       }}
     >
       <box orientation={Gtk.Orientation.VERTICAL} cssName="launcher-box">
