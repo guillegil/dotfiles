@@ -1,0 +1,209 @@
+/* Cachy Bar — design tokens
+ * Drop into your AGS project's style/theme.scss (or theme.css).
+ * The root [data-theme] selector controls light/dark; no JS needed for the switch.
+ */
+
+:root {
+  /* shape */
+  --radius: 14px;
+  --radius-inner: calc(var(--radius) - 4px);
+  --radius-popover: 14px;
+  --radius-hero: 18px;
+  --pad: 8px;
+
+  /* blur recipe — all shells use these */
+  --blur: blur(28px) saturate(160%);
+  --blur-popover: blur(36px) saturate(160%);
+
+  /* typography */
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+
+  /* motion */
+  --t-fast: 0.12s;
+  --t-base: 0.15s;
+  --t-morph: 0.18s cubic-bezier(.2,.7,.3,1);
+}
+
+/* ─── CATPPUCCIN MOCHA (default / dark) ─────────────────────────────── */
+:root,
+[data-theme="mocha"] {
+  /* surfaces */
+  --bg:        rgba(30,30,46,0.82);   /* base */
+  --bg-solid:  #1e1e2e;
+  --bg2:       rgba(69,71,90,0.55);   /* surface0/1 mix */
+  --bg3:       rgba(88,91,112,0.70);  /* surface1/2 mix */
+  --mantle:    rgba(24,24,37,0.92);   /* popover bg */
+  --crust:     #11111b;
+
+  --text:      #cdd6f4;
+  --subtext1:  #bac2de;
+  --dim:       #a6adc8;
+  --overlay0:  #6c7086;
+  --overlay1:  #7f849c;
+  --overlay2:  #9399b2;
+
+  /* palette */
+  --rosewater: #f5e0dc;
+  --flamingo:  #f2cdcd;
+  --pink:      #f5c2e7;
+  --mauve:     #cba6f7;
+  --red:       #f38ba8;
+  --maroon:    #eba0ac;
+  --peach:     #fab387;
+  --yellow:    #f9e2af;
+  --green:     #a6e3a1;
+  --teal:      #94e2d5;
+  --sky:       #89dceb;
+  --sapphire:  #74c7ec;
+  --blue:      #89b4fa;
+  --lavender:  #b4befe;
+
+  --accent:    var(--mauve);
+}
+
+/* ─── CATPPUCCIN LATTE (light) ──────────────────────────────────────── */
+[data-theme="latte"] {
+  --bg:        rgba(239,241,245,0.92);
+  --bg-solid:  #eff1f5;
+  --bg2:       rgba(204,208,218,0.55);
+  --bg3:       rgba(188,192,204,0.70);
+  --mantle:    rgba(230,233,239,0.94);
+  --crust:     #dce0e8;
+
+  --text:      #4c4f69;
+  --subtext1:  #5c5f77;
+  --dim:       #6c6f85;
+  --overlay0:  #9ca0b0;
+  --overlay1:  #8c8fa1;
+  --overlay2:  #7c7f93;
+
+  --rosewater: #dc8a78;
+  --flamingo:  #dd7878;
+  --pink:      #ea76cb;
+  --mauve:     #8839ef;
+  --red:       #d20f39;
+  --maroon:    #e64553;
+  --peach:     #fe640b;
+  --yellow:    #df8e1d;
+  --green:     #40a02b;
+  --teal:      #179299;
+  --sky:       #04a5e5;
+  --sapphire:  #209fb5;
+  --blue:      #1e66f5;
+  --lavender:  #7287fd;
+
+  --accent:    var(--mauve);
+}
+
+/* ─── core patterns ─────────────────────────────────────────────────── */
+
+.bar-shell {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid color-mix(in oklab, var(--text) 7%, transparent);
+  border-radius: var(--radius);
+  padding: 4px var(--pad);
+  box-shadow:
+    0 8px 28px -8px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.bar-shell--dock {
+  box-shadow:
+    0 16px 50px -12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-radius: calc(var(--radius) + 6px);
+}
+
+.popover {
+  background: var(--mantle);
+  backdrop-filter: var(--blur-popover);
+  -webkit-backdrop-filter: var(--blur-popover);
+  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+  border-radius: var(--radius-popover);
+  padding: 14px;
+  box-shadow:
+    0 20px 60px -16px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+.overlay-halo {
+  /* gradient halo strip (top of AI overlay, ConfirmBanner) */
+  height: 2px;
+  background: linear-gradient(90deg, var(--mauve), var(--blue), var(--teal));
+}
+
+/* ─── widget base ───────────────────────────────────────────────────── */
+
+.w {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-inner);
+  color: var(--text);
+  font: 500 12.5px/1 var(--font-mono);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  user-select: none;
+  transition:
+    background var(--t-base) ease,
+    transform  var(--t-base) ease,
+    color      var(--t-base) ease;
+}
+.w:hover { background: var(--bg2); }
+.w--flat { padding: 4px 8px; }
+.w--chip { background: var(--bg2); }
+.w--chip:hover { background: var(--bg3); }
+.w .dim { color: var(--dim); }
+.w .accent { color: var(--accent); }
+
+/* separator between widgets */
+.w-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--text);
+  opacity: 0.08;
+  margin: 0 4px;
+  align-self: center;
+}
+
+/* ─── label helpers ─────────────────────────────────────────────────── */
+.label-section {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* tabular figures everywhere for status text */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ─── motion ────────────────────────────────────────────────────────── */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(1.4); }
+}
+.pulse { animation: pulse 2.2s ease-in-out infinite; }
+
+@keyframes viz {
+  0%, 100% { transform: scaleY(0.35); }
+  50%      { transform: scaleY(1); }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse, [class*="viz"] { animation: none !important; }
+  * { transition-duration: 0.01ms !important; }
+}

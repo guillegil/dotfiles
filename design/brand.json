@@ -1,0 +1,267 @@
+{
+  "name": "Cachy Bar",
+  "version": "0.1.0",
+  "compositor": "Hyprland",
+  "host": "AGS (Aylur's GTK Shell)",
+
+  "shape": {
+    "radius": 14,
+    "radius_inner": 10,
+    "radius_popover": 14,
+    "radius_hero": 18,
+    "pad": 8,
+    "bar_height": 30,
+    "min_hit_target": 44
+  },
+
+  "typography": {
+    "family": ["JetBrains Mono", "SF Mono", "ui-monospace", "monospace"],
+    "weights": { "body": 400, "label": 500, "value": 600, "title": 700 },
+    "tabular_numerals": true,
+    "scale_px": {
+      "section_label": 9,
+      "badge": 10,
+      "body": 12.5,
+      "popover_heading": 13,
+      "hero_title": 14
+    }
+  },
+
+  "motion": {
+    "transition_fast_s": 0.12,
+    "transition_base_s": 0.15,
+    "transition_morph_s": 0.18,
+    "honor_reduced_motion": true
+  },
+
+  "palettes": {
+    "mocha": {
+      "name": "Catppuccin Mocha",
+      "kind": "dark",
+      "surface": {
+        "base":     "#1e1e2e",
+        "mantle":   "#181825",
+        "crust":    "#11111b",
+        "surface0": "#313244",
+        "surface1": "#45475a",
+        "surface2": "#585b70"
+      },
+      "text": {
+        "text":     "#cdd6f4",
+        "subtext1": "#bac2de",
+        "subtext0": "#a6adc8",
+        "overlay2": "#9399b2",
+        "overlay1": "#7f849c",
+        "overlay0": "#6c7086"
+      },
+      "accent": {
+        "rosewater": "#f5e0dc",
+        "flamingo":  "#f2cdcd",
+        "pink":      "#f5c2e7",
+        "mauve":     "#cba6f7",
+        "red":       "#f38ba8",
+        "maroon":    "#eba0ac",
+        "peach":     "#fab387",
+        "yellow":    "#f9e2af",
+        "green":     "#a6e3a1",
+        "teal":      "#94e2d5",
+        "sky":       "#89dceb",
+        "sapphire":  "#74c7ec",
+        "blue":      "#89b4fa",
+        "lavender":  "#b4befe"
+      },
+      "alphas": {
+        "bar_bg":     0.82,
+        "bar_bg2":    0.55,
+        "bar_bg3":    0.70,
+        "popover_bg": 0.92
+      },
+      "default_accent": "mauve"
+    },
+    "latte": {
+      "name": "Catppuccin Latte",
+      "kind": "light",
+      "surface": {
+        "base":     "#eff1f5",
+        "mantle":   "#e6e9ef",
+        "crust":    "#dce0e8",
+        "surface0": "#ccd0da",
+        "surface1": "#bcc0cc",
+        "surface2": "#acb0be"
+      },
+      "text": {
+        "text":     "#4c4f69",
+        "subtext1": "#5c5f77",
+        "subtext0": "#6c6f85",
+        "overlay2": "#7c7f93",
+        "overlay1": "#8c8fa1",
+        "overlay0": "#9ca0b0"
+      },
+      "accent": {
+        "rosewater": "#dc8a78",
+        "flamingo":  "#dd7878",
+        "pink":      "#ea76cb",
+        "mauve":     "#8839ef",
+        "red":       "#d20f39",
+        "maroon":    "#e64553",
+        "peach":     "#fe640b",
+        "yellow":    "#df8e1d",
+        "green":     "#40a02b",
+        "teal":      "#179299",
+        "sky":       "#04a5e5",
+        "sapphire":  "#209fb5",
+        "blue":      "#1e66f5",
+        "lavender":  "#7287fd"
+      },
+      "alphas": {
+        "bar_bg":     0.92,
+        "bar_bg2":    0.55,
+        "bar_bg3":    0.70,
+        "popover_bg": 0.94
+      },
+      "default_accent": "mauve"
+    }
+  },
+
+  "semantic_colors": {
+    "cpu": "blue",
+    "ram": "mauve",
+    "temp": "peach",
+    "temp_critical": "red",
+    "battery_healthy": "green",
+    "battery_warn": "yellow",
+    "battery_critical": "red",
+    "wifi": "sky",
+    "bluetooth": "blue",
+    "vpn": "green",
+    "mic": "red",
+    "recording": "red",
+    "camera_live": "green",
+    "ai": "mauve",
+    "ai_secondary": "blue",
+    "now_playing": "peach",
+    "now_playing_alt": "lavender",
+    "updates": "sky",
+    "pomodoro": "red",
+    "calendar": "green",
+    "github": "text",
+    "github_mention": "peach",
+    "weather": "sapphire",
+    "net_speed_down": "teal",
+    "net_speed_up": "peach",
+    "performance_eco": "green",
+    "performance_auto": "blue",
+    "performance_perf": "peach",
+    "keyboard": "lavender",
+    "caffeine_on": "peach"
+  },
+
+  "shells": {
+    "bar_glass": {
+      "blur_px": 28,
+      "saturate": 1.6,
+      "border": "1px solid color-mix(in oklab, var(--text) 7%, transparent)",
+      "shadow": "0 8px 28px -8px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05)"
+    },
+    "bar_dock": {
+      "shadow": "0 16px 50px -12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
+      "radius_add": 6
+    },
+    "popover": {
+      "blur_px": 36,
+      "saturate": 1.6,
+      "border": "1px solid color-mix(in oklab, var(--text) 8%, transparent)",
+      "shadow": "0 20px 60px -16px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)"
+    },
+    "overlay_halo_gradient": "linear-gradient(90deg, var(--mauve), var(--blue), var(--teal))",
+    "ai_glow_shadow": "0 24px 80px -20px rgba(0,0,0,0.7), 0 0 60px -20px color-mix(in oklab, var(--accent) 40%, transparent)"
+  },
+
+  "tinted_bg_recipe": {
+    "subtle": "color-mix(in oklab, <color> 12%, transparent)",
+    "active":  "color-mix(in oklab, <color> 22%, transparent)",
+    "border_active": "color-mix(in oklab, <color> 35%, transparent)",
+    "fill":    "color-mix(in oklab, <color> 45%, transparent)"
+  },
+
+  "icons": {
+    "style": "phosphor",
+    "stroke": 1.75,
+    "viewbox": "24 24",
+    "size_bar": [12, 16],
+    "size_popover": [14, 22],
+    "size_hero": [32, 48],
+    "real_icon_libraries": [
+      "Phosphor Icons (@phosphor-icons/web)",
+      "Material Symbols Rounded weight 400 optical-size 20"
+    ],
+    "names": [
+      "clock","calendar","wifi","bluetooth","battery","volume","mute","mic","brightness",
+      "bell","cpu","ram","thermo","power","keyboard","tray","window",
+      "play","pause","skip","prev",
+      "tomato","github","package","ai","spark","cloud","rec","clipboard","search","chevron",
+      "arch","hypr","user","vpn","camera","cam_off","leaf","bolt","scale","coffee","moon",
+      "shield","snip","dnd","airpods","headphones","mouse","laptop","dropper","region",
+      "speaker","display","monitor","arrow_down","arrow_up","swap"
+    ]
+  },
+
+  "widgets": {
+    "core": [
+      "Workspaces","ActiveWindow","Clock","Battery","CpuChip","RamChip","TempChip",
+      "Volume","Brightness","Net","NetIcon","BTIcon","Notifications","Tray",
+      "PowerMenu","KeyLayout","Launcher"
+    ],
+    "plugins": [
+      "NowPlaying","Pomodoro","HyprMap","GitHub","Updates","CalendarChip",
+      "AILauncher","AITalk","NetSpeed","RecIndicator","CameraIndicator",
+      "Performance","IdleInhibitor","ScreenshotWidget","ColorPickerWidget",
+      "AudioSourceWidget","Weather"
+    ]
+  },
+
+  "popovers": [
+    "ControlCenter","NowPlayingPanel","CalendarPanel","HyprMapPanel",
+    "AIOverlay","AppLauncher","CameraPopover","BatteryDevicesPopover",
+    "ScreenshotPopover","ColorPickerPopover","AudioSourcePopover",
+    "KeyboardLayoutPopover","IdleInhibitorPopover","NotificationsPopover",
+    "ConfirmBanner"
+  ],
+
+  "bar_layouts": [
+    {"id":"aurora","position":"top","style":"floating-segmented"},
+    {"id":"pillbox","position":"top","style":"edge-to-edge-dense"},
+    {"id":"mantle","position":"bottom","style":"floating-dock-hero"},
+    {"id":"spine","position":"left","style":"vertical-rail"},
+    {"id":"atlas","position":"top","style":"floating-split-modules"},
+    {"id":"cathedral","position":"top","style":"floating-hero-center"},
+    {"id":"linen","position":"top","style":"floating-segmented","theme":"latte"},
+    {"id":"marble","position":"top","style":"edge-to-edge-dense","theme":"latte"}
+  ],
+
+  "tweaks": {
+    "accent": { "kind": "color", "per_palette": true },
+    "radius": { "kind": "slider", "min": 0, "max": 28, "default": 14, "unit": "px" },
+    "pad":    { "kind": "slider", "min": 2, "max": 20, "default": 8,  "unit": "px" },
+    "position": { "kind": "enum", "options": ["top","bottom","left"] },
+    "visible_plugins": { "kind": "multi-toggle",
+      "options": ["AI","Pomodoro","GitHub","NowPlaying","Stats"] }
+  },
+
+  "services_required": {
+    "ags_builtin": [
+      "Hyprland","Mpris","Audio","Battery","Notifications",
+      "Network","Bluetooth","SystemTray","App"
+    ],
+    "external_cli": [
+      "paru","checkupdates","grim","slurp","swappy","hyprpicker",
+      "wl-clipboard","tailscale","gh","systemd-inhibit","hypridle",
+      "ollama","whisper.cpp"
+    ]
+  },
+
+  "fonts_install": [
+    "ttf-jetbrains-mono-nerd",
+    "ttf-material-symbols-variable-git"
+  ]
+}

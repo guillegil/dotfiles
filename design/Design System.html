@@ -1,0 +1,2350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cachy Bar — Design System & Brand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+ * Cachy Bar — Design System reference page.
+ * Defaults to Mocha. Use the theme switcher (top right) to swap.
+ * ───────────────────────────────────────────────────────────── */
+
+:root {
+  --font-mono: "JetBrains Mono","SF Mono",ui-monospace,monospace;
+  --font-sans: "Inter",-apple-system,system-ui,sans-serif;
+  --radius: 14px;
+  --radius-inner: 10px;
+  --pad: 8px;
+  --t-base: 0.18s cubic-bezier(.2,.7,.3,1);
+  /* default Mocha tokens (overwritten by [data-theme] below) */
+  --bg-page:   #11111b;
+  --bg-card:   rgba(30,30,46,0.82);
+  --bg2:       rgba(69,71,90,0.55);
+  --bg3:       rgba(88,91,112,0.70);
+  --mantle:    rgba(24,24,37,0.92);
+  --text:      #cdd6f4;
+  --dim:       #a6adc8;
+  --overlay0:  #6c7086;
+  --border:    rgba(205,214,244,0.08);
+  --rosewater: #f5e0dc; --flamingo: #f2cdcd; --pink: #f5c2e7; --mauve: #cba6f7;
+  --red: #f38ba8; --maroon: #eba0ac; --peach: #fab387; --yellow: #f9e2af;
+  --green: #a6e3a1; --teal: #94e2d5; --sky: #89dceb; --sapphire: #74c7ec;
+  --blue: #89b4fa; --lavender: #b4befe;
+  --accent: var(--mauve);
+  --halo: linear-gradient(90deg, var(--mauve), var(--blue), var(--teal));
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--t-base), color var(--t-base);
+}
+
+/* subtle starfield backdrop */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(1px 1px at 17% 22%, var(--text) 50%, transparent 51%),
+    radial-gradient(1px 1px at 43% 81%, var(--text) 50%, transparent 51%),
+    radial-gradient(1px 1px at 73% 14%, var(--text) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 64%, var(--text) 50%, transparent 51%),
+    radial-gradient(1px 1px at 31% 47%, var(--text) 50%, transparent 51%),
+    radial-gradient(1px 1px at 62% 92%, var(--text) 50%, transparent 51%),
+    radial-gradient(2px 2px at 8% 70%, var(--text) 50%, transparent 51%),
+    radial-gradient(2px 2px at 95% 30%, var(--text) 50%, transparent 51%);
+  background-size: 1200px 800px;
+  opacity: 0.08;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+main { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 56px 40px 120px; }
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero { position: relative; padding-bottom: 48px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+.hero .halo {
+  height: 3px; width: 100%; border-radius: 99px;
+  background: var(--halo);
+  margin-bottom: 32px;
+  filter: drop-shadow(0 0 12px color-mix(in oklab, var(--accent) 60%, transparent));
+}
+.hero h1 {
+  font-family: var(--font-mono); font-weight: 700;
+  font-size: clamp(40px, 6vw, 72px);
+  letter-spacing: -0.02em; line-height: 1.02;
+  margin: 0 0 16px;
+}
+.hero h1 .glyph { color: var(--accent); }
+.hero .tag { color: var(--dim); font-size: 14px; max-width: 720px; line-height: 1.7; margin: 0; }
+.hero .meta {
+  display: flex; flex-wrap: wrap; gap: 16px; margin-top: 32px;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+}
+.hero .meta span::before { content: "❯ "; color: var(--accent); }
+
+/* ── THEME SWITCHER ──────────────────────────────────────── */
+.theme-switcher {
+  position: fixed; top: 20px; right: 20px; z-index: 100;
+  display: flex; gap: 6px; padding: 6px;
+  background: var(--bg-card);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  box-shadow: 0 8px 28px -8px rgba(0,0,0,0.5);
+  max-width: calc(100vw - 40px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.theme-switcher::-webkit-scrollbar { display: none; }
+.theme-switcher button {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 99px; cursor: pointer;
+  background: transparent; border: 0; color: var(--dim);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.02em; white-space: nowrap;
+  transition: background var(--t-base), color var(--t-base);
+}
+.theme-switcher button:hover { background: var(--bg2); color: var(--text); }
+.theme-switcher button[aria-current="true"] { background: var(--bg3); color: var(--text); }
+.theme-switcher .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── SECTION ─────────────────────────────────────────────── */
+section { margin: 96px 0 0; scroll-margin-top: 80px; }
+section > h2 {
+  font-family: var(--font-mono); font-weight: 600;
+  font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim); margin: 0 0 8px; display: flex; align-items: center; gap: 12px;
+}
+section > h2::before {
+  content: ""; display: block; width: 24px; height: 1px; background: var(--accent);
+}
+section > h2 .num { color: var(--accent); font-weight: 700; }
+section > .lede {
+  font-size: 28px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.25;
+  color: var(--text); margin: 0 0 40px; max-width: 880px;
+}
+
+/* ── CARDS / GRIDS ───────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.grid { display: grid; gap: 16px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+.label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--dim);
+}
+
+/* ── 1. THEMES OVERVIEW ─────────────────────────────────── */
+.theme-card {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 18px; border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.06);
+  background: color-mix(in oklab, var(--theme-base, #1e1e2e) 92%, black);
+  color: var(--theme-text, #cdd6f4);
+  position: relative;
+  overflow: hidden;
+}
+.theme-card .strip {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--theme-mauve), var(--theme-blue), var(--theme-teal));
+}
+.theme-card .head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+}
+.theme-card h3 { font-size: 14px; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+.theme-card .badge {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 4px;
+  background: color-mix(in oklab, var(--theme-text) 8%, transparent);
+  color: color-mix(in oklab, var(--theme-text) 75%, transparent);
+}
+.theme-card .swatches {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+}
+.theme-card .sw {
+  aspect-ratio: 1; border-radius: 5px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--theme-text) 8%, transparent);
+}
+.theme-card .surfaces {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+  height: 18px; border-radius: 5px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--theme-text) 8%, transparent);
+}
+.theme-card .surfaces div { height: 100%; }
+.theme-card .meta {
+  display: flex; gap: 12px; font-size: 10px; color: color-mix(in oklab, var(--theme-text) 70%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 2. PALETTE MATRIX (deep dive) ──────────────────────── */
+.palette-matrix { display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: start; }
+@media (max-width: 720px) { .palette-matrix { grid-template-columns: 1fr; } }
+.palette-matrix .name { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.palette-matrix .desc { color: var(--dim); font-size: 12px; line-height: 1.7; margin-top: 6px; }
+.swatch-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.swatch {
+  display: flex; flex-direction: column; gap: 6px; padding: 12px;
+  border-radius: 10px; min-height: 88px; justify-content: flex-end;
+  position: relative; color: var(--text);
+  background: var(--swatch-bg);
+  border: 1px solid var(--border);
+}
+.swatch::before {
+  content: ""; position: absolute; top: 12px; left: 12px; right: 12px;
+  height: 28px; border-radius: 6px; background: var(--swatch-color);
+  box-shadow: 0 4px 14px -4px var(--swatch-color);
+}
+.swatch .nm { font-size: 10px; font-weight: 600; letter-spacing: 0.04em; margin-top: 36px; }
+.swatch .hx { font-size: 9.5px; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+/* ── 3. TYPOGRAPHY ──────────────────────────────────────── */
+.type-card { padding: 28px; }
+.type-card .specimen { font-size: clamp(36px, 5vw, 56px); line-height: 1.1; letter-spacing: -0.02em; }
+.type-card .stack {
+  margin-top: 18px; display: flex; flex-wrap: wrap; gap: 24px;
+  color: var(--dim); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.type-card .stack b { color: var(--text); font-weight: 600; }
+.type-scale { display: grid; gap: 18px; margin-top: 24px; }
+.type-scale .row {
+  display: grid; grid-template-columns: 90px 60px 1fr; gap: 16px; align-items: baseline;
+  padding-bottom: 14px; border-bottom: 1px dashed var(--border);
+}
+.type-scale .row:last-child { border-bottom: 0; }
+.type-scale .row .lbl { font-size: 10px; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; }
+.type-scale .row .sz { font-size: 10px; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+/* ── 4. SHAPE & SPACING ─────────────────────────────────── */
+.shape-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.shape-row .box {
+  aspect-ratio: 1; background: var(--bg2);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.shape-row .box::after {
+  content: attr(data-r); position: absolute; bottom: 6px; left: 8px;
+  font-size: 10px; color: var(--dim);
+}
+
+/* ── 5. MOTION DEMOS ────────────────────────────────────── */
+.motion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 720px) { .motion-grid { grid-template-columns: 1fr; } }
+.motion-card { padding: 24px; min-height: 160px; display: flex; flex-direction: column; }
+.motion-card .head { display: flex; justify-content: space-between; align-items: baseline; }
+.motion-card .name { font-size: 13px; font-weight: 600; }
+.motion-card .dur { font-size: 10px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.motion-card .stage { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; margin: 16px 0; }
+.motion-card code { font-size: 10.5px; color: var(--dim); display: block; }
+
+@keyframes ds-pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.5; transform: scale(1.4); }
+}
+.dot-pulse {
+  width: 8px; height: 8px; border-radius: 99px; background: var(--accent);
+  animation: ds-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes ds-viz {
+  0%,100% { transform: scaleY(0.35); }
+  50%     { transform: scaleY(1); }
+}
+.viz-stage { display: inline-flex; gap: 3px; align-items: flex-end; height: 32px; }
+.viz-bar {
+  width: 3px; height: 100%; border-radius: 2px;
+  background: var(--accent); transform-origin: bottom;
+  animation: ds-viz 1.1s ease-in-out infinite;
+}
+.viz-bar:nth-child(2){ animation-delay: 0.1s; }
+.viz-bar:nth-child(3){ animation-delay: 0.25s; }
+.viz-bar:nth-child(4){ animation-delay: 0.05s; }
+.viz-bar:nth-child(5){ animation-delay: 0.30s; }
+.viz-bar:nth-child(6){ animation-delay: 0.15s; }
+.viz-bar:nth-child(7){ animation-delay: 0.40s; }
+
+@keyframes ds-blink { 50% { opacity: 0; } }
+.cursor {
+  display: inline-block; width: 9px; height: 18px;
+  background: var(--accent); vertical-align: middle;
+  animation: ds-blink 1s steps(2) infinite;
+}
+
+@keyframes ds-ai {
+  0%,100% { transform: scaleY(0.4); }
+  50%     { transform: scaleY(1); }
+}
+.ai-stage { display: inline-flex; gap: 2.5px; align-items: center; height: 24px; }
+.ai-bar {
+  width: 2.5px; height: 100%; border-radius: 2px;
+  background: var(--mauve);
+  animation: ds-ai 0.8s ease-in-out infinite; transform-origin: center;
+}
+.ai-bar:nth-child(2){ animation-delay: 0.1s; background: var(--blue); }
+.ai-bar:nth-child(3){ animation-delay: 0.2s; background: var(--teal); }
+.ai-bar:nth-child(4){ animation-delay: 0.05s; background: var(--blue); }
+.ai-bar:nth-child(5){ animation-delay: 0.15s; background: var(--mauve); }
+
+@keyframes ds-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.marquee-track { display: inline-block; white-space: nowrap; animation: ds-marquee 14s linear infinite; padding-right: 32px; }
+.marquee-window {
+  width: 240px; overflow: hidden;
+  border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px;
+  background: var(--bg2); font-size: 12px;
+}
+
+@keyframes ds-spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 28px; height: 28px; border-radius: 99px;
+  border: 2.5px solid var(--bg3); border-top-color: var(--accent);
+  animation: ds-spin 0.9s linear infinite;
+}
+
+@keyframes ds-glow {
+  0%,100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 60%, transparent), 0 0 24px -8px var(--accent); }
+  50%     { box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 25%, transparent), 0 0 32px -4px var(--accent); }
+}
+.chip-glow {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px;
+  border-radius: 99px; background: var(--bg2); border: 1px solid var(--border);
+  font-size: 12px; font-weight: 500;
+  animation: ds-glow 2.4s ease-in-out infinite;
+}
+.chip-glow .star { color: var(--accent); }
+
+/* ── 6. COMPONENTS ──────────────────────────────────────── */
+.cmp-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.w {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: var(--radius-inner);
+  background: transparent; color: var(--text);
+  font: 500 12.5px/1 var(--font-mono); letter-spacing: 0.01em;
+  white-space: nowrap; border: 0;
+}
+.w-chip { background: var(--bg2); }
+.w-flat { padding: 4px 8px; }
+.w-sep { width: 1px; height: 16px; background: var(--text); opacity: 0.08; margin: 0 2px; }
+.bar-shell {
+  display: inline-flex; align-items: center; gap: 2px; padding: 4px var(--pad);
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%);
+  box-shadow: 0 8px 28px -8px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.popover {
+  padding: 14px; border-radius: var(--radius);
+  background: var(--mantle); border: 1px solid var(--border);
+  backdrop-filter: blur(36px) saturate(160%); -webkit-backdrop-filter: blur(36px) saturate(160%);
+  box-shadow: 0 20px 60px -16px rgba(0,0,0,0.7);
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 7px; border-radius: 5px; font-size: 10px; font-weight: 600;
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+.kbd {
+  font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 4px;
+  background: var(--bg2); color: var(--dim); border: 1px solid var(--border);
+}
+.halo-strip { height: 2px; background: var(--halo); border-radius: 99px; }
+
+/* ── 7. ICONS ───────────────────────────────────────────── */
+.icon-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px;
+}
+.icon-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px 6px; border-radius: 8px; border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--bg2) 60%, transparent);
+}
+.icon-cell svg { color: var(--text); }
+.icon-cell .nm { font-size: 9.5px; color: var(--dim); letter-spacing: 0.02em; }
+
+/* ── 8. WALLPAPERS ──────────────────────────────────────── */
+.wallpaper-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.wallpaper {
+  aspect-ratio: 16/9; border-radius: 10px;
+  position: relative; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.wallpaper .nm {
+  position: absolute; bottom: 8px; left: 10px; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 7px; border-radius: 4px;
+  background: rgba(0,0,0,0.4); color: #fff; backdrop-filter: blur(4px);
+}
+
+/* ── 9. CODE / TOKEN BLOCK ──────────────────────────────── */
+.code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  padding: 20px; border-radius: var(--radius);
+  background: var(--mantle); border: 1px solid var(--border);
+  overflow-x: auto; color: var(--text);
+  white-space: pre;
+}
+.code .c { color: var(--overlay0); }      /* comment */
+.code .k { color: var(--mauve); }         /* keyword */
+.code .s { color: var(--green); }         /* string */
+.code .v { color: var(--yellow); }        /* value */
+.code .p { color: var(--blue); }          /* property */
+
+/* ── 7. BUTTONS & INPUTS ────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 8px 14px; border-radius: 10px;
+  font: 500 12.5px/1 var(--font-mono); letter-spacing: 0.02em;
+  border: 1px solid transparent; cursor: pointer;
+  transition: background var(--t-base), border-color var(--t-base), transform var(--t-base);
+  background: transparent; color: var(--text);
+}
+.btn:active { transform: translateY(1px); }
+.btn--primary {
+  background: var(--accent);
+  color: color-mix(in oklab, var(--accent) 30%, #000 60%);
+  font-weight: 700;
+  box-shadow: 0 6px 18px -6px var(--accent), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.btn--primary:hover { background: color-mix(in oklab, var(--accent) 90%, white); }
+.btn--secondary {
+  background: var(--bg2); border-color: var(--border); color: var(--text);
+}
+.btn--secondary:hover { background: var(--bg3); }
+.btn--ghost { color: var(--dim); }
+.btn--ghost:hover { background: var(--bg2); color: var(--text); }
+.btn--danger {
+  background: color-mix(in oklab, var(--red) 20%, transparent);
+  color: var(--red); border-color: color-mix(in oklab, var(--red) 30%, transparent);
+}
+.btn--danger:hover { background: color-mix(in oklab, var(--red) 28%, transparent); }
+.btn--icon { padding: 8px; aspect-ratio: 1; border-radius: 10px; }
+.btn--sm { padding: 5px 10px; font-size: 11px; border-radius: 8px; }
+.btn--lg { padding: 11px 18px; font-size: 13px; border-radius: 12px; }
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+/* Inputs */
+.input {
+  width: 100%; padding: 10px 12px;
+  background: var(--bg2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 10px;
+  font: 500 12.5px/1.2 var(--font-mono);
+  outline: none; transition: border-color var(--t-base), background var(--t-base);
+}
+.input:focus { border-color: var(--accent); background: var(--bg3); }
+.input::placeholder { color: var(--dim); }
+.input-wrap { position: relative; display: flex; align-items: center; }
+.input-wrap .lead, .input-wrap .trail {
+  position: absolute; display: flex; align-items: center; color: var(--dim); pointer-events: none;
+}
+.input-wrap .lead { left: 12px; }
+.input-wrap .trail { right: 12px; pointer-events: auto; }
+.input-wrap .input.has-lead { padding-left: 38px; }
+.input-wrap .input.has-trail { padding-right: 60px; }
+
+/* Slider */
+.slider {
+  display: flex; align-items: center; gap: 12px; padding: 6px 0;
+}
+.slider .ico { color: var(--dim); }
+.slider .track {
+  flex: 1; height: 6px; border-radius: 99px;
+  background: var(--bg2); position: relative; cursor: pointer;
+}
+.slider .fill {
+  position: absolute; inset: 0 auto 0 0; border-radius: 99px;
+  background: var(--accent);
+}
+.slider .thumb {
+  position: absolute; top: 50%; width: 14px; height: 14px;
+  border-radius: 99px; background: var(--text);
+  border: 3px solid var(--accent);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 10px -2px rgba(0,0,0,0.4);
+}
+.slider .val { font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
+
+/* Toggle switch */
+.toggle {
+  width: 36px; height: 20px; border-radius: 99px;
+  background: var(--bg3); position: relative; cursor: pointer;
+  transition: background var(--t-base);
+  flex-shrink: 0;
+}
+.toggle::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 99px;
+  background: var(--text);
+  transition: left var(--t-base), background var(--t-base);
+}
+.toggle.on { background: var(--accent); }
+.toggle.on::after { left: 18px; background: color-mix(in oklab, var(--accent) 25%, white); }
+
+/* Segmented control */
+.segmented {
+  display: inline-flex; padding: 3px; gap: 2px;
+  background: var(--bg2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.segmented .seg {
+  padding: 6px 12px; border-radius: 7px; cursor: pointer;
+  font-size: 11.5px; font-weight: 500; color: var(--dim);
+  transition: background var(--t-base), color var(--t-base);
+  white-space: nowrap;
+}
+.segmented .seg:hover { color: var(--text); }
+.segmented .seg.on {
+  background: var(--bg-card); color: var(--text);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 2px 6px -2px rgba(0,0,0,0.3);
+}
+
+/* Checkbox / radio (visual only) */
+.check {
+  width: 16px; height: 16px; border-radius: 4px;
+  border: 1.5px solid var(--bg3); display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg2); flex-shrink: 0;
+}
+.check.on { background: var(--accent); border-color: var(--accent); }
+.check.on::after { content: ""; width: 8px; height: 5px; border-left: 2px solid var(--mantle); border-bottom: 2px solid var(--mantle); transform: rotate(-45deg) translate(1px, -1px); }
+.radio { width: 16px; height: 16px; border-radius: 99px; border: 1.5px solid var(--bg3); background: var(--bg2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.radio.on { border-color: var(--accent); }
+.radio.on::after { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--accent); }
+
+/* ── 8. TERMINAL & CODE ─────────────────────────────────── */
+.terminal {
+  background: var(--crust, #11111b);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  font-family: var(--font-mono); font-size: 12px;
+  box-shadow: 0 12px 36px -10px rgba(0,0,0,0.5);
+}
+.terminal .titlebar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 12px; background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.terminal .titlebar .dot { width: 11px; height: 11px; border-radius: 99px; }
+.terminal .titlebar .title { margin-left: 10px; font-size: 11px; color: var(--dim); }
+.terminal .body { padding: 14px 16px; min-height: 180px; line-height: 1.75; color: var(--text); }
+.terminal .prompt { color: var(--green); }
+.terminal .prompt-host { color: var(--mauve); }
+.terminal .prompt-arrow { color: var(--accent); }
+.terminal .out { color: var(--dim); }
+.terminal .err { color: var(--red); }
+.terminal .ok { color: var(--green); }
+.terminal .warn { color: var(--yellow); }
+.terminal .hl { color: var(--peach); }
+.terminal .url { color: var(--blue); text-decoration: underline; text-decoration-color: color-mix(in oklab, var(--blue) 50%, transparent); }
+
+/* Inline code chip */
+code, .ic {
+  font-family: var(--font-mono);
+  padding: 1px 6px; border-radius: 4px;
+  background: var(--bg2); color: var(--accent);
+  font-size: 0.92em;
+}
+.ic--strong { font-weight: 600; }
+
+/* ── 9. PROGRESS & FEEDBACK ─────────────────────────────── */
+.progress {
+  height: 6px; border-radius: 99px; background: var(--bg2);
+  overflow: hidden; position: relative;
+}
+.progress > i {
+  display: block; height: 100%; border-radius: 99px;
+  background: var(--accent);
+}
+.progress--lg { height: 10px; }
+.progress--seg {
+  display: grid; gap: 3px; grid-auto-flow: column; grid-auto-columns: 1fr;
+  background: transparent;
+}
+.progress--seg > i { background: var(--bg2); }
+.progress--seg > i.on { background: var(--accent); }
+
+@keyframes ds-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+.progress.indeterminate > i {
+  width: 30%; animation: ds-indeterminate 1.4s ease-in-out infinite;
+}
+
+/* Battery / ring (mini) */
+.ring { width: 56px; height: 56px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+.ring .bg { stroke: var(--bg2); }
+.ring .fg { stroke: var(--accent); }
+
+/* Status dot + label */
+.status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--dim);
+}
+.status::before {
+  content: ""; width: 8px; height: 8px; border-radius: 99px;
+  background: var(--green); box-shadow: 0 0 0 3px color-mix(in oklab, var(--green) 25%, transparent);
+}
+.status--warn::before { background: var(--yellow); box-shadow: 0 0 0 3px color-mix(in oklab, var(--yellow) 25%, transparent); }
+.status--err::before  { background: var(--red);    box-shadow: 0 0 0 3px color-mix(in oklab, var(--red)    25%, transparent); }
+.status--off::before  { background: var(--overlay0); box-shadow: none; }
+
+/* Toast */
+.toast {
+  display: flex; gap: 12px; padding: 12px 14px; border-radius: 10px;
+  background: var(--mantle); border: 1px solid var(--border);
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.4);
+  max-width: 380px;
+}
+.toast .app {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--mantle);
+  flex-shrink: 0;
+}
+.toast .body { flex: 1; min-width: 0; }
+.toast .meta { display: flex; justify-content: space-between; align-items: baseline; }
+.toast .src { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+.toast .ago { font-size: 10px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.toast .title { font-size: 12.5px; font-weight: 600; margin: 2px 0; }
+.toast .msg { font-size: 11.5px; color: var(--dim); line-height: 1.5; }
+.toast .actions { display: flex; gap: 6px; margin-top: 8px; }
+
+/* List rows (app launcher, settings) */
+.list { display: grid; gap: 2px; }
+.list .row {
+  display: flex; align-items: center; gap: 12px; padding: 9px 10px;
+  border-radius: 8px; cursor: pointer;
+}
+.list .row:hover { background: var(--bg2); }
+.list .row.selected { background: color-mix(in oklab, var(--accent) 18%, transparent); }
+.list .row .glyph {
+  width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+  background: linear-gradient(135deg, var(--accent), var(--blue)); color: var(--mantle);
+  flex-shrink: 0;
+}
+.list .row .nm { font-size: 12.5px; font-weight: 500; }
+.list .row .sub { font-size: 10.5px; color: var(--dim); margin-top: 1px; }
+.list .row .hint { margin-left: auto; font-size: 10px; color: var(--dim); }
+
+/* ── 10. WIDGET CATALOG ─────────────────────────────────── */
+.wcat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.wcat {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 16px; border-radius: var(--radius);
+  background: color-mix(in oklab, var(--bg2) 60%, transparent);
+  border: 1px solid var(--border);
+  min-height: 140px;
+}
+.wcat .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.wcat .nm { font-size: 12px; font-weight: 600; }
+.wcat .tg { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+.wcat .demo {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 12px 8px;
+  background: var(--bg-card); border-radius: 10px;
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  min-height: 56px;
+}
+.wcat .desc { font-size: 10.5px; color: var(--dim); line-height: 1.55; }
+.wcat .desc b { color: var(--text); font-weight: 600; }
+
+/* mini visualizations for widgets */
+.w-dot { width: 6px; height: 6px; border-radius: 99px; background: var(--text); opacity: 0.4; }
+.w-dot.on { background: var(--accent); opacity: 1; }
+.w-pill { font-size: 10px; padding: 3px 7px; border-radius: 5px; background: var(--bg2); }
+.w-pill.on { background: var(--accent); color: var(--mantle); font-weight: 700; }
+.w-spark { width: 38px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 1.5; }
+.w-ring {
+  width: 16px; height: 16px; border-radius: 99px;
+  background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--bg3) 0);
+  position: relative;
+}
+.w-ring::after {
+  content: ""; position: absolute; inset: 3px; border-radius: 99px;
+  background: var(--bg-card);
+}
+.w-bar { height: 4px; background: var(--bg3); border-radius: 99px; position: relative; min-width: 50px; }
+.w-bar > i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+.w-album {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--mauve), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--mantle);
+  flex-shrink: 0;
+}
+.hypr-map { display: inline-flex; gap: 2px; padding: 2px; }
+.hypr-map .ws { width: 14px; height: 10px; border-radius: 2px; background: var(--bg2); position: relative; }
+.hypr-map .ws.on { background: color-mix(in oklab, var(--accent) 50%, transparent); border: 1px solid var(--accent); }
+.hypr-map .ws .win { position: absolute; inset: 1px; border-radius: 1px; background: var(--text); opacity: 0.4; }
+
+/* ── 11. BAR LAYOUTS ────────────────────────────────────── */
+.layout-card {
+  position: relative; padding: 0; overflow: hidden;
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--bg2) 60%, transparent);
+  border: 1px solid var(--border);
+  aspect-ratio: 16/9;
+}
+.layout-card .scene {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, var(--mantle) 0%, var(--bg-page) 100%);
+  overflow: hidden;
+}
+.layout-card .scene::after {
+  content: ""; position: absolute; left: 18%; right: 18%; top: 32%; bottom: 22%;
+  background: var(--bg2); border-radius: 6px; opacity: 0.4;
+}
+.layout-card .bar {
+  position: absolute; display: inline-flex; align-items: center; gap: 2px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 3px 6px;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 14px -4px rgba(0,0,0,0.5);
+}
+.layout-card .bar .mod { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; }
+.layout-card .bar .chip { background: var(--bg2); border-radius: 4px; padding: 2px 5px; font-size: 8px; font-weight: 600; color: var(--text); }
+.layout-card .bar .dot { width: 3px; height: 3px; border-radius: 99px; background: var(--accent); }
+.layout-card .lbl-row {
+  position: absolute; bottom: 8px; left: 12px; right: 12px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10px; color: var(--text);
+}
+.layout-card .lbl-row b { font-weight: 600; font-size: 11px; }
+.layout-card .lbl-row span { color: var(--dim); }
+
+/* ── 12. DESIGN DECISIONS ───────────────────────────────── */
+.decision { padding: 22px; }
+.decision .ix { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.decision h3 { font-size: 15px; font-weight: 600; margin: 10px 0 6px; letter-spacing: -0.01em; }
+.decision p { font-size: 12px; color: var(--dim); margin: 0; line-height: 1.7; }
+.decision p b { color: var(--text); }
+
+/* ── footer ─────────────────────────────────────────────── */
+footer {
+  margin-top: 120px; padding-top: 32px; border-top: 1px solid var(--border);
+  color: var(--dim); font-size: 11px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+</style>
+</head>
+<body data-theme="mocha">
+
+<!-- ─── Theme switcher (sticky) ─────────────────────────────── -->
+<nav class="theme-switcher" role="tablist" aria-label="Switch theme">
+  <!-- buttons injected by script -->
+</nav>
+
+<main>
+
+  <!-- ─── HERO ─────────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="halo"></div>
+    <h1>Cachy <span class="glyph">❯</span> Bar</h1>
+    <p class="tag">A status-bar system for Arch + Hyprland — twelve themes, one widget vocabulary. This document is the source of truth for colors, type, motion, shape and components used across the design.</p>
+    <div class="meta">
+      <span>12 themes</span>
+      <span>8 bar layouts</span>
+      <span>30+ widgets</span>
+      <span>6 keyframes</span>
+      <span>40+ icons</span>
+      <span>12 design rules</span>
+    </div>
+  </header>
+
+  <!-- ─── 1. THEMES OVERVIEW ──────────────────────────────── -->
+  <section id="themes">
+    <h2><span class="num">01</span> Themes</h2>
+    <p class="lede">Twelve complete palettes built on a shared color vocabulary. Switch the doc from the top right; every theme is shown below regardless of selection.</p>
+    <div class="grid grid-3" id="themes-overview">
+      <!-- theme cards injected here -->
+    </div>
+  </section>
+
+  <!-- ─── 2. COLOR SYSTEM ─────────────────────────────────── -->
+  <section id="colors">
+    <h2><span class="num">02</span> Color system</h2>
+    <p class="lede">Every theme exposes the same 14 accent roles plus a 6-step surface stack. Use accent roles by meaning, not by hue.</p>
+    <div id="palette-detail"></div>
+  </section>
+
+  <!-- ─── 3. TYPOGRAPHY ───────────────────────────────────── -->
+  <section id="type">
+    <h2><span class="num">03</span> Typography</h2>
+    <p class="lede">Monospaced by default — terminal-native, tabular for status text. Two display fonts ship with the system for the 8-bit theme.</p>
+
+    <div class="grid grid-2">
+      <div class="card type-card">
+        <div class="label">Primary · UI / Bar / Popovers</div>
+        <div class="specimen" style="font-family: 'JetBrains Mono', monospace;">JetBrains Mono</div>
+        <div class="stack">
+          <span><b>Weight</b> 400 · 500 · 600 · 700</span>
+          <span><b>Feature</b> tabular-nums</span>
+          <span><b>Use for</b> everything</span>
+        </div>
+      </div>
+      <div class="card type-card">
+        <div class="label">Secondary · Long-form text</div>
+        <div class="specimen" style="font-family: 'Inter', sans-serif;">Inter</div>
+        <div class="stack">
+          <span><b>Weight</b> 400 · 500 · 600 · 700</span>
+          <span><b>Use for</b> docs · prose</span>
+        </div>
+      </div>
+      <div class="card type-card" style="background: linear-gradient(180deg, #000 0%, #1d2b53 100%); color: #fff1e8; border-color: rgba(255,241,232,0.1);">
+        <div class="label" style="color: #c2c3c7;">Display · Pixel theme</div>
+        <div class="specimen" style="font-family: 'VT323', monospace; font-size: 68px;">VT323 →</div>
+        <div class="stack" style="color: rgba(255,241,232,0.7);">
+          <span><b style="color:#fff1e8;">Pair</b> Press Start 2P</span>
+          <span><b style="color:#fff1e8;">Use for</b> Pixel theme only</span>
+        </div>
+      </div>
+      <div class="card type-card" style="background: linear-gradient(180deg, #000 0%, #1d2b53 100%); color: #fff1e8; border-color: rgba(255,241,232,0.1);">
+        <div class="label" style="color: #c2c3c7;">Display · Title / labels</div>
+        <div class="specimen" style="font-family: 'Press Start 2P', monospace; font-size: 22px; line-height: 1.5;">PRESS<br/>START 2P</div>
+        <div class="stack" style="color: rgba(255,241,232,0.7);">
+          <span><b style="color:#fff1e8;">Use for</b> arcade headings</span>
+          <span><b style="color:#fff1e8;">Min size</b> 10px</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card type-scale" style="margin-top: 24px;">
+      <div class="label">Type scale (JetBrains Mono)</div>
+      <div class="row">
+        <span class="lbl">Display</span><span class="sz">56 / 1.1</span>
+        <span style="font-size: 56px; font-weight: 700; letter-spacing: -0.02em;">cachy ❯ bar</span>
+      </div>
+      <div class="row">
+        <span class="lbl">H1</span><span class="sz">28 / 1.25</span>
+        <span style="font-size: 28px; font-weight: 600;">Section title</span>
+      </div>
+      <div class="row">
+        <span class="lbl">H2</span><span class="sz">18 / 1.3</span>
+        <span style="font-size: 18px; font-weight: 600;">Subsection</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Body</span><span class="sz">13 / 1.55</span>
+        <span style="font-size: 13px;">Default body text — popovers, descriptions, paragraphs.</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Widget</span><span class="sz">12.5 / 1</span>
+        <span style="font-size: 12.5px; font-weight: 500;">14:32 · Mon · May 25</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Label</span><span class="sz">10 / 1.2</span>
+        <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim);">Now playing</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Micro</span><span class="sz">9 / 1.2</span>
+        <span style="font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);">Meta · key · hint</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 4. SHAPE & SPACING ─────────────────────────────── -->
+  <section id="shape">
+    <h2><span class="num">04</span> Shape & spacing</h2>
+    <p class="lede">Corner radius is the system's main shape lever — same value cascades across shell, popover, widgets and chips.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="label">Corner radius scale</div>
+        <div class="shape-row" style="margin-top: 16px;">
+          <div class="box" style="border-radius: 4px;" data-r="4"></div>
+          <div class="box" style="border-radius: 8px;" data-r="8"></div>
+          <div class="box" style="border-radius: 14px;" data-r="14"></div>
+          <div class="box" style="border-radius: 18px;" data-r="18"></div>
+          <div class="box" style="border-radius: 99px;" data-r="∞"></div>
+        </div>
+        <div style="margin-top: 16px; color: var(--dim); font-size: 11.5px; line-height: 1.7;">
+          <div><b style="color:var(--text)">--radius</b> · 14px · bar shell / popover</div>
+          <div><b style="color:var(--text)">--radius-inner</b> · 10px · individual widgets</div>
+          <div><b style="color:var(--text)">--radius-hero</b> · 18px · cathedral bulge / album art</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Spacing tokens</div>
+        <div style="display: grid; grid-template-columns: 100px 1fr; gap: 12px; margin-top: 16px; font-size: 12px;">
+          <span style="color:var(--dim)">--pad</span><span><span style="display:inline-block;width:8px;height:14px;background:var(--accent);vertical-align:middle"></span> 8px · bar internal</span>
+          <span style="color:var(--dim)">gap-2</span><span><span style="display:inline-block;width:2px;height:14px;background:var(--accent);vertical-align:middle"></span> 2px · between widgets</span>
+          <span style="color:var(--dim)">gap-6</span><span><span style="display:inline-block;width:6px;height:14px;background:var(--accent);vertical-align:middle"></span> 6px · between icon + label</span>
+          <span style="color:var(--dim)">gap-8</span><span><span style="display:inline-block;width:8px;height:14px;background:var(--accent);vertical-align:middle"></span> 8px · widget body</span>
+          <span style="color:var(--dim)">gap-12</span><span><span style="display:inline-block;width:12px;height:14px;background:var(--accent);vertical-align:middle"></span> 12px · popover sections</span>
+          <span style="color:var(--dim)">gap-24</span><span><span style="display:inline-block;width:24px;height:14px;background:var(--accent);vertical-align:middle"></span> 24px · between bars on a canvas</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Elevation</div>
+        <div style="display: flex; gap: 16px; align-items: center; margin-top: 18px;">
+          <div style="width: 60px; height: 60px; border-radius: 10px; background: var(--bg2);"></div>
+          <div style="width: 60px; height: 60px; border-radius: 10px; background: var(--bg-card); box-shadow: 0 8px 28px -8px rgba(0,0,0,0.45);"></div>
+          <div style="width: 60px; height: 60px; border-radius: 10px; background: var(--mantle); box-shadow: 0 20px 60px -16px rgba(0,0,0,0.7);"></div>
+          <div style="width: 60px; height: 60px; border-radius: 10px; background: var(--mantle); box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 30%, transparent), 0 0 24px -4px var(--accent);"></div>
+        </div>
+        <div style="display: flex; gap: 16px; margin-top: 10px; font-size: 10px; color: var(--dim);">
+          <span style="width: 60px;">surface</span>
+          <span style="width: 60px;">bar shell</span>
+          <span style="width: 60px;">popover</span>
+          <span style="width: 60px;">accent glow</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Blur recipe</div>
+        <div style="margin-top: 16px; font-size: 12px; line-height: 1.8;">
+          <div><b>Bar shell</b> &nbsp; <code style="color:var(--accent)">blur(28px) saturate(160%)</code></div>
+          <div><b>Popover</b> &nbsp;&nbsp; <code style="color:var(--accent)">blur(36px) saturate(160%)</code></div>
+          <div><b>AI overlay</b> <code style="color:var(--accent)">blur(48px) saturate(180%)</code></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 5. MOTION ───────────────────────────────────────── -->
+  <section id="motion">
+    <h2><span class="num">05</span> Motion</h2>
+    <p class="lede">Six reusable keyframes — every animated widget composes from this set. Honor <code>prefers-reduced-motion</code> by disabling all of them.</p>
+    <div class="motion-grid">
+
+      <div class="card motion-card">
+        <div class="head"><span class="name">pulse</span><span class="dur">2200ms · ease-in-out · infinite</span></div>
+        <div class="stage">
+          <span class="dot-pulse"></span>
+          <span class="dot-pulse" style="background: var(--green); animation-delay: 0.4s;"></span>
+          <span class="dot-pulse" style="background: var(--red); animation-delay: 0.8s;"></span>
+        </div>
+        <code>recording dot · listening indicator · live mic</code>
+      </div>
+
+      <div class="card motion-card">
+        <div class="head"><span class="name">viz</span><span class="dur">1100ms · ease-in-out · infinite</span></div>
+        <div class="stage">
+          <span class="viz-stage">
+            <span class="viz-bar"></span><span class="viz-bar"></span><span class="viz-bar"></span>
+            <span class="viz-bar"></span><span class="viz-bar"></span><span class="viz-bar"></span>
+            <span class="viz-bar"></span>
+          </span>
+        </div>
+        <code>now-playing visualizer · mic levels</code>
+      </div>
+
+      <div class="card motion-card">
+        <div class="head"><span class="name">ai-talk</span><span class="dur">800ms · ease-in-out · infinite</span></div>
+        <div class="stage">
+          <span class="ai-stage">
+            <span class="ai-bar"></span><span class="ai-bar"></span><span class="ai-bar"></span>
+            <span class="ai-bar"></span><span class="ai-bar"></span>
+          </span>
+        </div>
+        <code>AI listening · talking back</code>
+      </div>
+
+      <div class="card motion-card">
+        <div class="head"><span class="name">blink</span><span class="dur">1000ms · steps(2) · infinite</span></div>
+        <div class="stage">
+          <span style="font-size: 18px; font-family: var(--font-mono);">█ login&nbsp;<span class="cursor"></span></span>
+        </div>
+        <code>terminal cursor · login screen · TTY</code>
+      </div>
+
+      <div class="card motion-card">
+        <div class="head"><span class="name">marquee</span><span class="dur">14000ms · linear · infinite</span></div>
+        <div class="stage">
+          <div class="marquee-window">
+            <span class="marquee-track">♪ Midnight City — M83 · then Strobe — Deadmau5 · then Faded — Alan Walker · </span>
+          </div>
+        </div>
+        <code>long track titles in NowPlaying</code>
+      </div>
+
+      <div class="card motion-card">
+        <div class="head"><span class="name">glow</span><span class="dur">2400ms · ease-in-out · infinite</span></div>
+        <div class="stage">
+          <span class="chip-glow"><span class="star">✦</span> Ask AI <span class="kbd">⌘ K</span></span>
+        </div>
+        <code>AI launcher · primary CTAs</code>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── 6. COMPONENTS ───────────────────────────────────── -->
+  <section id="components">
+    <h2><span class="num">06</span> Components</h2>
+    <p class="lede">Six primitives compose into every bar, popover and overlay. Theme tokens drive every color, shape and elevation.</p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="label">Bar shell</div>
+        <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 14px;">
+          <div class="bar-shell">
+            <span class="w w-flat"><span style="width:6px;height:6px;border-radius:99px;background:var(--accent);"></span></span>
+            <span class="w">14:32</span>
+            <span class="w-sep"></span>
+            <span class="w"><span style="color:var(--dim)">CPU</span> 34%</span>
+            <span class="w-sep"></span>
+            <span class="w w-chip"><span style="color:var(--green)">●</span> 78%</span>
+          </div>
+          <code style="font-size: 11px; color: var(--dim);">.bar-shell &nbsp;·&nbsp; blur + border + radius + shadow</code>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Widget (w / w-chip / w-flat)</div>
+        <div style="margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="w">plain</span>
+          <span class="w w-chip">chip</span>
+          <span class="w w-flat">flat</span>
+          <span class="w" style="color: var(--accent);">accent</span>
+          <span class="w w-chip" style="background: color-mix(in oklab, var(--red) 18%, transparent); color: var(--red);">danger</span>
+        </div>
+        <code style="font-size: 11px; color: var(--dim); margin-top: 12px; display: block;">.w + modifier · semantic by color</code>
+      </div>
+
+      <div class="card">
+        <div class="label">Popover</div>
+        <div class="popover" style="margin-top: 18px; max-width: 280px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--mauve), var(--blue));"></div>
+            <div>
+              <div style="font-size: 12px; font-weight: 600;">Midnight City</div>
+              <div style="font-size: 10px; color: var(--dim);">M83 · Spotify</div>
+            </div>
+          </div>
+          <div style="height: 4px; border-radius: 99px; background: var(--bg2); position: relative; overflow: hidden;">
+            <div style="position: absolute; inset: 0; width: 42%; background: var(--accent);"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: var(--dim); font-variant-numeric: tabular-nums;">
+            <span>1:48</span><span>4:03</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Badges & keys</div>
+        <div style="margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <span class="badge" style="background: color-mix(in oklab, var(--green) 18%, transparent); color: var(--green);">● live</span>
+          <span class="badge" style="background: color-mix(in oklab, var(--peach) 18%, transparent); color: var(--peach);">3</span>
+          <span class="badge" style="background: color-mix(in oklab, var(--red) 18%, transparent); color: var(--red);">REC 00:42</span>
+          <span class="badge">new</span>
+          <span class="kbd">⌘ K</span>
+          <span class="kbd">⇧ ↵</span>
+          <span class="kbd">ESC</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Halo strip (gradient marker)</div>
+        <div style="margin-top: 20px;">
+          <div class="halo-strip"></div>
+          <div style="margin-top: 14px; padding: 14px; background: var(--bg2); border-radius: 10px;">
+            <div style="font-size: 11px; color: var(--dim); margin-bottom: 6px;">AI assistant</div>
+            <div style="font-size: 13px;">How can I help you today?</div>
+          </div>
+        </div>
+        <code style="font-size: 11px; color: var(--dim); margin-top: 12px; display: block;">linear-gradient(90deg, mauve, blue, teal)</code>
+      </div>
+
+      <div class="card">
+        <div class="label">Workspaces (dots + pills)</div>
+        <div style="margin-top: 18px; display: flex; gap: 18px; align-items: center;">
+          <div style="display: inline-flex; gap: 5px; align-items: center;">
+            <span style="width:6px;height:6px;border-radius:99px;background:var(--text);opacity:0.4;"></span>
+            <span style="width:6px;height:6px;border-radius:99px;background:var(--accent);"></span>
+            <span style="width:6px;height:6px;border-radius:99px;background:var(--text);opacity:0.6;"></span>
+            <span style="width:6px;height:6px;border-radius:99px;background:var(--text);opacity:0.4;"></span>
+            <span style="width:6px;height:6px;border-radius:99px;background:var(--text);opacity:0.2;"></span>
+          </div>
+          <div style="display: inline-flex; gap: 4px; align-items: center;">
+            <span style="font-size: 10px; padding: 3px 7px; border-radius: 5px; background: var(--bg2);">1</span>
+            <span style="font-size: 10px; padding: 3px 7px; border-radius: 5px; background: var(--accent); color: var(--mantle); font-weight: 700;">2</span>
+            <span style="font-size: 10px; padding: 3px 7px; border-radius: 5px; background: var(--bg2);">3</span>
+            <span style="font-size: 10px; padding: 3px 7px; border-radius: 5px;">4</span>
+            <span style="font-size: 10px; padding: 3px 7px; border-radius: 5px;">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 7. ICONOGRAPHY ──────────────────────────────────── -->
+  <!-- ─── 7. BUTTONS & INPUTS ───────────────────────── -->
+  <section id="inputs">
+    <h2><span class="num">07</span> Buttons & inputs</h2>
+    <p class="lede">Interactive primitives. Buttons earn color through role — don’t reach for new hues. Form fields share a single shape with the bar shell.</p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="label">Button variants</div>
+        <div class="cmp-row" style="margin-top: 16px;">
+          <button class="btn btn--primary">✨ Ask AI</button>
+          <button class="btn btn--secondary">Cancel</button>
+          <button class="btn btn--ghost">Dismiss</button>
+          <button class="btn btn--danger">Reset config</button>
+          <button class="btn btn--icon btn--secondary" aria-label="close">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div class="cmp-row" style="margin-top: 14px;">
+          <button class="btn btn--primary btn--sm">Small</button>
+          <button class="btn btn--primary">Default</button>
+          <button class="btn btn--primary btn--lg">Large</button>
+          <button class="btn btn--secondary" disabled>Disabled</button>
+        </div>
+        <code style="font-size: 11px; color: var(--dim); margin-top: 14px; display: block;">.btn + .btn--primary | --secondary | --ghost | --danger | --icon</code>
+      </div>
+
+      <div class="card">
+        <div class="label">Text inputs</div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+          <input class="input" placeholder="Search apps, files, settings…" type="text">
+          <div class="input-wrap">
+            <span class="lead">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+            </span>
+            <input class="input has-lead has-trail" placeholder="Search" type="text" value="hyprland docs">
+            <span class="trail"><span class="kbd">⌘ K</span></span>
+          </div>
+          <div class="input-wrap">
+            <span class="lead">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+            </span>
+            <input class="input has-lead" placeholder="Password" type="password" value="••••••••">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Sliders</div>
+        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
+          <div class="slider">
+            <span class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            </span>
+            <div class="track"><div class="fill" style="width:80%"></div><div class="thumb" style="left:80%"></div></div>
+            <span class="val">80%</span>
+          </div>
+          <div class="slider">
+            <span class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 9c1.5 1.5 1.5 4.5 0 6"/><path d="M19 6c3 3 3 9 0 12"/></svg>
+            </span>
+            <div class="track"><div class="fill" style="width:65%; background:var(--green)"></div><div class="thumb" style="left:65%; border-color:var(--green)"></div></div>
+            <span class="val">65%</span>
+          </div>
+          <div class="slider">
+            <span class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+            </span>
+            <div class="track"><div class="fill" style="width:30%; background:var(--red)"></div><div class="thumb" style="left:30%; border-color:var(--red)"></div></div>
+            <span class="val">30%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Toggles, checks & radio</div>
+        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr auto; gap: 14px 12px; align-items: center;">
+          <span>Caffeine — idle inhibit</span><span class="toggle on"></span>
+          <span>Bluetooth</span><span class="toggle on"></span>
+          <span>VPN · mocha-vpn</span><span class="toggle"></span>
+          <span>Auto-rotate</span><span class="toggle"></span>
+        </div>
+        <div style="display: flex; gap: 18px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border);">
+          <label style="display: inline-flex; gap: 8px; align-items: center; font-size: 12px;"><span class="check on"></span> Notifications</label>
+          <label style="display: inline-flex; gap: 8px; align-items: center; font-size: 12px;"><span class="check"></span> Do not disturb</label>
+          <label style="display: inline-flex; gap: 8px; align-items: center; font-size: 12px;"><span class="radio on"></span> Auto</label>
+          <label style="display: inline-flex; gap: 8px; align-items: center; font-size: 12px;"><span class="radio"></span> Manual</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Segmented control</div>
+        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start;">
+          <div class="segmented">
+            <span class="seg">Eco</span>
+            <span class="seg on">Auto</span>
+            <span class="seg">Performance</span>
+          </div>
+          <div class="segmented">
+            <span class="seg on">Dark</span>
+            <span class="seg">Light</span>
+            <span class="seg">System</span>
+          </div>
+          <div class="segmented">
+            <span class="seg on">Top</span>
+            <span class="seg">Bottom</span>
+            <span class="seg">Left rail</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Dropdown / select</div>
+        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn--secondary" style="justify-content: space-between; width: 220px;">
+            <span style="display: inline-flex; gap: 8px; align-items: center;">
+              <span style="width:10px;height:10px;border-radius:99px;background:var(--blue);"></span>
+              AirPods Pro
+            </span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="popover" style="width: 220px; padding: 6px;">
+            <div class="list">
+              <div class="row selected"><span style="width:10px;height:10px;border-radius:99px;background:var(--blue);"></span><span class="nm">AirPods Pro</span><span class="hint">✓</span></div>
+              <div class="row"><span style="width:10px;height:10px;border-radius:99px;background:var(--green);"></span><span class="nm">Built-in speakers</span></div>
+              <div class="row"><span style="width:10px;height:10px;border-radius:99px;background:var(--peach);"></span><span class="nm">LG Ultragear</span></div>
+              <div class="row"><span style="width:10px;height:10px;border-radius:99px;background:var(--mauve);"></span><span class="nm">HDMI · living room</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. TERMINAL & CODE -->
+  <section id="terminal">
+    <h2><span class="num">08</span> Terminal & code</h2>
+    <p class="lede">Arch lives in the terminal — so does this design. Prompt color is <code>green</code>, host is <code>mauve</code>, errors are <code>red</code>, warnings <code>yellow</code>, URLs <code>blue</code>.</p>
+
+    <div class="grid grid-2">
+      <div class="terminal">
+        <div class="titlebar">
+          <span class="dot" style="background: var(--red);"></span>
+          <span class="dot" style="background: var(--yellow);"></span>
+          <span class="dot" style="background: var(--green);"></span>
+          <span class="title">kitty · ~/dev/cachy-bar</span>
+        </div>
+        <div class="body">
+<span class="prompt-host">@arch</span> <span class="out">in</span> <span class="hl">~/dev/cachy-bar</span> <span class="prompt-arrow">❯</span> hyprctl monitors<br>
+<span class="out">Monitor DP-1 (ID 0): 3440x1440@165.00 Hz</span><br>
+<span class="out">  description: LG Ultragear 34GP950G</span><br>
+<span class="out">  reserved: 0 0 0 0</span><br>
+<br>
+<span class="prompt-host">@arch</span> <span class="out">in</span> <span class="hl">~/dev/cachy-bar</span> <span class="prompt-arrow">❯</span> paru -Syu<br>
+<span class="ok">::</span> Synchronizing package databases…<br>
+<span class="ok">::</span> <span class="hl">23 packages</span> to upgrade<br>
+<span class="warn">::</span> hyprland 0.42.0-2 → 0.43.0-1<br>
+<span class="err">error:</span> failed to commit transaction <span class="out">(conflicting files)</span><br>
+<span class="out">docs at</span> <span class="url">https://wiki.archlinux.org/title/Pacman</span><br>
+<span class="prompt-host">@arch</span> <span class="out">in</span> <span class="hl">~/dev/cachy-bar</span> <span class="prompt-arrow">❯</span> <span class="cursor" style="vertical-align: -3px; height: 14px;"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Inline code & keyboard</div>
+        <div style="margin-top: 16px; line-height: 1.9;">
+          Press <span class="kbd">⌘ K</span> to open the launcher.
+          The bar reads colors from <code>--accent</code> and <code>--bg</code>.
+          Run <code>hyprctl reload</code> to apply.
+        </div>
+        <div class="label" style="margin-top: 24px;">Toast (snippet)</div>
+        <div style="margin-top: 14px;">
+          <div class="toast">
+            <div class="app" style="background: linear-gradient(135deg, var(--peach), var(--red));">$</div>
+            <div class="body">
+              <div class="meta"><span class="src">paru</span><span class="ago">2m</span></div>
+              <div class="title">23 packages can be upgraded</div>
+              <div class="msg">hyprland · mesa · wayland · +20 more</div>
+              <div class="actions">
+                <button class="btn btn--primary btn--sm">Update</button>
+                <button class="btn btn--ghost btn--sm">Later</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="grid-column: span 2;">
+        <div class="label">App launcher (search + result rows)</div>
+        <div style="margin-top: 16px; max-width: 520px;">
+          <div class="input-wrap">
+            <span class="lead">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+            </span>
+            <input class="input has-lead" placeholder="Search apps, files, AI…" value="firefox">
+          </div>
+          <div class="list" style="margin-top: 14px;">
+            <div class="row selected">
+              <div class="glyph" style="background: linear-gradient(135deg, #ff7139, #ffaa00); color: #fff;">FX</div>
+              <div><div class="nm">Firefox</div><div class="sub">Web browser · firefox.desktop</div></div>
+              <span class="hint">↵ open</span>
+            </div>
+            <div class="row">
+              <div class="glyph" style="background: linear-gradient(135deg, var(--blue), var(--sapphire));">FF</div>
+              <div><div class="nm">Firefox Developer Edition</div><div class="sub">Web browser · firefox-developer.desktop</div></div>
+              <span class="hint">↵</span>
+            </div>
+            <div class="row">
+              <div class="glyph" style="background: linear-gradient(135deg, var(--peach), var(--red));">$</div>
+              <div><div class="nm">paru -S firefox-bin</div><div class="sub">Install package · 3.4 MB</div></div>
+              <span class="hint">⌘↵</span>
+            </div>
+            <div class="row">
+              <div class="glyph" style="background: linear-gradient(135deg, var(--mauve), var(--lavender));">✨</div>
+              <div><div class="nm">Ask AI: “summarize firefox release notes”</div><div class="sub">Claude · 1 token</div></div>
+              <span class="hint">⇧↵</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. PROGRESS & FEEDBACK -->
+  <section id="feedback">
+    <h2><span class="num">09</span> Progress & feedback</h2>
+    <p class="lede">Determinate is preferred. Indeterminate is for waits with no ETA. Status semantics map to the accent roles: green = ok, yellow = warn, red = err.</p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="label">Progress bars</div>
+        <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px;"><span>Download · hyprland-0.43.0-1.pkg.tar.zst</span><span style="color: var(--dim);">68%</span></div>
+            <div class="progress"><i style="width: 68%;"></i></div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px;"><span>Battery</span><span style="color: var(--green);">78% — charging</span></div>
+            <div class="progress progress--lg"><i style="width: 78%; background: var(--green);"></i></div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px;"><span>Indeterminate · syncing…</span></div>
+            <div class="progress indeterminate"><i></i></div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px;"><span>Pomodoro · 18 / 25 min</span></div>
+            <div class="progress progress--seg">
+              <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+              <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+              <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+              <i class="on"></i><i class="on"></i><i class="on"></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Rings & spinners</div>
+        <div style="margin-top: 18px; display: flex; align-items: center; gap: 28px;">
+          <svg class="ring" viewBox="0 0 56 56">
+            <circle class="bg" cx="28" cy="28" r="24"/>
+            <circle class="fg" cx="28" cy="28" r="24" style="stroke: var(--green); stroke-dasharray: 150.8; stroke-dashoffset: 33.2;"/>
+          </svg>
+          <div>
+            <div style="font-size: 18px; font-weight: 600;">78%</div>
+            <div style="font-size: 11px; color: var(--dim);">Battery · charging</div>
+          </div>
+          <div class="spinner"></div>
+          <div>
+            <div style="font-size: 12px; font-weight: 500;">Loading…</div>
+            <div style="font-size: 10.5px; color: var(--dim);">syncing 23 packages</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Status semantics</div>
+        <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 10px;">
+          <div class="status">Connected · mocha-5G</div>
+          <div class="status status--warn">Degraded · high latency</div>
+          <div class="status status--err">Disconnected · retrying in 4s</div>
+          <div class="status status--off">Bluetooth off</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Toast variants</div>
+        <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 10px;">
+          <div class="toast">
+            <div class="app" style="background: linear-gradient(135deg, var(--green), var(--teal));">✓</div>
+            <div class="body">
+              <div class="meta"><span class="src">SYSTEM</span><span class="ago">now</span></div>
+              <div class="title">Theme applied · Catppuccin Mocha</div>
+              <div class="msg">All bars and popovers re-skinned in 18 ms.</div>
+            </div>
+          </div>
+          <div class="toast" style="border-color: color-mix(in oklab, var(--red) 30%, transparent);">
+            <div class="app" style="background: linear-gradient(135deg, var(--red), var(--maroon));">!</div>
+            <div class="body">
+              <div class="meta"><span class="src" style="color: var(--red);">paru</span><span class="ago">just now</span></div>
+              <div class="title">Update failed — conflicting files</div>
+              <div class="msg">/usr/lib/libwayland-server.so.0 exists in both pkgs.</div>
+              <div class="actions">
+                <button class="btn btn--danger btn--sm">View log</button>
+                <button class="btn btn--ghost btn--sm">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. WIDGET CATALOG -->
+  <section id="widgets">
+    <h2><span class="num">10</span> Widget catalog</h2>
+    <p class="lede">Every glyph that lives on the bar. Grouped by role — system, network, workspace, media, plugin, utility. All widgets share the same shell (<code>.w</code>) and read color from theme tokens.</p>
+
+    <div class="label" style="margin-bottom: 12px;">System status</div>
+    <div class="wcat-grid" style="margin-bottom: 32px;">
+      <div class="wcat">
+        <div class="head"><span class="nm">Clock</span><span class="tg">core</span></div>
+        <div class="demo"><span class="w">14:32 <span style="color:var(--dim)">· Mon · May 25</span></span></div>
+        <div class="desc">Time + date, tabular-nums. <b>dateFirst</b> swaps order. Click to open calendar.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Battery</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w">
+            <span style="width:18px;height:9px;border-radius:2px;border:1.5px solid var(--green);position:relative;display:inline-block;">
+              <span style="position:absolute;inset:1px;width:78%;background:var(--green);border-radius:1px;"></span>
+            </span>
+            <span style="color:var(--green)">78%</span>
+          </span>
+        </div>
+        <div class="desc">Color shifts: <b style="color:var(--green)">green &gt;50</b> · <b style="color:var(--yellow)">yellow &gt;20</b> · <b style="color:var(--red)">red ≤20</b>. Bolt glyph when charging.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">CPU</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w">
+            <span style="color:var(--dim);font-size:10px;font-weight:700;letter-spacing:0.06em">CPU</span>
+            <svg class="w-spark" viewBox="0 0 38 14"><polyline points="0,10 4,8 8,11 12,6 16,9 20,5 24,8 28,3 32,6 38,2"/></svg>
+            <span>34%</span>
+          </span>
+        </div>
+        <div class="desc">Live sparkline + percentage. Pairs with RAM and temperature chips.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">RAM</span><span class="tg">core</span></div>
+        <div class="demo"><span class="w"><span style="color:var(--dim);font-size:10px;font-weight:700;letter-spacing:0.06em">RAM</span><span>42%</span></span></div>
+        <div class="desc">Memory load, plain numeric. Click for memory popover.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Temp</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--peach)"><path d="M12 3a2.5 2.5 0 00-2.5 2.5v9.1a4 4 0 105 0V5.5A2.5 2.5 0 0012 3z"/></svg>
+            <span>54°</span>
+          </span>
+        </div>
+        <div class="desc">CPU temperature. Peach &gt; 70° turns red.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Volume</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 9c1.5 1.5 1.5 4.5 0 6"/><path d="M19 6c3 3 3 9 0 12"/></svg>
+            <span>65%</span>
+          </span>
+        </div>
+        <div class="desc">Speaker icon shows mute state (X bars). Scroll to adjust, click for output picker.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Brightness</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            <span>80%</span>
+          </span>
+        </div>
+        <div class="desc">Display brightness. Scroll to adjust.</div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-bottom: 12px;">Network & devices</div>
+    <div class="wcat-grid" style="margin-bottom: 32px;">
+      <div class="wcat">
+        <div class="head"><span class="nm">Net</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--sky)"><path d="M2 8.5c5.5-5 14.5-5 20 0"/><path d="M5 12c4-3.5 10-3.5 14 0"/><path d="M8.5 15.5c2-1.7 5-1.7 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
+            <span>mocha-5G</span>
+          </span>
+        </div>
+        <div class="desc">SSID + signal strength bars. NetIcon variant shows only the glyph.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Bluetooth</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue)"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></svg>
+            <span style="font-size:10px">3</span>
+          </span>
+        </div>
+        <div class="desc">Connected count badge. Click for device popover.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">NetSpeed</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w" style="gap:6px">
+            <span style="color:var(--green);font-size:10px">↓ 1.2M</span>
+            <span style="color:var(--peach);font-size:10px">↑ 0.3M</span>
+          </span>
+        </div>
+        <div class="desc">Live throughput. Down/up. Toggleable in plugin settings.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">AudioSource</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="13" rx="3" ry="6"/><ellipse cx="16" cy="13" rx="3" ry="6"/></svg>
+            <span style="font-size:11px">AirPods Pro</span>
+          </span>
+        </div>
+        <div class="desc">Active output device with hardware icon. Click to switch.</div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-bottom: 12px;">Workspace & windows</div>
+    <div class="wcat-grid" style="margin-bottom: 32px;">
+      <div class="wcat">
+        <div class="head"><span class="nm">Workspaces · dots</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w" style="gap:5px">
+            <span class="w-dot"></span><span class="w-dot on"></span><span class="w-dot" style="opacity:0.6"></span><span class="w-dot"></span><span class="w-dot" style="opacity:0.2"></span>
+          </span>
+        </div>
+        <div class="desc">Hyprland workspace indicator. Brighter dot = has windows. Filled = active.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Workspaces · pills</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w" style="gap:4px">
+            <span class="w-pill">1</span><span class="w-pill on">2</span><span class="w-pill">3</span><span class="w-pill">4</span><span class="w-pill">5</span>
+          </span>
+        </div>
+        <div class="desc">Labelled variant for keyboard-driven layouts. Names instead of numbers if configured.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">ActiveWindow</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w" style="max-width:200px;overflow:hidden">
+            <span style="width:10px;height:10px;border-radius:2px;background:var(--peach);flex-shrink:0"></span>
+            <span style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">kitty — ~/dev/cachy-rice</span>
+          </span>
+        </div>
+        <div class="desc">Focused window title, truncated. Pairs an app-tinted dot with the title.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">HyprMap</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <div class="hypr-map">
+            <div class="ws"><div class="win"></div></div>
+            <div class="ws on"><div class="win"></div></div>
+            <div class="ws"><div class="win" style="width:50%"></div></div>
+            <div class="ws"></div>
+            <div class="ws"><div class="win"></div></div>
+          </div>
+        </div>
+        <div class="desc">Live minimap of every workspace. Each tile shows the window tree shape.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">KeyLayout</span><span class="tg">core</span></div>
+        <div class="demo"><span class="w">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--dim)"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12"/></svg>
+          <span style="text-transform:uppercase;font-weight:700;font-size:10px;letter-spacing:0.08em">US</span>
+        </span></div>
+        <div class="desc">Active xkb layout. Click to cycle or pick.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Tray</span><span class="tg">core</span></div>
+        <div class="demo"><span class="w" style="gap:6px">
+          <span style="width:11px;height:11px;border-radius:2px;background:var(--mauve);opacity:0.7"></span>
+          <span style="width:11px;height:11px;border-radius:2px;background:var(--blue);opacity:0.7"></span>
+          <span style="width:11px;height:11px;border-radius:2px;background:var(--green);opacity:0.7"></span>
+          <span style="width:11px;height:11px;border-radius:2px;background:var(--sky);opacity:0.7"></span>
+        </span></div>
+        <div class="desc">System tray glyphs — Discord, Syncthing, Tailscale, NetworkManager.</div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-bottom: 12px;">Media & audio</div>
+    <div class="wcat-grid" style="margin-bottom: 32px;">
+      <div class="wcat">
+        <div class="head"><span class="nm">NowPlaying · compact</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w" style="gap:8px;max-width:240px">
+            <span class="w-album">M83</span>
+            <span style="display:flex;flex-direction:column;gap:1px;min-width:0">
+              <span style="font-size:11px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Midnight City</span>
+              <span style="font-size:9.5px;color:var(--dim)">M83 · Spotify</span>
+            </span>
+            <span class="viz-stage" style="height:14px"><span class="viz-bar" style="width:2px"></span><span class="viz-bar" style="width:2px"></span><span class="viz-bar" style="width:2px"></span></span>
+          </span>
+        </div>
+        <div class="desc">Album art + title/artist + live visualizer. Long titles marquee on hover.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">AlbumArt</span><span class="tg">helper</span></div>
+        <div class="demo" style="gap:8px">
+          <span class="w-album">M83</span>
+          <span class="w-album" style="background: linear-gradient(135deg, var(--green), var(--teal))">SP</span>
+          <span class="w-album" style="background: linear-gradient(135deg, var(--peach), var(--red))">FX</span>
+          <span class="w-album" style="background: linear-gradient(135deg, var(--mauve), var(--blue))">RB</span>
+        </div>
+        <div class="desc">Procedural album art — gradient swatch with a 2-letter glyph. No PNGs needed.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Viz (visualizer)</span><span class="tg">helper</span></div>
+        <div class="demo">
+          <span class="viz-stage">
+            <span class="viz-bar"></span><span class="viz-bar"></span><span class="viz-bar"></span>
+            <span class="viz-bar"></span><span class="viz-bar"></span><span class="viz-bar"></span>
+          </span>
+        </div>
+        <div class="desc">5–10 animated bars. Used in NowPlaying, AITalk and the AI overlay.</div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-bottom: 12px;">Plugins</div>
+    <div class="wcat-grid" style="margin-bottom: 32px;">
+      <div class="wcat">
+        <div class="head"><span class="nm">AILauncher</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="chip-glow"><span class="star">✨</span> Ask AI <span class="kbd">⌘ K</span></span>
+        </div>
+        <div class="desc">Pulsing CTA. Opens the AI overlay. The pulse is a soft 2.4s breath, not constant motion.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">AITalk</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w w-chip" style="gap:8px;background:color-mix(in oklab, var(--mauve) 20%, transparent)">
+            <span class="ai-stage"><span class="ai-bar"></span><span class="ai-bar"></span><span class="ai-bar"></span><span class="ai-bar"></span><span class="ai-bar"></span></span>
+            <span style="font-size:11px;color:var(--mauve)">listening…</span>
+          </span>
+        </div>
+        <div class="desc">Live state when the AI is hearing you. Tri-color bars in mauve / blue / teal.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Pomodoro</span><span class="tg">plugin</span></div>
+        <div class="demo"><span class="w">
+          <span class="w-ring" style="--p:72;width:18px;height:18px"></span>
+          <span style="font-size:11px">18<span style="color:var(--dim)">/25m</span></span>
+        </span></div>
+        <div class="desc">Ring + minutes-elapsed/total. Color shifts to peach when &lt; 5 min remain.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">GitHub</span><span class="tg">plugin</span></div>
+        <div class="demo"><span class="w" style="gap:6px">
+          <span style="display:inline-flex">
+            <span style="width:14px;height:14px;border-radius:99px;background:var(--peach);border:1.5px solid var(--bg-card)"></span>
+            <span style="width:14px;height:14px;border-radius:99px;background:var(--mauve);border:1.5px solid var(--bg-card);margin-left:-6px"></span>
+            <span style="width:14px;height:14px;border-radius:99px;background:var(--green);border:1.5px solid var(--bg-card);margin-left:-6px"></span>
+          </span>
+          <span style="font-size:11px">4 PRs · <span style="color:var(--peach)">2 @ you</span></span>
+        </span></div>
+        <div class="desc">Open PRs + mention count. Avatar stack of recent authors.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Updates</span><span class="tg">plugin</span></div>
+        <div class="demo"><span class="w" style="gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--peach)"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+          <span>23</span>
+        </span></div>
+        <div class="desc">paru / pacman update count. Click for log + one-shot upgrade.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Calendar</span><span class="tg">plugin</span></div>
+        <div class="demo"><span class="w" style="gap:6px">
+          <span style="width:6px;height:6px;border-radius:99px;background:var(--accent)"></span>
+          <span style="font-size:11px">3:30p · Design review</span>
+        </span></div>
+        <div class="desc">Next upcoming event. Dot = countdown color (yellow &lt;15m, red &lt;5m).</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Weather</span><span class="tg">plugin</span></div>
+        <div class="demo"><span class="w" style="gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--sky)"><path d="M7 18a5 5 0 010-10 6 6 0 0111.3 1.7A4 4 0 0117 18H7z"/></svg>
+          <span>19°</span>
+        </span></div>
+        <div class="desc">Current temperature + condition glyph. Click for forecast.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Performance</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="segmented" style="font-size:10px">
+            <span class="seg">Eco</span>
+            <span class="seg on">Auto</span>
+            <span class="seg">Perf</span>
+          </span>
+        </div>
+        <div class="desc">CPU governor switcher. Auto = balanced, Perf = boost on, Eco = save battery.</div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-bottom: 12px;">Utility</div>
+    <div class="wcat-grid" style="margin-bottom: 32px;">
+      <div class="wcat">
+        <div class="head"><span class="nm">Launcher</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w w-chip" style="gap:7px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+            <span style="font-size:11px">Apps</span>
+            <span class="kbd">⌘ Space</span>
+          </span>
+        </div>
+        <div class="desc">Opens the unified app launcher. Always shows the global hotkey.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Notifications</span><span class="tg">core</span></div>
+        <div class="demo">
+          <span class="w" style="position:relative">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4l2-2z"/><path d="M10 20a2 2 0 004 0"/></svg>
+            <span style="position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:99px;background:var(--red);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center">3</span>
+          </span>
+        </div>
+        <div class="desc">Unread count badge. Click opens the toast stack popover with snooze.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">PowerMenu</span><span class="tg">core</span></div>
+        <div class="demo"><span class="w w-chip" style="background:color-mix(in oklab, var(--red) 18%, transparent)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M12 3v9"/><path d="M6.5 7.5a8 8 0 1011 0"/></svg>
+        </span></div>
+        <div class="desc">Suspend / restart / shut down. Always tinted red — destructive.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Screenshot</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w" style="padding:0;background:var(--bg2);border-radius:6px">
+            <span style="padding:5px 7px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
+            <span style="padding:5px 7px;border-left:1px solid var(--border);font-size:10px;color:var(--dim)">Region</span>
+          </span>
+        </div>
+        <div class="desc">Split button — click icon to capture, click “Region” to switch mode (Window / Screen / Region).</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">ColorPicker</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w" style="gap:6px">
+            <span style="width:12px;height:12px;border-radius:3px;background:#cba6f7;border:1px solid var(--border)"></span>
+            <span style="font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums">#cba6f7</span>
+          </span>
+        </div>
+        <div class="desc">Last picked color + hex. Click to open the loupe + Catppuccin palette popover.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">IdleInhibitor</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w" style="gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--peach)"><path d="M12 3v9"/><path d="M6.5 7.5a8 8 0 1011 0"/></svg>
+            <span style="font-size:11px;color:var(--peach)">42m</span>
+          </span>
+        </div>
+        <div class="desc">Caffeine — prevents sleep. Counts down remaining time. Click to extend or cancel.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">RecIndicator</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w" style="gap:6px;color:var(--red)">
+            <span class="dot-pulse" style="background:var(--red)"></span>
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.08em">REC</span>
+            <span style="font-size:10px;font-variant-numeric:tabular-nums">00:42</span>
+          </span>
+        </div>
+        <div class="desc">Live screen recording timer. Pulsing red dot.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">CameraIndicator</span><span class="tg">plugin</span></div>
+        <div class="demo">
+          <span class="w" style="gap:6px;color:var(--green);padding:4px 8px;border-radius:5px;background:color-mix(in oklab, var(--green) 14%, transparent)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.08em">CAM</span>
+            <span style="font-size:10px;font-variant-numeric:tabular-nums">00:42</span>
+          </span>
+        </div>
+        <div class="desc">Privacy indicator: webcam is in use. Green tint, always visible when active.</div>
+      </div>
+      <div class="wcat">
+        <div class="head"><span class="nm">Sep (separator)</span><span class="tg">helper</span></div>
+        <div class="demo">
+          <span class="w">A</span><span class="w-sep"></span><span class="w">B</span>
+        </div>
+        <div class="desc">1px vertical hairline at 8% opacity. Use sparingly — group widgets in the shell instead when you can.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. BAR LAYOUTS -->
+  <section id="layouts">
+    <h2><span class="num">11</span> Bar layouts</h2>
+    <p class="lede">Eight compositions of the same widget vocabulary. Pick by shape, density and screen real estate — they all use the same shell tokens.</p>
+    <div class="grid grid-3">
+
+      <div class="layout-card">
+        <div class="scene">
+          <div class="bar" style="top:8%;left:8%;right:8%;justify-content:space-between">
+            <div class="mod"><span class="dot"></span><span class="chip">1 2 3</span></div>
+            <div class="mod"><span class="chip">14:32</span></div>
+            <div class="mod"><span class="chip">78%</span><span class="dot"></span></div>
+          </div>
+        </div>
+        <div class="lbl-row"><b>01 · Aurora</b><span>floating segmented top</span></div>
+      </div>
+
+      <div class="layout-card">
+        <div class="scene">
+          <div class="bar" style="top:0;left:0;right:0;border-radius:0;border:0;border-bottom:1px solid var(--border);justify-content:flex-start;gap:6px;padding:5px 10px">
+            <span class="chip">1</span><span class="chip" style="background:var(--accent);color:var(--mantle)">2</span><span class="chip">3</span>
+            <span style="width:1px;height:10px;background:var(--border);margin:0 4px"></span>
+            <span class="chip">CPU 34</span><span class="chip">RAM 42</span>
+            <span style="flex:1"></span>
+            <span class="chip">14:32</span><span class="chip">78%</span>
+          </div>
+        </div>
+        <div class="lbl-row"><b>02 · Pillbox</b><span>edge-to-edge dense</span></div>
+      </div>
+
+      <div class="layout-card">
+        <div class="scene">
+          <div class="bar" style="bottom:8%;left:18%;right:18%;justify-content:space-between;border-radius:12px;padding:5px 8px">
+            <div class="mod"><span class="dot"></span><span class="chip">apps</span></div>
+            <div class="mod" style="gap:6px"><div class="w-album" style="width:14px;height:14px;font-size:7px">M83</div><span class="chip">Midnight City</span></div>
+            <div class="mod"><span class="chip">14:32</span></div>
+          </div>
+        </div>
+        <div class="lbl-row"><b>03 · Mantle</b><span>bottom dock with hero player</span></div>
+      </div>
+
+      <div class="layout-card">
+        <div class="scene">
+          <div class="bar" style="top:14%;bottom:14%;left:6%;width:auto;flex-direction:column;gap:6px;padding:6px 4px;justify-content:flex-start;align-items:center">
+            <span class="chip" style="padding:4px">✨</span>
+            <span class="dot"></span>
+            <span class="chip" style="padding:4px">1</span>
+            <span class="chip" style="padding:4px;background:var(--accent);color:var(--mantle)">2</span>
+            <span class="chip" style="padding:4px">3</span>
+            <span style="flex:1"></span>
+            <span class="chip" style="padding:4px">78</span>
+          </div>
+        </div>
+        <div class="lbl-row"><b>04 · Spine</b><span>vertical left rail</span></div>
+      </div>
+
+      <div class="layout-card">
+        <div class="scene">
+          <div class="bar" style="top:8%;left:4%;padding:4px 7px"><span class="dot"></span><span class="chip">1 2 3</span></div>
+          <div class="bar" style="top:8%;left:38%;right:38%;justify-content:center;padding:4px 7px"><span class="chip">14:32 · May 25</span></div>
+          <div class="bar" style="top:8%;right:4%;padding:4px 7px"><span class="chip">78%</span><span class="dot"></span></div>
+        </div>
+        <div class="lbl-row"><b>05 · Atlas</b><span>three split floating modules</span></div>
+      </div>
+
+      <div class="layout-card">
+        <div class="scene">
+          <div class="bar" style="top:8%;left:8%;right:8%;justify-content:space-between;padding:5px 8px">
+            <span class="chip">1 2 3</span>
+            <span style="position:absolute;top:-2px;left:50%;transform:translateX(-50%);background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:5px 10px;display:inline-flex;gap:5px;align-items:center;box-shadow:0 6px 14px -4px rgba(0,0,0,0.5)">
+              <div class="w-album" style="width:14px;height:14px;font-size:7px">M83</div>
+              <span style="font-size:8px;font-weight:600">Midnight City</span>
+            </span>
+            <span class="chip">14:32</span>
+          </div>
+        </div>
+        <div class="lbl-row"><b>06 · Cathedral</b><span>hero center bulge</span></div>
+      </div>
+
+      <div class="layout-card">
+        <div class="scene" style="background:linear-gradient(160deg, #eff1f5, #dce0e8)">
+          <div class="bar" style="top:8%;left:8%;right:8%;justify-content:space-between;background:rgba(255,255,255,0.78);border-color:rgba(0,0,0,0.06);color:#4c4f69">
+            <div class="mod"><span class="dot"></span><span class="chip" style="background:rgba(0,0,0,0.06);color:#4c4f69">1 2 3</span></div>
+            <div class="mod"><span class="chip" style="background:rgba(0,0,0,0.06);color:#4c4f69">14:32</span></div>
+            <div class="mod"><span class="chip" style="background:rgba(0,0,0,0.06);color:#4c4f69">78%</span></div>
+          </div>
+        </div>
+        <div class="lbl-row"><b>07 · Linen</b><span>Aurora in Latte</span></div>
+      </div>
+
+      <div class="layout-card">
+        <div class="scene" style="background:linear-gradient(180deg, #000 0%, #1d2b53 100%)">
+          <div class="bar" style="top:0;left:0;right:0;border-radius:0;border:0;color:#fff1e8;background:rgba(13,20,48,0.95);justify-content:flex-start;gap:6px;padding:5px 10px;font-family:'VT323',monospace">
+            <span class="chip" style="background:#ffec27;color:#000;font-family:'VT323',monospace">01</span>
+            <span class="chip" style="background:rgba(255,241,232,0.1);color:#fff1e8;font-family:'VT323',monospace">CPU 34</span>
+            <span style="flex:1"></span>
+            <span class="chip" style="background:rgba(255,241,232,0.1);color:#fff1e8;font-family:'VT323',monospace">14:32</span>
+          </div>
+        </div>
+        <div class="lbl-row"><b>08 · Pixel</b><span>8-bit arcade CRT</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 12. DESIGN DECISIONS -->
+  <section id="decisions">
+    <h2><span class="num">12</span> Design decisions</h2>
+    <p class="lede">The opinions baked into Cachy Bar. Read these before adding a widget, a theme or a popover — they keep the system coherent across 12 palettes.</p>
+
+    <div class="grid grid-2">
+      <div class="card decision">
+        <span class="ix">01</span>
+        <h3>One vocabulary, every theme</h3>
+        <p>Every palette ships the same 14 accent keys (<b>mauve, blue, peach, teal…</b>) and the same 6-step surface stack. Widgets never reference a hex — they reference a role. That’s why a single widget renders correctly in Mocha <i>and</i> Tokyo Night <i>and</i> Gruvbox.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">02</span>
+        <h3>Color carries meaning, not decoration</h3>
+        <p>Green = ok. Yellow = warn. Red = err / destructive. Mauve = AI / accent. Blue = info. Peach = attention / counter. <b>Don’t reach for a new hue</b> when an existing role fits — invent a new accent only if the role is genuinely new.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">03</span>
+        <h3>Monospaced by default</h3>
+        <p>The bar lives on a desktop next to terminals — it should feel like family. JetBrains Mono everywhere; <b>tabular numerals</b> for any number that updates (clock, %, temp). Inter only for prose-heavy popovers. Pixel theme swaps to VT323 for the same reason.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">04</span>
+        <h3>Glass over the wallpaper, never over an app</h3>
+        <p>The shell is translucent on purpose — the wallpaper bleeds through with <code>blur(28px) saturate(160%)</code>. <b>Bar should never sit above a focused window.</b> Hyprland configs reserve the bar’s edge.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">05</span>
+        <h3>Popover ≠ overlay</h3>
+        <p>A <b>popover</b> opens next to its widget, dismisses on outside-click, and never dims the screen. The <b>AI overlay</b> is full-bleed with a halo strip on top — use it only for the assistant. Don’t reach for an overlay when a popover will do.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">06</span>
+        <h3>Density is configurable, not aesthetic</h3>
+        <p><code>--pad</code> and <code>--radius</code> are tweakable per user. Aurora users want air; Pillbox users want density. <b>Don’t hard-code spacing</b> — always derive from the tokens so power users can tighten the entire UI with two sliders.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">07</span>
+        <h3>Motion is purposeful, never ambient</h3>
+        <p>Six keyframes total. Pulse / viz / ai-talk / blink / marquee / glow. They each report state — recording, listening, playing, focus. <b>No decorative motion.</b> All animations honor <code>prefers-reduced-motion</code>.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">08</span>
+        <h3>Icons are 24px stroke, one weight</h3>
+        <p>1.75px stroke at 24px viewBox. Fills only for play/dots/tray glyphs. <code>currentColor</code> so theme tokens drive color. <b>Avoid filled icons</b> in dark themes — they read as buttons, not symbols.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">09</span>
+        <h3>The bar reports, the popover does</h3>
+        <p>Bar widgets are <b>read-only at a glance</b> — click them to act. Scroll = small adjust on Volume/Brightness only. Never trap interactive controls in the bar itself; that’s what popovers are for.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">10</span>
+        <h3>Plugins are visible only when relevant</h3>
+        <p>Now-playing only when something plays. Idle inhibitor only when on. GitHub PRs only when authenticated. <b>The bar shouldn’t shrink with empty slots.</b> Hide, don’t grey out.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">11</span>
+        <h3>Layouts are personality, not utility</h3>
+        <p>Aurora is calm, Pillbox is dense, Cathedral is loud. <b>Pick by personality</b>, not by feature set — all layouts can host all widgets. Switching is one tweak away.</p>
+      </div>
+      <div class="card decision">
+        <span class="ix">12</span>
+        <h3>Light themes are first-class</h3>
+        <p>Latte / Gruvbox Light / Solarized Light aren’t afterthoughts. They get their own wallpaper variants, recalibrated accents (saturation pushed up), and the same widget vocabulary. <b>If a design only works in dark, it’s broken.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="icons">
+    <h2><span class="num">13</span> Iconography</h2>
+    <p class="lede">Stroke-based 24px grid icons. Single weight (1.75 stroke), <code>currentColor</code>, no fills except for filled play / dots / tray glyphs.</p>
+    <div class="card">
+      <div class="icon-grid" id="icon-grid"></div>
+    </div>
+  </section>
+
+  <!-- ─── 8. WALLPAPERS ───────────────────────────────────── -->
+  <section id="wallpapers">
+    <h2><span class="num">14</span> Wallpapers</h2>
+    <p class="lede">Every theme ships at least one wallpaper variant — the desktop backdrop the bar floats over.</p>
+    <div class="wallpaper-grid" id="wallpaper-grid"></div>
+  </section>
+
+  <!-- ─── 9. TOKENS / CSS ─────────────────────────────────── -->
+  <section id="tokens">
+    <h2><span class="num">15</span> Tokens</h2>
+    <p class="lede">All visual decisions are exposed as CSS custom properties. Drop the snippet below into your AGS project's stylesheet.</p>
+    <div class="code"><span class="c">/* shape */</span>
+<span class="p">--radius</span>: <span class="v">14px</span>;
+<span class="p">--radius-inner</span>: <span class="v">10px</span>;       <span class="c">/* widgets inside the shell */</span>
+<span class="p">--pad</span>: <span class="v">8px</span>;
+
+<span class="c">/* blur recipe */</span>
+<span class="p">--blur</span>: <span class="k">blur</span>(<span class="v">28px</span>) <span class="k">saturate</span>(<span class="v">160%</span>);
+<span class="p">--blur-popover</span>: <span class="k">blur</span>(<span class="v">36px</span>) <span class="k">saturate</span>(<span class="v">160%</span>);
+
+<span class="c">/* motion */</span>
+<span class="p">--t-fast</span>: <span class="v">0.12s</span>;
+<span class="p">--t-base</span>: <span class="v">0.15s</span>;
+<span class="p">--t-morph</span>: <span class="v">0.18s cubic-bezier(.2,.7,.3,1)</span>;
+
+<span class="c">/* surfaces (mocha example) */</span>
+<span class="p">--bg</span>:     <span class="k">rgba</span>(<span class="v">30,30,46,0.82</span>);
+<span class="p">--bg2</span>:    <span class="k">rgba</span>(<span class="v">69,71,90,0.55</span>);
+<span class="p">--bg3</span>:    <span class="k">rgba</span>(<span class="v">88,91,112,0.70</span>);
+<span class="p">--mantle</span>: <span class="k">rgba</span>(<span class="v">24,24,37,0.92</span>);
+<span class="p">--text</span>:   <span class="v">#cdd6f4</span>;
+<span class="p">--dim</span>:    <span class="v">#a6adc8</span>;
+
+<span class="c">/* 14 accent roles — same keys across every theme */</span>
+<span class="p">--rosewater</span>: <span class="v">#f5e0dc</span>;  <span class="p">--flamingo</span>: <span class="v">#f2cdcd</span>;
+<span class="p">--pink</span>:      <span class="v">#f5c2e7</span>;  <span class="p">--mauve</span>:    <span class="v">#cba6f7</span>;
+<span class="p">--red</span>:       <span class="v">#f38ba8</span>;  <span class="p">--maroon</span>:   <span class="v">#eba0ac</span>;
+<span class="p">--peach</span>:     <span class="v">#fab387</span>;  <span class="p">--yellow</span>:   <span class="v">#f9e2af</span>;
+<span class="p">--green</span>:     <span class="v">#a6e3a1</span>;  <span class="p">--teal</span>:     <span class="v">#94e2d5</span>;
+<span class="p">--sky</span>:       <span class="v">#89dceb</span>;  <span class="p">--sapphire</span>: <span class="v">#74c7ec</span>;
+<span class="p">--blue</span>:      <span class="v">#89b4fa</span>;  <span class="p">--lavender</span>: <span class="v">#b4befe</span>;
+
+<span class="p">--accent</span>: <span class="k">var</span>(<span class="p">--mauve</span>);</div>
+  </section>
+
+  <footer>
+    <span>Cachy Bar · Design System v1</span>
+    <span>Built on Catppuccin's color vocabulary · works for any palette that ships the same keys</span>
+    <span><a href="index.html">← back to canvas</a></span>
+  </footer>
+
+</main>
+
+<script>
+/* ─── Palette data (mirrors src/theme.jsx) ──────────────── */
+const THEMES = [
+  { id: 'mocha', label: 'Catppuccin Mocha', kind: 'dark',
+    base: '#1e1e2e', mantle: '#181825', crust: '#11111b',
+    surface0: '#313244', surface1: '#45475a', surface2: '#585b70',
+    text: '#cdd6f4', subtext1: '#bac2de', dim: '#a6adc8',
+    rosewater:'#f5e0dc',flamingo:'#f2cdcd',pink:'#f5c2e7',mauve:'#cba6f7',
+    red:'#f38ba8',maroon:'#eba0ac',peach:'#fab387',yellow:'#f9e2af',
+    green:'#a6e3a1',teal:'#94e2d5',sky:'#89dceb',sapphire:'#74c7ec',
+    blue:'#89b4fa',lavender:'#b4befe',
+    wallpaper: 'radial-gradient(ellipse at 20% 0%, #45475a 0%, #1e1e2e 45%, #11111b 100%)',
+  },
+  { id: 'latte', label: 'Catppuccin Latte', kind: 'light',
+    base: '#eff1f5', mantle: '#e6e9ef', crust: '#dce0e8',
+    surface0: '#ccd0da', surface1: '#bcc0cc', surface2: '#acb0be',
+    text: '#4c4f69', subtext1: '#5c5f77', dim: '#6c6f85',
+    rosewater:'#dc8a78',flamingo:'#dd7878',pink:'#ea76cb',mauve:'#8839ef',
+    red:'#d20f39',maroon:'#e64553',peach:'#fe640b',yellow:'#df8e1d',
+    green:'#40a02b',teal:'#179299',sky:'#04a5e5',sapphire:'#209fb5',
+    blue:'#1e66f5',lavender:'#7287fd',
+    wallpaper: 'radial-gradient(ellipse at 20% 0%, #dce0e8 0%, #eff1f5 50%, #ccd0da 100%)',
+  },
+  { id: 'gruvbox', label: 'Gruvbox Dark', kind: 'dark',
+    base: '#282828', mantle: '#1d2021', crust: '#161616',
+    surface0: '#3c3836', surface1: '#504945', surface2: '#665c54',
+    text: '#ebdbb2', subtext1: '#d5c4a1', dim: '#bdae93',
+    rosewater:'#fbf1c7',flamingo:'#d65d0e',pink:'#d3869b',mauve:'#d3869b',
+    red:'#fb4934',maroon:'#cc241d',peach:'#fe8019',yellow:'#fabd2f',
+    green:'#b8bb26',teal:'#8ec07c',sky:'#83a598',sapphire:'#458588',
+    blue:'#83a598',lavender:'#d3869b',
+    wallpaper: 'radial-gradient(ellipse at 30% 0%, #504945 0%, #282828 50%, #1d2021 100%)',
+  },
+  { id: 'tokyonight', label: 'Tokyo Night', kind: 'dark',
+    base: '#1a1b26', mantle: '#16161e', crust: '#13131a',
+    surface0: '#24283b', surface1: '#292e42', surface2: '#414868',
+    text: '#c0caf5', subtext1: '#a9b1d6', dim: '#9aa5ce',
+    rosewater:'#c0caf5',flamingo:'#ff9e64',pink:'#ff007c',mauve:'#bb9af7',
+    red:'#f7768e',maroon:'#db4b4b',peach:'#ff9e64',yellow:'#e0af68',
+    green:'#9ece6a',teal:'#73daca',sky:'#7dcfff',sapphire:'#2ac3de',
+    blue:'#7aa2f7',lavender:'#9d7cd8',
+    wallpaper: 'radial-gradient(ellipse at 50% 100%, #7aa2f7 -10%, #292e42 30%, #1a1b26 70%, #13131a 100%)',
+  },
+  { id: 'nord', label: 'Nord', kind: 'dark',
+    base: '#2e3440', mantle: '#272c36', crust: '#22272f',
+    surface0: '#3b4252', surface1: '#434c5e', surface2: '#4c566a',
+    text: '#eceff4', subtext1: '#e5e9f0', dim: '#d8dee9',
+    rosewater:'#eceff4',flamingo:'#d08770',pink:'#b48ead',mauve:'#b48ead',
+    red:'#bf616a',maroon:'#bf616a',peach:'#d08770',yellow:'#ebcb8b',
+    green:'#a3be8c',teal:'#8fbcbb',sky:'#88c0d0',sapphire:'#5e81ac',
+    blue:'#81a1c1',lavender:'#b48ead',
+    wallpaper: 'radial-gradient(ellipse at 70% 0%, #5e81ac 0%, #3b4252 35%, #2e3440 80%)',
+  },
+  { id: 'dracula', label: 'Dracula', kind: 'dark',
+    base: '#282a36', mantle: '#21222c', crust: '#191a21',
+    surface0: '#2c2e3f', surface1: '#383a4e', surface2: '#44475a',
+    text: '#f8f8f2', subtext1: '#dcdce8', dim: '#a9a9b8',
+    rosewater:'#f8f8f2',flamingo:'#ffb86c',pink:'#ff79c6',mauve:'#bd93f9',
+    red:'#ff5555',maroon:'#ff5555',peach:'#ffb86c',yellow:'#f1fa8c',
+    green:'#50fa7b',teal:'#8be9fd',sky:'#8be9fd',sapphire:'#6272a4',
+    blue:'#8be9fd',lavender:'#bd93f9',
+    wallpaper: 'radial-gradient(ellipse at 20% 0%, #bd93f9 -10%, #44475a 25%, #282a36 65%, #191a21 100%)',
+  },
+  { id: 'rosepine', label: 'Rosé Pine', kind: 'dark',
+    base: '#191724', mantle: '#1f1d2e', crust: '#14121f',
+    surface0: '#1f1d2e', surface1: '#26233a', surface2: '#403d52',
+    text: '#e0def4', subtext1: '#cbc7e3', dim: '#908caa',
+    rosewater:'#ebbcba',flamingo:'#f6c177',pink:'#ebbcba',mauve:'#c4a7e7',
+    red:'#eb6f92',maroon:'#eb6f92',peach:'#f6c177',yellow:'#f6c177',
+    green:'#9ccfd8',teal:'#31748f',sky:'#9ccfd8',sapphire:'#31748f',
+    blue:'#9ccfd8',lavender:'#c4a7e7',
+    wallpaper: 'radial-gradient(ellipse at 80% 0%, #c4a7e7 -10%, #403d52 25%, #1f1d2e 60%, #14121f 100%)',
+  },
+  { id: 'everforest', label: 'Everforest', kind: 'dark',
+    base: '#2d353b', mantle: '#232a2e', crust: '#1e2326',
+    surface0: '#343f44', surface1: '#3d484d', surface2: '#4f585e',
+    text: '#d3c6aa', subtext1: '#b6b099', dim: '#9da9a0',
+    rosewater:'#d3c6aa',flamingo:'#e69875',pink:'#d699b6',mauve:'#d699b6',
+    red:'#e67e80',maroon:'#e67e80',peach:'#e69875',yellow:'#dbbc7f',
+    green:'#a7c080',teal:'#83c092',sky:'#7fbbb3',sapphire:'#4f6c7a',
+    blue:'#7fbbb3',lavender:'#d699b6',
+    wallpaper: 'radial-gradient(ellipse at 50% 110%, #a7c080 -20%, #3d484d 25%, #2d353b 60%, #1e2326 100%)',
+  },
+  { id: 'kanagawa', label: 'Kanagawa', kind: 'dark',
+    base: '#1f1f28', mantle: '#181820', crust: '#16161d',
+    surface0: '#2a2a37', surface1: '#223249', surface2: '#2d4f67',
+    text: '#dcd7ba', subtext1: '#c8c093', dim: '#938aa9',
+    rosewater:'#dcd7ba',flamingo:'#ffa066',pink:'#d27e99',mauve:'#957fb8',
+    red:'#e46876',maroon:'#c34043',peach:'#ffa066',yellow:'#e6c384',
+    green:'#98bb6c',teal:'#7aa89f',sky:'#7fb4ca',sapphire:'#2d4f67',
+    blue:'#7e9cd8',lavender:'#9cabca',
+    wallpaper: 'radial-gradient(ellipse at 30% 110%, #2d4f67 -10%, #223249 30%, #1f1f28 65%, #16161d 100%)',
+  },
+  { id: 'gruvbox-light', label: 'Gruvbox Light', kind: 'light',
+    base: '#fbf1c7', mantle: '#f2e5bc', crust: '#ebdbb2',
+    surface0: '#ebdbb2', surface1: '#d5c4a1', surface2: '#bdae93',
+    text: '#3c3836', subtext1: '#504945', dim: '#665c54',
+    rosewater:'#3c3836',flamingo:'#af3a03',pink:'#b16286',mauve:'#8f3f71',
+    red:'#9d0006',maroon:'#cc241d',peach:'#af3a03',yellow:'#b57614',
+    green:'#79740e',teal:'#427b58',sky:'#689d6a',sapphire:'#458588',
+    blue:'#076678',lavender:'#8f3f71',
+    wallpaper: 'radial-gradient(ellipse at 30% 0%, #f2e5bc 0%, #fbf1c7 50%, #ebdbb2 100%)',
+  },
+  { id: 'solarized-light', label: 'Solarized Light', kind: 'light',
+    base: '#fdf6e3', mantle: '#eee8d5', crust: '#e4ddc9',
+    surface0: '#eee8d5', surface1: '#d5cfb8', surface2: '#93a1a1',
+    text: '#586e75', subtext1: '#657b83', dim: '#839496',
+    rosewater:'#586e75',flamingo:'#cb4b16',pink:'#d33682',mauve:'#6c71c4',
+    red:'#dc322f',maroon:'#cb4b16',peach:'#cb4b16',yellow:'#b58900',
+    green:'#859900',teal:'#2aa198',sky:'#2aa198',sapphire:'#268bd2',
+    blue:'#268bd2',lavender:'#6c71c4',
+    wallpaper: 'radial-gradient(ellipse at 70% 0%, #eee8d5 0%, #fdf6e3 50%, #e4ddc9 100%)',
+  },
+  { id: 'pixel', label: 'Pixel 8-bit', kind: 'dark',
+    base: '#1d2b53', mantle: '#0d1430', crust: '#000000',
+    surface0: '#1a2548', surface1: '#2d3a6a', surface2: '#5f574f',
+    text: '#fff1e8', subtext1: '#c2c3c7', dim: '#83769c',
+    rosewater:'#ffccaa',flamingo:'#ab5236',pink:'#ff77a8',mauve:'#c77dff',
+    red:'#ff004d',maroon:'#7e2553',peach:'#ffa300',yellow:'#ffec27',
+    green:'#00e436',teal:'#29adff',sky:'#29adff',sapphire:'#1d2b53',
+    blue:'#29adff',lavender:'#c77dff',
+    wallpaper: 'linear-gradient(180deg, #000000 0%, #1d2b53 35%, #7e2553 75%, #ff004d 100%)',
+  },
+];
+
+const ACCENT_KEYS = ['rosewater','flamingo','pink','mauve','red','maroon','peach','yellow','green','teal','sky','sapphire','blue','lavender'];
+
+/* ─── Theme switcher: rewrites CSS vars at :root ────────── */
+function applyTheme(id) {
+  const t = THEMES.find(x => x.id === id);
+  if (!t) return;
+  const r = document.documentElement;
+  // surfaces — use rgba derived from base/surface for translucent vars
+  const hexToRgba = (hex, a) => {
+    const h = hex.replace('#','');
+    return `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;
+  };
+  r.style.setProperty('--bg-page', t.crust);
+  r.style.setProperty('--crust', t.crust);
+  r.style.setProperty('--bg-card', hexToRgba(t.base, t.kind === 'light' ? 0.92 : 0.82));
+  r.style.setProperty('--bg2', hexToRgba(t.surface1, 0.55));
+  r.style.setProperty('--bg3', hexToRgba(t.surface2, 0.70));
+  r.style.setProperty('--mantle', hexToRgba(t.mantle, 0.92));
+  r.style.setProperty('--text', t.text);
+  r.style.setProperty('--dim', t.dim);
+  r.style.setProperty('--border', hexToRgba(t.text, 0.08));
+  ACCENT_KEYS.forEach(k => r.style.setProperty('--' + k, t[k]));
+  r.style.setProperty('--accent', t.mauve);
+  r.style.setProperty('--halo', `linear-gradient(90deg, ${t.mauve}, ${t.blue}, ${t.teal})`);
+  // pixel theme: swap UI font
+  if (id === 'pixel') {
+    r.style.setProperty('--font-mono', '"VT323","Press Start 2P","JetBrains Mono",monospace');
+    document.body.style.fontSize = '15px';
+  } else {
+    r.style.setProperty('--font-mono', '"JetBrains Mono","SF Mono",ui-monospace,monospace');
+    document.body.style.fontSize = '13px';
+  }
+  document.body.setAttribute('data-theme', id);
+  document.querySelectorAll('.theme-switcher button').forEach(b => {
+    b.setAttribute('aria-current', b.dataset.id === id ? 'true' : 'false');
+  });
+  try { localStorage.setItem('ds-theme', id); } catch(e) {}
+}
+
+/* ─── Build the theme switcher ──────────────────────────── */
+const sw = document.querySelector('.theme-switcher');
+THEMES.forEach(t => {
+  const btn = document.createElement('button');
+  btn.dataset.id = t.id;
+  btn.innerHTML = `<span class="dot" style="background:${t.mauve}"></span>${t.label}`;
+  btn.onclick = () => applyTheme(t.id);
+  sw.appendChild(btn);
+});
+
+/* ─── Build the themes-overview grid ────────────────────── */
+const overview = document.getElementById('themes-overview');
+THEMES.forEach(t => {
+  const cardVars = `
+    --theme-base: ${t.base};
+    --theme-text: ${t.text};
+    --theme-mauve: ${t.mauve};
+    --theme-blue: ${t.blue};
+    --theme-teal: ${t.teal};
+  `;
+  const accents = ['mauve','blue','peach','teal','green','yellow','red'].map(k =>
+    `<div class="sw" style="background:${t[k]}" title="${k} · ${t[k]}"></div>`).join('');
+  const surfaces = ['crust','mantle','base','surface0','surface1','surface2'].map(k =>
+    `<div style="background:${t[k] || t.base}"></div>`).join('');
+  const card = document.createElement('div');
+  card.className = 'theme-card';
+  card.style.cssText = cardVars;
+  card.innerHTML = `
+    <div class="strip"></div>
+    <div class="head">
+      <h3>${t.label}</h3>
+      <span class="badge">${t.kind}</span>
+    </div>
+    <div class="swatches">${accents}</div>
+    <div class="surfaces">${surfaces}</div>
+    <div class="meta">
+      <span>${t.base}</span>
+      <span>${t.text}</span>
+    </div>
+  `;
+  overview.appendChild(card);
+});
+
+/* ─── Build the palette deep-dive (one block per theme) ─ */
+const detail = document.getElementById('palette-detail');
+THEMES.forEach((t, i) => {
+  const isLight = t.kind === 'light';
+  const swatchBg = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)';
+  const swatchText = t.text;
+  const accents = ACCENT_KEYS.map(k => `
+    <div class="swatch" style="--swatch-bg:${swatchBg}; --swatch-color:${t[k]}; color:${swatchText};">
+      <div class="nm">${k}</div>
+      <div class="hx" style="color:${t.dim};">${t[k]}</div>
+    </div>`).join('');
+  const surfaces = ['crust','mantle','base','surface0','surface1','surface2'].map(k => `
+    <div class="swatch" style="--swatch-bg:${swatchBg}; --swatch-color:${t[k] || t.base}; color:${swatchText};">
+      <div class="nm">${k}</div>
+      <div class="hx" style="color:${t.dim};">${t[k] || t.base}</div>
+    </div>`).join('');
+  const texts = [
+    ['text', t.text], ['subtext1', t.subtext1], ['dim', t.dim],
+  ].map(([k,v]) => `
+    <div class="swatch" style="--swatch-bg:${swatchBg}; --swatch-color:${v}; color:${swatchText};">
+      <div class="nm">${k}</div>
+      <div class="hx" style="color:${t.dim};">${v}</div>
+    </div>`).join('');
+  const block = document.createElement('div');
+  block.className = 'palette-matrix';
+  block.style.marginBottom = '56px';
+  block.innerHTML = `
+    <div>
+      <div class="label">${String(i+1).padStart(2,'0')} · ${t.kind}</div>
+      <div class="name" style="margin-top: 6px;">${t.label}</div>
+      <div class="desc">Base <code style="color:${t.mauve}">${t.base}</code> · text <code style="color:${t.mauve}">${t.text}</code>. Accent default: <code style="color:${t.mauve}">mauve</code>.</div>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom: 10px;">14 accent roles</div>
+      <div class="swatch-grid">${accents}</div>
+      <div class="label" style="margin: 18px 0 10px;">Surface stack (crust → surface2)</div>
+      <div class="swatch-grid">${surfaces}</div>
+      <div class="label" style="margin: 18px 0 10px;">Text ramp</div>
+      <div class="swatch-grid">${texts}</div>
+    </div>
+  `;
+  detail.appendChild(block);
+});
+
+/* ─── Build the wallpaper grid ──────────────────────────── */
+const wp = document.getElementById('wallpaper-grid');
+THEMES.forEach(t => {
+  const el = document.createElement('div');
+  el.className = 'wallpaper';
+  el.style.background = t.wallpaper;
+  el.innerHTML = `<div class="nm">${t.label}</div>`;
+  wp.appendChild(el);
+});
+
+/* ─── Iconography ───────────────────────────────────────── */
+const ICONS = {
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>',
+  wifi: '<path d="M2 8.5c5.5-5 14.5-5 20 0"/><path d="M5 12c4-3.5 10-3.5 14 0"/><path d="M8.5 15.5c2-1.7 5-1.7 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/>',
+  bluetooth: '<path d="M7 7l10 10-5 4V3l5 4L7 17"/>',
+  battery: '<rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/><rect x="4" y="9" width="11" height="6" fill="currentColor" stroke="none"/>',
+  volume: '<path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 9c1.5 1.5 1.5 4.5 0 6"/><path d="M19 6c3 3 3 9 0 12"/>',
+  mute: '<path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 9l5 6M21 9l-5 6"/>',
+  mic: '<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',
+  brightness: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  bell: '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4l2-2z"/><path d="M10 20a2 2 0 004 0"/>',
+  cpu: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>',
+  ram: '<rect x="2" y="8" width="20" height="8" rx="1"/><path d="M6 8v8M10 8v8M14 8v8M18 8v8"/>',
+  thermo: '<path d="M12 3a2.5 2.5 0 00-2.5 2.5v9.1a4 4 0 105 0V5.5A2.5 2.5 0 0012 3z"/><circle cx="12" cy="17" r="1.5" fill="currentColor" stroke="none"/>',
+  power: '<path d="M12 3v9"/><path d="M6.5 7.5a8 8 0 1011 0"/>',
+  keyboard: '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>',
+  play: '<polygon points="7 4 19 12 7 20 7 4" fill="currentColor" stroke="none"/>',
+  pause: '<rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/>',
+  skip: '<polygon points="5 4 15 12 5 20 5 4" fill="currentColor" stroke="none"/><rect x="17" y="4" width="2" height="16" fill="currentColor" stroke="none"/>',
+  prev: '<polygon points="19 4 9 12 19 20 19 4" fill="currentColor" stroke="none"/><rect x="5" y="4" width="2" height="16" fill="currentColor" stroke="none"/>',
+  tomato: '<path d="M12 4c-1-1.5-3-1.5-4 0"/><path d="M12 4c1-1.5 3-1.5 4 0"/><ellipse cx="12" cy="14" rx="8" ry="7.5"/>',
+  github: '<path d="M9 19c-4 1.5-4-2-6-2.5M15 22v-3.5a3 3 0 00-1-2.3c3-.3 6-1.5 6-6.5a5 5 0 00-1.4-3.5 4.6 4.6 0 00-.1-3.4S17 1.5 14 3.5a13.4 13.4 0 00-6 0C5 1.5 4 2 4 2a4.6 4.6 0 00-.1 3.4A5 5 0 002.5 9c0 5 3 6.2 6 6.5a3 3 0 00-1 2.3V22"/>',
+  package: '<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>',
+  ai: '<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" fill="currentColor" stroke="none" opacity="0.85"/><circle cx="19" cy="5" r="1.5" fill="currentColor" stroke="none"/>',
+  spark: '<path d="M12 4v4M12 16v4M4 12h4M16 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M6.3 17.7l2.8-2.8M14.9 9.1l2.8-2.8"/>',
+  cloud: '<path d="M7 18a5 5 0 010-10 6 6 0 0111.3 1.7A4 4 0 0117 18H7z"/>',
+  rec: '<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="9"/>',
+  clipboard: '<rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/>',
+  chevron: '<path d="M9 6l6 6-6 6"/>',
+  camera: '<path d="M3 7h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/>',
+  leaf: '<path d="M4 20s2-7 8-11 11-5 11-5-2 9-7 14-12 2-12 2z"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 010 18M12 3a13 13 0 000 18"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>',
+  airpods: '<ellipse cx="8" cy="13" rx="3" ry="6"/><ellipse cx="16" cy="13" rx="3" ry="6"/>',
+  monitor: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>',
+  download: '<path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14"/>',
+  upload: '<path d="M12 20V8m0 0l-4 4m4-4l4 4M5 4h14"/>',
+  refresh: '<path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+};
+const iconGrid = document.getElementById('icon-grid');
+Object.entries(ICONS).forEach(([name, paths]) => {
+  const cell = document.createElement('div');
+  cell.className = 'icon-cell';
+  cell.innerHTML = `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>
+    <span class="nm">${name}</span>
+  `;
+  iconGrid.appendChild(cell);
+});
+
+/* ─── Boot — restore saved theme or default to Mocha ───── */
+let saved = 'mocha';
+try { saved = localStorage.getItem('ds-theme') || 'mocha'; } catch(e) {}
+applyTheme(saved);
+</script>
+
+</body>
+</html>

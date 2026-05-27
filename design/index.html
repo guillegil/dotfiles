@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cachy AGS Bar — Design Canvas</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; font-family: -apple-system, system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  /* JetBrains Mono for the bar typography */
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=VT323&family=Press+Start+2P&display=swap');
+</style>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="src/theme.jsx"></script>
+<script type="text/babel" src="src/icons.jsx"></script>
+<script type="text/babel" src="src/widgets.jsx"></script>
+<script type="text/babel" src="src/bars.jsx"></script>
+<script type="text/babel" src="src/popovers.jsx"></script>
+<script type="text/babel" src="src/login.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "mocha_accent": "#94e2d5",
+  "latte_accent": "#179299",
+  "gruvbox_accent": "#fe8019",
+  "tokyonight_accent": "#7aa2f7",
+  "nord_accent": "#88c0d0",
+  "dracula_accent": "#ff79c6",
+  "rosepine_accent": "#c4a7e7",
+  "everforest_accent": "#a7c080",
+  "kanagawa_accent": "#7e9cd8",
+  "gruvbox_light_accent": "#076678",
+  "solarized_light_accent": "#268bd2",
+  "pixel_accent": "#ffec27",
+  "radius": 18,
+  "pad": 8,
+  "showAI": true,
+  "showPomodoro": true,
+  "showGitHub": true,
+  "showNowPlaying": true,
+  "showStats": true
+}/*EDITMODE-END*/;
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  // each Desktop reads `accent` per-bar; tweaks panel sets a global override
+  // for mocha bars (mocha_accent) and latte bars (latte_accent).
+  const dArgs = (vibe='mocha-a', acc=t.mocha_accent) => ({
+    palette: MOCHA, wallpaper: vibe, accent: acc,
+    radius: t.radius, pad: t.pad,
+  });
+  const lArgs = (vibe='latte-a', acc=t.latte_accent) => ({
+    palette: LATTE, wallpaper: vibe, accent: acc,
+    radius: t.radius, pad: t.pad,
+  });
+  // generic builder so every theme uses the same shape
+  const themeArgs = (palette, vibe, acc) => ({
+    palette, wallpaper: vibe, accent: acc,
+    radius: t.radius, pad: t.pad,
+  });
+
+  return (
+    <>
+      <DesignCanvas defaultZoom={0.7}>
+
+        {/* ─── DARK · CATPPUCCIN MOCHA ───────────────────────────────── */}
+        <DCSection id="dark" title="Catppuccin Mocha · Dark"
+          subtitle="Six layouts — same widget vocabulary, different personalities. Use Tweaks to swap accent & radius.">
+
+          <DCArtboard id="aurora" label="01 · Aurora — floating segmented top"
+            width={1400} height={300}>
+            <Desktop {...dArgs('mocha-a', MOCHA.mauve)} position="top">
+              <BarAurora/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="pillbox" label="02 · Pillbox — edge-to-edge dense"
+            width={1400} height={300}>
+            <Desktop {...dArgs('mocha-b', MOCHA.blue)} position="top">
+              <BarPillbox/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="mantle" label="03 · Mantle — bottom dock with hero player"
+            width={1400} height={320}>
+            <Desktop {...dArgs('mocha-c', MOCHA.peach)} position="bottom">
+              <BarMantle/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="spine" label="04 · Spine — vertical left rail"
+            width={780} height={620}>
+            <Desktop {...dArgs('mocha-d', MOCHA.teal)} position="left">
+              <BarSpine/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="atlas" label="05 · Atlas — three split floating modules"
+            width={1400} height={300}>
+            <Desktop {...dArgs('mocha-e', MOCHA.pink)} position="top">
+              <BarAtlas/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="cathedral" label="06 · Cathedral — hero center bulge"
+            width={1400} height={380}>
+            <Desktop {...dArgs('mocha-f', MOCHA.lavender)} position="top">
+              <BarCathedral/>
+            </Desktop>
+          </DCArtboard>
+
+        </DCSection>
+
+        {/* ─── LIGHT · CATPPUCCIN LATTE ──────────────────────────────── */}
+        <DCSection id="light" title="Catppuccin Latte · Light"
+          subtitle="Same bars, recolored for daylight. Try them with the bar position you'd actually use.">
+
+          <DCArtboard id="linen" label="07 · Linen — Aurora in Latte"
+            width={1400} height={300}>
+            <Desktop {...lArgs('latte-a', LATTE.mauve)} position="top">
+              <BarLinen/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="marble" label="08 · Marble — Pillbox in Latte"
+            width={1400} height={300}>
+            <Desktop {...lArgs('latte-b', LATTE.blue)} position="top">
+              <BarMarble/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="quartz" label="09 · Quartz — bottom dock in Latte"
+            width={1400} height={320}>
+            <Desktop {...lArgs('latte-c', LATTE.peach)} position="bottom">
+              <BarMantle/>
+            </Desktop>
+          </DCArtboard>
+
+        </DCSection>
+
+        {/* ─── MORE THEMES · DARK ─────────────────────────────────── */}
+        <DCSection id="themes-dark" title="More themes — dark"
+          subtitle="Seven additional palettes wired into the same widget vocabulary. Bar layout rotates so you can see each theme in a different shape.">
+
+          <DCArtboard id="gruvbox" label="10 · Gruvbox Dark — Aurora"
+            width={1400} height={300}>
+            <Desktop {...themeArgs(GRUVBOX, 'gruvbox-a', t.gruvbox_accent)} position="top">
+              <BarAurora/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="tokyonight" label="11 · Tokyo Night — Pillbox"
+            width={1400} height={300}>
+            <Desktop {...themeArgs(TOKYONIGHT, 'tokyonight-a', t.tokyonight_accent)} position="top">
+              <BarPillbox/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="nord" label="12 · Nord — Mantle (bottom dock)"
+            width={1400} height={320}>
+            <Desktop {...themeArgs(NORD, 'nord-a', t.nord_accent)} position="bottom">
+              <BarMantle/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="dracula" label="13 · Dracula — Atlas"
+            width={1400} height={300}>
+            <Desktop {...themeArgs(DRACULA, 'dracula-a', t.dracula_accent)} position="top">
+              <BarAtlas/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="rosepine" label="14 · Rosé Pine — Cathedral"
+            width={1400} height={380}>
+            <Desktop {...themeArgs(ROSEPINE, 'rosepine-a', t.rosepine_accent)} position="top">
+              <BarCathedral/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="everforest" label="15 · Everforest — Aurora"
+            width={1400} height={300}>
+            <Desktop {...themeArgs(EVERFOREST, 'everforest-a', t.everforest_accent)} position="top">
+              <BarAurora/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="kanagawa" label="16 · Kanagawa — Spine (vertical)"
+            width={780} height={620}>
+            <Desktop {...themeArgs(KANAGAWA, 'kanagawa-a', t.kanagawa_accent)} position="left">
+              <BarSpine/>
+            </Desktop>
+          </DCArtboard>
+
+        </DCSection>
+
+        {/* ─── MORE THEMES · LIGHT ────────────────────────────────── */}
+        <DCSection id="themes-light" title="More themes — light"
+          subtitle="Paper-bright palettes for the daylight crowd.">
+
+          <DCArtboard id="gruvbox-light" label="17 · Gruvbox Light — Pillbox"
+            width={1400} height={300}>
+            <Desktop {...themeArgs(GRUVBOX_LIGHT, 'gruvbox-light-a', t.gruvbox_light_accent)} position="top">
+              <BarPillbox/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="solarized-light" label="18 · Solarized Light — Aurora"
+            width={1400} height={300}>
+            <Desktop {...themeArgs(SOLARIZED_LIGHT, 'solarized-light-a', t.solarized_light_accent)} position="top">
+              <BarAurora/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="solarized-light-mantle" label="19 · Solarized Light — Mantle (bottom dock)"
+            width={1400} height={320}>
+            <Desktop {...themeArgs(SOLARIZED_LIGHT, 'solarized-light-b', t.solarized_light_accent)} position="bottom">
+              <BarMantle/>
+            </Desktop>
+          </DCArtboard>
+
+        </DCSection>
+
+        {/* ─── RETRO 8-BIT ─────────────────────────────────────── */}
+        <DCSection id="pixel" title="Retro 8-bit — Pixel"
+          subtitle="PICO-8 palette, VT323 type, stepped pixel mountains, CRT scanlines. Same widgets, arcade clothes.">
+
+          <DCArtboard id="pixel-pillbox" label="20 · Pixel — Pillbox (CRT dense)"
+            width={1400} height={320}>
+            <Desktop {...themeArgs(PIXEL, 'pixel-a', t.pixel_accent)} position="top">
+              <BarPillbox/>
+            </Desktop>
+          </DCArtboard>
+
+          <DCArtboard id="pixel-aurora" label="21 · Pixel — Aurora (segmented HUD)"
+            width={1400} height={320}>
+            <Desktop {...themeArgs(PIXEL, 'pixel-b', t.pixel_accent)} position="top">
+              <BarAurora/>
+            </Desktop>
+          </DCArtboard>
+
+        </DCSection>
+
+        {/* ─── POPOVERS & OVERLAYS ───────────────────────────────────── */}
+        <DCSection id="popovers" title="Popovers & overlays"
+          subtitle="Click-throughs from the bar. AI assistant opens as a full overlay; the rest drop down as popovers.">
+
+          <DCArtboard id="ai-overlay" label="AI assistant — voice + chat overlay"
+            width={760} height={520}>
+            <Desktop {...dArgs('mocha-a', MOCHA.mauve)} position="top" showApp={false}>
+              <BarAurora/>
+            </Desktop>
+            <div style={{position:'absolute',inset:0,zIndex:20,pointerEvents:'none'}}>
+              <AIOverlay/>
+            </div>
+          </DCArtboard>
+
+          <DCArtboard id="app-launcher" label="App launcher — search, calc, AI"
+            width={760} height={760}>
+            <Desktop {...dArgs('mocha-d', t.mocha_accent)} position="top" showApp={false}>
+              <BarAurora/>
+            </Desktop>
+            <div style={{position:'absolute',inset:0,zIndex:20,pointerEvents:'none',
+              ['--accent']:t.mocha_accent,
+              ['--bg2']:'rgba(69,71,90,0.55)',
+              ['--text']:'#cdd6f4',['--dim']:'#a6adc8',
+              ['--mauve']:MOCHA.mauve,['--blue']:MOCHA.blue,['--teal']:MOCHA.teal,
+              ['--green']:MOCHA.green,['--red']:MOCHA.red,['--yellow']:MOCHA.yellow,
+              ['--peach']:MOCHA.peach,['--pink']:MOCHA.pink,['--sky']:MOCHA.sky,
+              ['--lavender']:MOCHA.lavender,['--sapphire']:MOCHA.sapphire,
+              fontFamily:'"JetBrains Mono", monospace',color:'#cdd6f4',
+            }}>
+              <AppLauncher/>
+            </div>
+          </DCArtboard>
+
+          <DCArtboard id="np-popover" label="Now playing — expanded popover"
+            width={420} height={520}>
+            <div style={{
+              position:'relative',width:'100%',height:'100%',
+              background:'radial-gradient(ellipse at 50% 0%, #585b70 0%, #1e1e2e 60%, #11111b 100%)',
+              padding:'24px 30px',
+            }}>
+              {/* mini bar slice for context */}
+              <div style={{display:'flex',justifyContent:'center',marginBottom:14,
+                ['--bg']:'rgba(30,30,46,0.82)',['--bg2']:'rgba(69,71,90,0.55)',
+                ['--bg3']:'rgba(88,91,112,0.7)',['--text']:'#cdd6f4',['--dim']:'#a6adc8',
+                ['--accent']:MOCHA.peach,['--mauve']:MOCHA.mauve,['--blue']:MOCHA.blue,['--peach']:MOCHA.peach,
+                ['--green']:MOCHA.green,['--red']:MOCHA.red,['--yellow']:MOCHA.yellow,['--pink']:MOCHA.pink,
+                ['--sky']:MOCHA.sky,['--teal']:MOCHA.teal,['--lavender']:MOCHA.lavender,['--sapphire']:MOCHA.sapphire,
+                ['--radius']:'12px',color:'#cdd6f4',
+                fontFamily:'"JetBrains Mono", monospace',
+              }}>
+                <BarShell><NowPlaying title="Midnight City" artist="M83" compact accent={MOCHA.peach}/></BarShell>
+              </div>
+              <div style={{display:'flex',justifyContent:'center',position:'relative',
+                ['--bg']:'rgba(30,30,46,0.82)',['--bg2']:'rgba(69,71,90,0.55)',['--bg3']:'rgba(88,91,112,0.7)',
+                ['--text']:'#cdd6f4',['--dim']:'#a6adc8',['--accent']:MOCHA.peach,
+                ['--mauve']:MOCHA.mauve,['--blue']:MOCHA.blue,['--peach']:MOCHA.peach,
+                ['--green']:MOCHA.green,['--red']:MOCHA.red,['--yellow']:MOCHA.yellow,['--pink']:MOCHA.pink,
+                ['--sky']:MOCHA.sky,['--teal']:MOCHA.teal,['--lavender']:MOCHA.lavender,
+                fontFamily:'"JetBrains Mono", monospace',
+              }}>
+                <NowPlayingPanel/>
+              </div>
+            </div>
+          </DCArtboard>
+
+          <DCArtboard id="control-center" label="Control center — VPN, privacy, performance, sliders"
+            width={460} height={760}>
+            <PopoverArtboard accent={MOCHA.mauve} barWidget={
+              <BarShell>
+                <Volume v={65}/><Brightness v={80}/><NetIcon/><BTIcon count={3}/>
+              </BarShell>
+            }>
+              <ControlCenter/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="battery-devices" label="Battery & devices — laptop + AirPods + peripherals"
+            width={460} height={620}>
+            <PopoverArtboard accent={MOCHA.green} barWidget={
+              <BarShell>
+                <Performance mode="auto" compact/>
+                <Sep/>
+                <Battery pct={78} charging/>
+                <BTIcon count={3}/>
+              </BarShell>
+            }>
+              <BatteryDevicesPopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="camera-popover" label="Camera — live preview + REC controls"
+            width={460} height={620}>
+            <PopoverArtboard accent={MOCHA.green} barWidget={
+              <BarShell>
+                <CameraIndicator time="00:42"/>
+                <Sep/>
+                <RecIndicator/>
+              </BarShell>
+            }>
+              <CameraPopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="calendar-popover" label="Calendar — month + upcoming"
+            width={400} height={620}>
+            <PopoverArtboard accent={MOCHA.green} barWidget={
+              <BarShell><CalendarChip when="3:30p" what="Design review · @sam"/></BarShell>
+            }>
+              <CalendarPanel/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="hyprmap-popover" label="Hyprland minimap — live workspace preview"
+            width={440} height={520}>
+            <PopoverArtboard accent={MOCHA.teal} barWidget={
+              <BarShell><HyprMap workspaces={5} active={2}/></BarShell>
+            }>
+              <HyprMapPanel/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="screenshot-popover" label="Screenshot — region preview + recents"
+            width={440} height={700}>
+            <PopoverArtboard accent={MOCHA.teal} barWidget={
+              <BarShell><ScreenshotWidget/></BarShell>
+            }>
+              <ScreenshotPopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="color-picker-popover" label="Color picker — loupe + Catppuccin palette"
+            width={420} height={620}>
+            <PopoverArtboard accent={MOCHA.mauve} barWidget={
+              <BarShell><ColorPickerWidget recent="#cba6f7"/></BarShell>
+            }>
+              <ColorPickerPopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="audio-popover" label="Audio — output, input, per-app mixer"
+            width={460} height={760}>
+            <PopoverArtboard accent={MOCHA.blue} barWidget={
+              <BarShell><AudioSourceWidget device="AirPods Pro" icon="airpods"/></BarShell>
+            }>
+              <AudioSourcePopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="keyboard-popover" label="Keyboard layout — preview + layouts"
+            width={440} height={680}>
+            <PopoverArtboard accent={MOCHA.lavender} barWidget={
+              <BarShell><KeyLayout layout="us"/></BarShell>
+            }>
+              <KeyboardLayoutPopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="idle-popover" label="Caffeine — idle inhibitor"
+            width={420} height={680}>
+            <PopoverArtboard accent={MOCHA.peach} barWidget={
+              <BarShell><IdleInhibitor on remaining="42m"/></BarShell>
+            }>
+              <IdleInhibitorPopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="notifications" label="Notifications — toast stack with snooze"
+            width={460} height={620}>
+            <PopoverArtboard accent={MOCHA.mauve} barWidget={
+              <BarShell><Notifications count={3}/></BarShell>
+            }>
+              <NotificationsPopover/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+          <DCArtboard id="confirm-banner" label="Confirm banner — AI asking for permission"
+            width={540} height={500}>
+            <PopoverArtboard accent={MOCHA.mauve} barWidget={
+              <BarShell><AITalk listening/></BarShell>
+            }>
+              <ConfirmBanner/>
+            </PopoverArtboard>
+          </DCArtboard>
+
+        </DCSection>
+
+        {/* ─── LOGIN SCREENS ─────────────────────────────────────────── */}
+        <DCSection id="login" title="Login screens — SDDM"
+          subtitle="Three takes on the lock/login screen — same widget vocabulary as the bar, scaled up.">
+
+          <DCArtboard id="login-aurora" label="Aurora login — centered glass card"
+            width={1600} height={1000}>
+            <LoginAurora/>
+          </DCArtboard>
+
+          <DCArtboard id="login-atlas" label="Atlas login — split floating modules"
+            width={1600} height={1000}>
+            <LoginAtlas/>
+          </DCArtboard>
+
+          <DCArtboard id="login-terminal" label="Terminal login — brutalist TTY"
+            width={1600} height={1000}>
+            <LoginTerminal/>
+          </DCArtboard>
+
+        </DCSection>
+
+      </DesignCanvas>
+
+      <TweaksPanel>
+        <TweakSection label="Mocha (dark)"/>
+        <TweakColor label="Accent" value={t.mocha_accent}
+          options={[MOCHA.mauve, MOCHA.blue, MOCHA.peach, MOCHA.teal, MOCHA.pink, MOCHA.lavender, MOCHA.green]}
+          onChange={(v) => setTweak('mocha_accent', v)}/>
+
+        <TweakSection label="Latte (light)"/>
+        <TweakColor label="Accent" value={t.latte_accent}
+          options={[LATTE.mauve, LATTE.blue, LATTE.peach, LATTE.teal, LATTE.pink, LATTE.green, LATTE.red]}
+          onChange={(v) => setTweak('latte_accent', v)}/>
+
+        <TweakSection label="Gruvbox Dark"/>
+        <TweakColor label="Accent" value={t.gruvbox_accent}
+          options={[GRUVBOX.peach, GRUVBOX.yellow, GRUVBOX.green, GRUVBOX.teal, GRUVBOX.blue, GRUVBOX.mauve, GRUVBOX.red]}
+          onChange={(v) => setTweak('gruvbox_accent', v)}/>
+
+        <TweakSection label="Tokyo Night"/>
+        <TweakColor label="Accent" value={t.tokyonight_accent}
+          options={[TOKYONIGHT.blue, TOKYONIGHT.sky, TOKYONIGHT.mauve, TOKYONIGHT.teal, TOKYONIGHT.peach, TOKYONIGHT.green, TOKYONIGHT.red]}
+          onChange={(v) => setTweak('tokyonight_accent', v)}/>
+
+        <TweakSection label="Nord"/>
+        <TweakColor label="Accent" value={t.nord_accent}
+          options={[NORD.sky, NORD.blue, NORD.teal, NORD.green, NORD.mauve, NORD.peach, NORD.yellow]}
+          onChange={(v) => setTweak('nord_accent', v)}/>
+
+        <TweakSection label="Dracula"/>
+        <TweakColor label="Accent" value={t.dracula_accent}
+          options={[DRACULA.pink, DRACULA.mauve, DRACULA.teal, DRACULA.green, DRACULA.peach, DRACULA.yellow, DRACULA.red]}
+          onChange={(v) => setTweak('dracula_accent', v)}/>
+
+        <TweakSection label="Rosé Pine"/>
+        <TweakColor label="Accent" value={t.rosepine_accent}
+          options={[ROSEPINE.mauve, ROSEPINE.pink, ROSEPINE.peach, ROSEPINE.teal, ROSEPINE.blue, ROSEPINE.red]}
+          onChange={(v) => setTweak('rosepine_accent', v)}/>
+
+        <TweakSection label="Everforest"/>
+        <TweakColor label="Accent" value={t.everforest_accent}
+          options={[EVERFOREST.green, EVERFOREST.teal, EVERFOREST.blue, EVERFOREST.yellow, EVERFOREST.peach, EVERFOREST.mauve, EVERFOREST.red]}
+          onChange={(v) => setTweak('everforest_accent', v)}/>
+
+        <TweakSection label="Kanagawa"/>
+        <TweakColor label="Accent" value={t.kanagawa_accent}
+          options={[KANAGAWA.blue, KANAGAWA.mauve, KANAGAWA.teal, KANAGAWA.yellow, KANAGAWA.peach, KANAGAWA.pink, KANAGAWA.red]}
+          onChange={(v) => setTweak('kanagawa_accent', v)}/>
+
+        <TweakSection label="Gruvbox Light"/>
+        <TweakColor label="Accent" value={t.gruvbox_light_accent}
+          options={[GRUVBOX_LIGHT.blue, GRUVBOX_LIGHT.green, GRUVBOX_LIGHT.peach, GRUVBOX_LIGHT.yellow, GRUVBOX_LIGHT.mauve, GRUVBOX_LIGHT.red]}
+          onChange={(v) => setTweak('gruvbox_light_accent', v)}/>
+
+        <TweakSection label="Solarized Light"/>
+        <TweakColor label="Accent" value={t.solarized_light_accent}
+          options={[SOLARIZED_LIGHT.blue, SOLARIZED_LIGHT.teal, SOLARIZED_LIGHT.green, SOLARIZED_LIGHT.yellow, SOLARIZED_LIGHT.peach, SOLARIZED_LIGHT.mauve, SOLARIZED_LIGHT.red]}
+          onChange={(v) => setTweak('solarized_light_accent', v)}/>
+
+        <TweakSection label="Pixel (8-bit)"/>
+        <TweakColor label="Accent" value={t.pixel_accent}
+          options={[PIXEL.yellow, PIXEL.green, PIXEL.teal, PIXEL.red, PIXEL.peach, PIXEL.pink, PIXEL.mauve]}
+          onChange={(v) => setTweak('pixel_accent', v)}/>
+
+        <TweakSection label="Shape"/>
+        <TweakSlider label="Corner radius" value={t.radius} min={0} max={28} unit="px"
+          onChange={(v) => setTweak('radius', v)}/>
+        <TweakSlider label="Bar padding" value={t.pad} min={2} max={20} unit="px"
+          onChange={(v) => setTweak('pad', v)}/>
+
+        <TweakSection label="Plugins visible"/>
+        <TweakToggle label="AI launcher / talk" value={t.showAI}
+          onChange={(v) => setTweak('showAI', v)}/>
+        <TweakToggle label="Pomodoro" value={t.showPomodoro}
+          onChange={(v) => setTweak('showPomodoro', v)}/>
+        <TweakToggle label="GitHub PRs" value={t.showGitHub}
+          onChange={(v) => setTweak('showGitHub', v)}/>
+        <TweakToggle label="Now playing" value={t.showNowPlaying}
+          onChange={(v) => setTweak('showNowPlaying', v)}/>
+        <TweakToggle label="CPU / RAM / temp stats" value={t.showStats}
+          onChange={(v) => setTweak('showStats', v)}/>
+      </TweaksPanel>
+    </>
+  );
+}
+
+// Reusable mini-bar + popover frame for popover artboards
+function PopoverArtboard({ accent, barWidget, children }) {
+  const vars = {
+    ['--bg']:'rgba(30,30,46,0.82)',['--bg2']:'rgba(69,71,90,0.55)',['--bg3']:'rgba(88,91,112,0.7)',
+    ['--text']:'#cdd6f4',['--dim']:'#a6adc8',['--accent']:accent,
+    ['--mauve']:MOCHA.mauve,['--blue']:MOCHA.blue,['--peach']:MOCHA.peach,
+    ['--green']:MOCHA.green,['--red']:MOCHA.red,['--yellow']:MOCHA.yellow,['--pink']:MOCHA.pink,
+    ['--sky']:MOCHA.sky,['--teal']:MOCHA.teal,['--lavender']:MOCHA.lavender,['--sapphire']:MOCHA.sapphire,
+    ['--maroon']:MOCHA.maroon,
+    ['--radius']:'12px',color:'#cdd6f4',
+    fontFamily:'"JetBrains Mono", monospace',
+  };
+  return (
+    <div style={{
+      position:'relative',width:'100%',height:'100%',
+      background:'radial-gradient(ellipse at 50% 0%, #45475a 0%, #1e1e2e 55%, #11111b 100%)',
+      padding:'24px 30px', ...vars,
+    }}>
+      <div style={{display:'flex',justifyContent:'center',marginBottom:18}}>{barWidget}</div>
+      <div style={{display:'flex',justifyContent:'center',position:'relative'}}>{children}</div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
