@@ -97,7 +97,7 @@ install_packages() {
 write_sddm_default_session() {
     local drop_in="/etc/sddm.conf.d/10-default-session.conf"
     local expected
-    expected="$(printf '[Autologin]\nSession=hyprland-uwsm.desktop\n')"
+    expected="$(printf '[General]\nDefaultSession=hyprland-uwsm.desktop\n\n[Autologin]\nSession=hyprland-uwsm.desktop\n')"
 
     if [[ -f "$drop_in" && "$(sudo cat "$drop_in")" == "$expected" ]]; then
         c_ok "SDDM drop-in already up to date — skipped."
@@ -105,7 +105,7 @@ write_sddm_default_session() {
     fi
 
     printf '%s' "$expected" | sudo install -D -m 0644 /dev/stdin "$drop_in"
-    c_ok "SDDM default session set to hyprland-uwsm."
+    c_ok "SDDM default session set to hyprland-uwsm.desktop."
     return 0
 }
 

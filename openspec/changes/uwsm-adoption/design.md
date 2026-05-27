@@ -122,25 +122,40 @@ Three candidate locations:
 3. Edit `/etc/sddm.conf` directly — packagers explicitly recommend against
    this; drop-ins are the supported pattern.
 
-The actual SDDM key is **`Session=` under `[Autologin]`**. When `User=`
-is also set, this autologins. When `User=` is left empty, modern SDDM
-(0.20+) uses `Session=` as the **preselected entry at the greeter**.
-There is no `defaultSession=` key — that name in the proposal was
-shorthand; the spec phase locks the correct key name. We verified against
-`/usr/lib/sddm/sddm.conf.d/default.conf` on the live machine: the
-`[Autologin]` block ships with `Session=` empty by design, ready for
-drop-in override.
+**Runtime verification revealed a CRITICAL bug in the original ADR-3
+decision.** The `[Autologin] Session=` key is only applied by SDDM when
+autologin is enabled (i.e. when `User=` is also set in that section).
+For users doing a standard manual password login — the common case — SDDM
+reads `[General] DefaultSession=` to preselect a session in the greeter.
+The original single-section drop-in with only `[Autologin]` caused SDDM
+to ignore the drop-in entirely for manual login, breaking the "Fresh
+install — SDDM defaults to uwsm session" scenario.
 
-**Decision.** Write `/etc/sddm.conf.d/10-default-session.conf` with:
+**Corrected decision.** Write `/etc/sddm.conf.d/10-default-session.conf`
+with BOTH sections (defense in depth):
 
 ```ini
+[General]
+DefaultSession=hyprland-uwsm.desktop
+
 [Autologin]
 Session=hyprland-uwsm.desktop
 ```
 
-`User=` is intentionally omitted (no autologin). The leading `10-` keeps
-the file early in the drop-in load order so any user-added
-`20-something.conf` can later override us without touching this file.
+`[General] DefaultSession=` covers manual password login — SDDM uses this
+key to preselect the named session in the greeter before the user types their
+password. `[Autologin] Session=` covers users who later enable autologin
+by also adding `User=` to the drop-in. Writing both sections ensures correct
+behavior whether or not autologin is configured. `User=` is intentionally
+omitted so no automatic login occurs. The leading `10-` keeps the file
+early in the drop-in load order so any user-added `20-something.conf` can
+later override without touching this file.
+
+**Original decision was incorrect.** The original ADR-3 stated that
+"modern SDDM (0.20+) uses `Session=` [under `[Autologin]`] as the
+preselected entry at the greeter" — this was wrong. SDDM's `[Autologin]`
+section is processed only when the autologin username is set. The greeter
+session preselection for manual login uses `[General] DefaultSession=`.
 
 **Alternatives rejected.**
 - **`~/.config/sddm/`.** SDDM greeter does not read per-user configs.
@@ -151,22 +166,33 @@ the file early in the drop-in load order so any user-added
 - **Seed `/var/lib/sddm/state.conf` with `[Last]\nSession=hyprland-uwsm.desktop`.**
   Works on fresh installs (no prior state) but conflicts with
   `RememberLastSession=true` once the user logs in once. We would either
-  have to disable that (worse UX — user can never switch DM remembers
+  have to disable that (worse UX — user can never switch; DM remembers
   their pick) or accept that our seed gets clobbered after one login.
   Rejected as a primary mechanism.
+- **`[Autologin] Session=` only (the original ADR-3 choice).** Verified
+  incorrect at runtime. SDDM ignores this section unless `User=` is also
+  set. The greeter shows the alphabetically-first session (bare `hyprland`)
+  instead of the uwsm entry on a fresh install. Rejected and superseded by
+  the two-section form.
 
 **Consequences.**
-- On a fresh install, the SDDM greeter highlights "Hyprland (uwsm-managed)"
-  by default; the user presses Enter and lands in the right session.
+- On a fresh install (no prior session state), `[General] DefaultSession=`
+  causes the SDDM greeter to highlight "Hyprland (uwsm-managed)" by
+  default; the user types their password and presses Enter.
 - On in-place upgrades where the user has already logged into bare
   Hyprland once, `RememberLastSession=true` may still preselect the bare
-  entry. We document this — the user picks "Hyprland (uwsm-managed)" once
-  manually; subsequent logins remember it.
+  entry (last-used wins over DefaultSession). We document this — the user
+  picks "Hyprland (uwsm-managed)" once manually; subsequent logins
+  remember it.
+- If the user later enables autologin by adding `User=` to a higher-
+  priority drop-in, the `[Autologin] Session=hyprland-uwsm.desktop` line
+  in our drop-in provides the correct session for autologin without any
+  further configuration.
 - The drop-in is **root-owned**; `install.sh` uses `sudo install` (atomic
   rename) to write it. Idempotency contract: the file is written only
-  when (a) absent OR (b) content differs from the canonical body. No
-  unconditional write — that would tickle pacman hooks unnecessarily and
-  noisify the install.sh log.
+  when (a) absent OR (b) content differs from the canonical two-section
+  body. The old single-section form is treated as "stale content" and
+  replaced on the next `install.sh` run.
 - The plain `hyprland.desktop` session is NOT removed (pacman owns it).
   Rollback at the picker level is one click.
 
@@ -442,8 +468,9 @@ modified `hyprland.lua` and fails if absent.
 9. The first-time uwsm hint is printed.
 10. User reboots (or starts `sddm.service`).
 11. SDDM starts, reads its drop-in chain, sees
-    `[Autologin]\nSession=hyprland-uwsm.desktop` with no `User=`, preselects
-    "Hyprland (uwsm-managed)" at the greeter.
+    `[General]\nDefaultSession=hyprland-uwsm.desktop` (and the matching
+    `[Autologin]` section), preselects "Hyprland (uwsm-managed)" at the
+    greeter via `DefaultSession=`.
 12. User enters password and presses Enter → SDDM execs
     `uwsm start -- hyprland.desktop` from `hyprland-uwsm.desktop`.
 13. uwsm initializes `wayland-wm-env@hyprland.service`, then
@@ -535,7 +562,7 @@ three are new checks specific to design decisions made above.
 | 9 | `loginctl session-status` | Shows session bound to `wayland-session@hyprland.target` |
 | 10 | swaync line preserved verbatim (ADR-4 boundary check) | `rg -n '^   hl.exec_cmd\("swaync"\)$' ~/.config/hypr/hyprland.lua` returns exactly one match on a line at or near 47 |
 | 11 | `install.sh` idempotency | Second run prints "SDDM default-session drop-in already present and current", "sddm.service already enabled", "hyprpolkitagent.service already enabled"; no first-time hint |
-| 12 | SDDM drop-in content | `cat /etc/sddm.conf.d/10-default-session.conf` outputs exactly `[Autologin]\nSession=hyprland-uwsm.desktop\n`; file owned by root, mode 0644 |
+| 12 | SDDM drop-in content | `cat /etc/sddm.conf.d/10-default-session.conf` outputs both `[General]\nDefaultSession=hyprland-uwsm.desktop` and `[Autologin]\nSession=hyprland-uwsm.desktop`; file owned by root, mode 0644 |
 
 ## Open Questions Resolved by This Design
 

@@ -46,9 +46,9 @@ on fresh installs so no manual picker interaction is required.
 #### Scenario: Fresh install — SDDM defaults to uwsm session
 
 - GIVEN `uwsm` is installed and `/usr/share/wayland-sessions/hyprland-uwsm.desktop` is present
-- AND `/etc/sddm.conf.d/10-default-session.conf` exists with `[Autologin]\nSession=hyprland-uwsm`
-- WHEN the user arrives at the SDDM login screen for the first time
-- THEN SDDM pre-selects "Hyprland (uwsm-managed)" in the session picker
+- AND `/etc/sddm.conf.d/10-default-session.conf` exists with `[General]\nDefaultSession=hyprland-uwsm.desktop` and `[Autologin]\nSession=hyprland-uwsm.desktop`
+- WHEN the user arrives at the SDDM login screen for the first time (manual password login, autologin NOT enabled)
+- THEN SDDM pre-selects "Hyprland (uwsm-managed)" in the session picker via the `[General] DefaultSession=` key
 
 #### Scenario: Successful uwsm session start
 
@@ -173,12 +173,23 @@ and waits on it via `UWSM_WAIT_VARNAMES`.
 ### Requirement: install.sh SDDM drop-in writer
 
 `install.sh` MUST write `/etc/sddm.conf.d/10-default-session.conf` with the
-following exact content to set SDDM's default session:
+following exact content to set SDDM's default session for both manual login
+(greeter preselection) and optional autologin:
 
 ```
+[General]
+DefaultSession=hyprland-uwsm.desktop
+
 [Autologin]
-Session=hyprland-uwsm
+Session=hyprland-uwsm.desktop
 ```
+
+**Defense in depth:** `[General] DefaultSession=` covers manual password login
+(the common case) — SDDM uses this key to preselect a session in the greeter
+before the user logs in. `[Autologin] Session=` covers users who later enable
+autologin. Writing both sections ensures correct behavior regardless of whether
+autologin is configured. The `[Autologin]` section alone is NOT sufficient for
+manual login preselection; SDDM only reads it when `User=` is also set.
 
 The write MUST follow write-if-differs semantics (idempotent):
 
@@ -187,7 +198,7 @@ if /etc/sddm.conf.d/10-default-session.conf does not exist
    OR its content differs from the expected content:
     mkdir -p /etc/sddm.conf.d/
     write expected content to file (requires sudo)
-    print: "SDDM default session set to hyprland-uwsm."
+    print: "SDDM default session set to hyprland-uwsm.desktop."
 else:
     print: "SDDM drop-in already up to date — skipped."
 ```
@@ -199,23 +210,23 @@ NOT in the `--link-only` code path.
 
 - GIVEN `/etc/sddm.conf.d/10-default-session.conf` does not exist
 - WHEN `install.sh` runs without `--link-only`
-- THEN the file is created with section `[Autologin]` and key `Session=hyprland-uwsm`
+- THEN the file is created with both `[General] DefaultSession=hyprland-uwsm.desktop` and `[Autologin] Session=hyprland-uwsm.desktop`
 - AND the file is owned by root with mode 644
-- AND the console prints "SDDM default session set to hyprland-uwsm."
+- AND the console prints "SDDM default session set to hyprland-uwsm.desktop."
 
 #### Scenario: Drop-in skipped when already correct
 
-- GIVEN `/etc/sddm.conf.d/10-default-session.conf` already contains the expected content
+- GIVEN `/etc/sddm.conf.d/10-default-session.conf` already contains the expected two-section content
 - WHEN `install.sh` runs
 - THEN the file is NOT overwritten
 - AND the console prints "SDDM drop-in already up to date — skipped."
 
 #### Scenario: Drop-in updated when content differs
 
-- GIVEN `/etc/sddm.conf.d/10-default-session.conf` exists but contains stale content
+- GIVEN `/etc/sddm.conf.d/10-default-session.conf` exists but contains stale content (e.g. the old single-section `[Autologin]`-only form)
 - WHEN `install.sh` runs
-- THEN the file is overwritten with the expected content
-- AND the console prints "SDDM default session set to hyprland-uwsm."
+- THEN the file is overwritten with the new two-section expected content
+- AND the console prints "SDDM default session set to hyprland-uwsm.desktop."
 
 #### Scenario: Drop-in skipped in link-only mode
 
