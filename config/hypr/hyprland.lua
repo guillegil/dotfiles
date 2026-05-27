@@ -55,7 +55,7 @@ end)
 -- blur=true: compositor blur behind the bar glass surface
 -- ignore_zero=true: fully-transparent pixels are ignored by blur, preventing halo artifacts
 hl.layer_rule({ name = "ags-blur",        match = { namespace = "^ags$" }, blur = true })
-hl.layer_rule({ name = "ags-ignorezero",  match = { namespace = "^ags$" }, ignorezero = true })
+hl.layer_rule({ name = "ags-ignorezero",  match = { namespace = "^ags$" }, ignore_alpha = true })
 
 
 -------------------------------
