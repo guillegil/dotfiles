@@ -1,13 +1,13 @@
 change: uwsm-adoption
 status: planning_complete
-current_phase: apply
+current_phase: verify
 phases:
   explore:   { status: complete }
   proposal:  { status: complete }
   spec:      { status: complete }
   design:    { status: complete }
   tasks:     { status: complete }
-  apply:     { status: pending, blocked_by: bare-metal-environment }
+  apply:     { status: complete }
   verify:    { status: pending }
   archive:   { status: pending }
 artifact_store: hybrid
