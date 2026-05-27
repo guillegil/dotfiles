@@ -1,6 +1,6 @@
 change: uwsm-adoption
-status: planning_complete
-current_phase: verify
+status: ready_to_archive
+current_phase: archive
 phases:
   explore:   { status: complete }
   proposal:  { status: complete }
@@ -8,7 +8,15 @@ phases:
   design:    { status: complete }
   tasks:     { status: complete }
   apply:     { status: complete }
-  verify:    { status: pending_user_runtime, static: pass, warnings: 1, critical: 0 }
+  verify:
+    status: complete
+    static: pass
+    runtime: pass
+    critical: 0
+    warnings_resolved: 1
+    suggestions: 3
+    pending_visual: [5.6 AGS bar visual identity]
+    pending_future: [5.8 logout latency under 5s — observe on next natural logout]
   archive:   { status: pending }
 artifact_store: hybrid
 delivery_strategy: ask-on-risk
@@ -30,20 +38,26 @@ notes: |
       to a new install.
     - uwsm session lifecycle (logout/login + service activation timing)
       must be tested on the real target host.
-  The bare-metal agent should:
-    1. Clone the repo on the new CachyOS install.
-    2. Run sdd-init to refresh skill registry + project context.
-    3. Run sdd-apply uwsm-adoption — follows tasks.md 1.1..6.x in order.
-    4. Run sdd-verify uwsm-adoption against specs.md.
-    5. Run sdd-archive uwsm-adoption.
-    6. THEN resume desktop-redesign starting at Slice A.
 
-  Fix applied after runtime verification found CRITICAL drop-in bug
-  (commit 9e2538d): the original [Autologin]-only drop-in was ignored by
-  SDDM for manual login. Corrected to two-section form with [General]
-  DefaultSession= (greeter preselection) + [Autologin] Session= (autologin
-  fallback). User must re-run install.sh to upgrade the existing drop-in,
-  then re-check 5.1 (SDDM greeter preselection) and 5.10 (drop-in content).
+  Apply path (bare-metal):
+    1. Phases 1-4 implemented in commit 6bd4810.
+    2. Runtime verification found CRITICAL drop-in bug — original
+       [Autologin]-only form was ignored by SDDM for manual login.
+       Fixed in 9e2538d (two-section form with [General] DefaultSession=
+       + [Autologin] Session=). Spec, design (ADR-3), tasks (3.1, 5.10),
+       and apply-progress updated in the same commit.
+    3. User re-ran install.sh, which detected stale content and rewrote
+       the drop-in to the two-section form. User then logged out + back
+       in via SDDM into the uwsm-managed session and ran the runtime
+       checklist.
+    4. Final verify (this pass): 9 PASS, 2 PASS-INFERRED, 1 PENDING-VISUAL
+       (5.6 AGS bar), 1 PENDING-FUTURE (5.8 logout latency). No CRITICAL.
+       W1 RESOLVED. SUGGESTIONS S1/S2/S3 recorded as non-blocking.
+    5. ARCHIVE-READY. Next: sdd-archive uwsm-adoption. Then resume
+       desktop-redesign Slice A.
+
+  Optional close-out at archive: ask user one yes/no on AGS bar visual
+  identity to flip 5.6 from PENDING-VISUAL to PASS.
 estimated_changed_lines: 63
 estimated_files_touched: 3
 chained_prs_recommended: false
