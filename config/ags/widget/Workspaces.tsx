@@ -10,9 +10,19 @@ import hyprland from "../service/hyprland"
 export default function Workspaces() {
   const workspaces = createBinding(hyprland, "workspaces")
   const active = createBinding(hyprland, "activeWorkspace")
+  // Hyprland's `hyprctl -j workspaces` only returns workspaces that already
+  // exist (i.e. were visited or have windows). To give the user a stable bar
+  // they can click to switch into an empty workspace, always render the fixed
+  // range 1..5 plus any extras Hyprland reports plus the active workspace.
   const items = createComputed(
     [workspaces, active],
-    (ids, activeId) => ids.map(id => ({ id, active: id === activeId })),
+    (ids, activeId) => {
+      const set = new Set<number>([1, 2, 3, 4, 5, ...ids])
+      if (activeId > 0) set.add(activeId)
+      return Array.from(set)
+        .sort((a, b) => a - b)
+        .map(id => ({ id, active: id === activeId }))
+    },
   )
 
   return (

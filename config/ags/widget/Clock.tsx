@@ -65,21 +65,24 @@ export function CalendarPopover() {
       margins={[38, 0, 0, 0]}
       accessibleName="Calendar"
     >
-      <box cssClasses={["calendar-popover"]} orientation={Gtk.Orientation.VERTICAL}>
-        <calendar
-          cssClasses={["calendar-widget", "tabular"]}
-          showDayNames={true}
-          showHeading={true}
-          $={(self) => {
-            // REQ-CL-03: mark today — GTK Calendar highlights today by default
-            // but we ensure it's selected and accessible
-            self.update_property(
-              [Gtk.AccessibleProperty.LABEL],
-              ["Calendar, current month"],
-            )
-          }}
-        />
-      </box>
+      <box
+        cssClasses={["calendar-popover"]}
+        orientation={Gtk.Orientation.VERTICAL}
+        $={(self) => {
+          // REQ-CL-03: Gtk.Calendar is not a JSX intrinsic in gnim — construct
+          // it imperatively and append. GTK4 highlights today by default.
+          const cal = new Gtk.Calendar()
+          cal.add_css_class("calendar-widget")
+          cal.add_css_class("tabular")
+          cal.show_day_names = true
+          cal.show_heading = true
+          cal.update_property(
+            [Gtk.AccessibleProperty.LABEL],
+            ["Calendar, current month"],
+          )
+          self.append(cal)
+        }}
+      />
     </Popover>
   )
 }

@@ -111,9 +111,9 @@
 }
 
 // ── ActiveWindow chip (REQ-AW-01..03) ────────────────────────────────────────
-.active-window {
-  max-width: 220px;
-}
+// GTK4 does not support max-width; the visual clamp is enforced on the label
+// via Pango ellipsize + maxWidthChars in ActiveWindow.tsx.
+.active-window {}
 
 // ── LauncherPill button (REQ-LP-01..02) ──────────────────────────────────────
 .launcher-pill {
