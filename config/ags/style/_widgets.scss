@@ -87,23 +87,113 @@
   color: var(--dim);
 }
 
-// Launcher (restyle — token-driven)
-.launcher-box {
-  padding:          12px;
-  background-color: var(--bg2);
-  border-radius:    var(--radius-hero);
-  min-width:        400px;
+// ── Launcher overlay (Claude design — Phase 1) ───────────────────────────────
+// Card width matches reference (560px). GTK4 cannot do backdrop-filter, so
+// the elevated look comes from var(--mantle) + tinted border + drop shadow
+// (Hyprland blur is not applied to the launcher overlay; it is opaque enough
+// to read against any backdrop).
+
+.launcher-card {
+  min-width:     560px;
+  background:    var(--mantle);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-hero);
+  box-shadow:    0 28px 80px -20px rgba(0, 0, 0, 0.75);
+  color:         var(--text);
+  font-family:   var(--font-mono);
+}
+
+// Search row
+.launcher-search {
+  padding:       14px 18px;
+  border-bottom: 1px solid var(--bar-border);
+}
+
+.search-icon {
+  -gtk-icon-size: 18px;
+  color:          var(--accent);
+}
+
+// GTK4 entry has a default background and border. Reset both for a flat
+// monospace input that inherits the card surface.
+entry.launcher-entry,
+entry.launcher-entry > text {
+  background:       transparent;
+  background-image: none;
+  border:           0;
+  box-shadow:       none;
+  outline:          0;
+  caret-color:      var(--accent);
+  color:            var(--text);
+  font-family:      var(--font-mono);
+  font-size:        16px;
+  font-weight:      500;
+  padding:          0;
+}
+
+.kbd {
+  background:     var(--bg2);
+  border:         1px solid var(--bar-border);
+  border-radius:  4px;
+  padding:        1px 5px;
+  font-size:      9px;
+  font-weight:    600;
+  letter-spacing: 0.04em;
+  color:          var(--text);
+  font-family:    var(--font-mono);
+}
+
+// Result rows container
+.launcher-results {
+  padding: 8px 14px;
 }
 
 .app-item {
-  padding:       6px 10px;
+  padding:       8px 10px;
   border-radius: var(--radius-inner);
+  background:    transparent;
+  border:        1px solid transparent;
   color:         var(--text);
-
-  &:hover { background: var(--bg3); }
+  transition:    background var(--t-base), border var(--t-base);
 }
 
-.app-item image { margin-right: 8px; }
+.app-item:hover {
+  background: var(--bg2);
+}
+
+// Selected row (keyboard focus + first match)
+.app-item:focus,
+.app-item.selected {
+  background:   var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+.app-tile {
+  -gtk-icon-size: 38px;
+}
+
+.app-name {
+  font-size:   13px;
+  font-weight: 600;
+  color:       var(--text);
+}
+
+.app-sub {
+  font-size: 11px;
+  color:     var(--dim);
+}
+
+// Footer with kbd hints
+.launcher-footer {
+  padding:    10px 18px;
+  border-top: 1px solid var(--bar-border);
+  background: var(--crust-50);
+}
+
+.kbd-hint {
+  color:     var(--dim);
+  font-size: 10px;
+}
 
 // ── Bar inner layout ─────────────────────────────────────────────────────────
 .bar-inner {
