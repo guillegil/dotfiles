@@ -182,18 +182,27 @@ entry.launcher-entry > text {
   background:    transparent;
   border:        1px solid transparent;
   color:         var(--text);
-  transition:    background var(--t-base), border var(--t-base);
+  // GTK4 4.22 supports transform + transitions (gtk_css_reference §3, §8).
+  transition:    background var(--t-base),
+                 border var(--t-base),
+                 transform var(--t-fast);
 }
 
 .app-item:hover {
   background: var(--bg2);
+  // Subtle lift on hover — confirmed-supported micro-interaction.
+  transform:  translateY(-1px);
 }
 
 // Selected row (keyboard focus + first match)
+// TEST: runtime color-mix() per gtk_css_reference §6.1 (Color L5). If this
+// renders tinted with no CSS error in /tmp/ags-debug.log, runtime color-mix
+// works on GTK 4.22 and we can retire the build-time --accent-bg/-border
+// SCSS helpers in a follow-up. If it errors, revert to the token vars.
 .app-item:focus,
 .app-item.selected {
-  background:   var(--accent-bg);
-  border-color: var(--accent-border);
+  background:   color-mix(in oklab, var(--accent) 18%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
 }
 
 .app-tile {
