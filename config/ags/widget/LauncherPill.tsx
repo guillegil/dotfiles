@@ -21,8 +21,8 @@ export default function LauncherPill() {
         self.set_size_request(44, 44)
       }}
     >
-      <label
-        label=""
+      <image
+        iconName="view-app-grid-symbolic"
         cssClasses={["launcher-pill-icon"]}
         valign={Gtk.Align.CENTER}
       />
