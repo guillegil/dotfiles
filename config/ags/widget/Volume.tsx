@@ -59,7 +59,13 @@ export default function Volume() {
     >
       <box spacing={4} valign={Gtk.Align.CENTER}>
         <image iconName={iconName} valign={Gtk.Align.CENTER} />
-        <label cssClasses={["tabular"]} label={pct} valign={Gtk.Align.CENTER} />
+        {/* Hide the percentage when muted — icon alone signals the state. */}
+        <label
+          cssClasses={["tabular"]}
+          label={pct}
+          visible={mute.as(m => !m)}
+          valign={Gtk.Align.CENTER}
+        />
       </box>
     </button>
   )
