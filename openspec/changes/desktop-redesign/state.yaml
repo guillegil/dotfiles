@@ -39,11 +39,24 @@ notes: |
   Task 1.22 (gsettings animations off motion-off check) deferred to verify phase.
 
   Slice B complete on bare-metal — Clock+Calendar, ActiveWindow, LauncherPill, Mic+Launcher
-  restyle. Runtime smoke deferred to user (task 2.8).
-  Also fixed pre-existing :root in _typography.scss → * (GTK4 CSS subset compliance).
+  restyle. Runtime smoke PASSED after 5 post-apply fixes:
+    1. 48d7ca5 — LauncherPill rendered empty (label=""); swap to <image iconName="view-app-grid-symbolic"/>
+    2. 1c8845d — <calendar> is not a gnim JSX intrinsic; build Gtk.Calendar imperatively via box.$={...}
+    3. 1c8845d — GTK4 CSS has no max-width property; clamp via Pango ellipsize + maxWidthChars on label
+    4. 1c8845d — Hyprland `hyprctl -j workspaces` returns only existing workspaces; render fixed 1..5 + extras + active
+    5. bee0d6d — LauncherPill set_size_request(44,44) + min-height/min-width 44px stretched bar; drop both, padding only
+    6. bee0d6d — Reorder Bar.tsx left section: LauncherPill → Workspaces → ActiveWindow (user requested far-left position)
+    7. 9bdb06e — Hyprland Lua config: `hyprctl dispatch workspace N` legacy form fails (eval'd as invalid Lua);
+                 replaced with focusWorkspace(target) wrapping `hl.dsp.focus({workspace=N})` Lua API
+
+  Slice B confirmed working:
+    - Workspaces 1..5 visible, active pill morphs, click switches workspace, scroll cycles
+    - LauncherPill icon visible at far-left, click opens launcher
+    - ActiveWindow updates on focus, truncates with ellipsis
+    - Clock shows HH:MM + date, click toggles Calendar popover (GTK4 calendar widget appears)
+    - Stderr clean (no CSS / JSX intrinsic errors)
 
   Next steps:
-    1. User runs smoke test (task 2.8): ags run → verify Clock ticks, Calendar opens, LauncherPill.
-    2. sdd-continue → Slice C: Volume, Battery, Network widgets.
-    3. Continue through Slice D as stacked commit to main.
-    4. After Slice D: sdd-verify desktop-redesign (incl. task 1.22) → sdd-archive.
+    1. sdd-continue → Slice C: Volume, Battery, Network widgets (+ lib/a11y.ts).
+    2. Continue through Slice D as stacked commit to main.
+    3. After Slice D: sdd-verify desktop-redesign (incl. task 1.22) → sdd-archive.
