@@ -1,5 +1,5 @@
 change: uwsm-adoption
-status: ready_to_archive
+status: archived
 current_phase: archive
 phases:
   explore:   { status: complete }
@@ -17,7 +17,7 @@ phases:
     suggestions: 3
     pending_visual: [5.6 AGS bar visual identity]
     pending_future: [5.8 logout latency under 5s — observe on next natural logout]
-  archive:   { status: pending }
+  archive:   { status: complete }
 artifact_store: hybrid
 delivery_strategy: ask-on-risk
 chain_strategy: stacked-to-main
