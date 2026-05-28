@@ -84,6 +84,43 @@ window.Launcher:focus,
   }
 }
 
+// ── Slice C: system widgets (Volume / Battery / Network) ─────────────────────
+// Symbolic icons follow the `color` property; labels inherit it too. Colors
+// are semantic per HANDOFF.md §2 (volume→text, battery→green/yellow/red by
+// threshold, network→sky). State tints use runtime color-mix() (verified on
+// GTK 4.22 — see docs/gtk_css_reference_overview.md §6.1).
+
+.volume {
+  color: var(--text);
+
+  &.muted { color: var(--red); }
+  &:hover { background: color-mix(in oklab, var(--text) 8%, transparent); }
+}
+
+.battery {
+  &.high    { color: var(--green); }
+  &.mid     { color: var(--yellow); }
+  &.low {
+    color: var(--red);
+    // Pulse only when critically low AND not charging.
+    &:not(.charging) {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  }
+  // Charging always reads healthy regardless of level.
+  &.charging { color: var(--green); }
+}
+
+.network {
+  &.online  { color: var(--sky); }
+  &.offline { color: var(--dim); }
+}
+
+.network-ssid {
+  font-size: 11px;
+  color:     var(--dim);
+}
+
 .dot {
   min-width:  8px;
   min-height: 8px;

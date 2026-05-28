@@ -12,6 +12,9 @@ import Mic from "./Mic"
 import ActiveWindow from "./ActiveWindow"
 import LauncherPill from "./LauncherPill"
 import Clock from "./Clock"
+import Volume from "./Volume"
+import Battery from "./Battery"
+import Network from "./Network"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return (
@@ -29,12 +32,12 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <Clock />
         </box>
 
-        {/* Right section — end child; Volume/Battery/Network/Bell in Slice C/D */}
+        {/* Right section — end child; Bell arrives in Slice D */}
         <box $type="end" cssClasses={["bar-section"]} spacing={4}>
           <Mic />
-          <label label="vol" cssClasses={["w"]} />
-          <label label="bat" cssClasses={["w"]} />
-          <label label="net" cssClasses={["w"]} />
+          <Volume />
+          <Network />
+          <Battery />
           <label label="bell" cssClasses={["w"]} />
         </box>
       </centerbox>
