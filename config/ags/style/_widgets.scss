@@ -106,10 +106,20 @@ window.Launcher:focus,
 }
 
 // ── Launcher overlay (Claude design — Phase 1) ───────────────────────────────
-// Card width matches reference (560px). GTK4 cannot do backdrop-filter, so
-// the elevated look comes from var(--mantle) + tinted border + drop shadow
-// (Hyprland blur is not applied to the launcher overlay; it is opaque enough
-// to read against any backdrop).
+// The launcher window is now full-screen (anchored on all four edges) so a
+// transparent scrim child can capture click-outside events and dismiss the
+// overlay (Spotlight-style). The Hyprland layer rule for namespace "ags"
+// applies blur to the whole window, giving the scrim its glass dim.
+// Card width matches reference (560px); Hyprland blur + the dim scrim sit
+// behind it.
+
+window.Launcher {
+  background: transparent;
+}
+
+.launcher-scrim {
+  background: var(--crust-50);
+}
 
 .launcher-card {
   min-width:     560px;

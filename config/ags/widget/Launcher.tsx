@@ -29,14 +29,19 @@ export default function Launcher() {
     setQuery("")
   }
 
+  const anchorAll =
+    Astal.WindowAnchor.TOP |
+    Astal.WindowAnchor.BOTTOM |
+    Astal.WindowAnchor.LEFT |
+    Astal.WindowAnchor.RIGHT
+
   return (
     <window
       name="launcher"
       cssClasses={["Launcher"]}
       visible={false}
       keymode={Astal.Keymode.ON_DEMAND}
-      anchor={Astal.WindowAnchor.TOP}
-      marginTop={88}
+      anchor={anchorAll}
       application={app}
       $={self => {
         const controller = new Gtk.EventControllerKey()
@@ -51,9 +56,35 @@ export default function Launcher() {
         )
       }}
     >
+      {/* Full-screen scrim — clicks outside the card close the launcher. */}
+      <box
+        cssClasses={["launcher-scrim"]}
+        hexpand={true}
+        vexpand={true}
+        halign={Gtk.Align.FILL}
+        valign={Gtk.Align.FILL}
+        $={(self) => {
+          const close = new Gtk.GestureClick()
+          close.connect("released", () => app.toggle_window("launcher"))
+          self.add_controller(close)
+        }}
+      >
       <box
         orientation={Gtk.Orientation.VERTICAL}
         cssClasses={["launcher-card"]}
+        halign={Gtk.Align.CENTER}
+        valign={Gtk.Align.START}
+        marginTop={88}
+        $={(self) => {
+          // Card consumes clicks so the scrim's release handler does not
+          // fire when the user clicks padding / non-interactive areas of
+          // the card itself.
+          const claim = new Gtk.GestureClick()
+          claim.connect("pressed", (g) => {
+            g.set_state(Gtk.EventSequenceState.CLAIMED)
+          })
+          self.add_controller(claim)
+        }}
       >
         {/* ── Search row ─────────────────────────────────────────── */}
         <box
@@ -129,6 +160,7 @@ export default function Launcher() {
           <KbdHint k="↵" hint="launch" />
           <KbdHint k="esc" hint="close" />
         </box>
+      </box>
       </box>
     </window>
   )
