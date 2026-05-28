@@ -29,8 +29,13 @@ class Hyprland extends GObject.Object {
     this.#init()
   }
 
-  dispatch(cmd: string, ...args: string[]): Promise<string> {
-    return execAsync(["hyprctl", "dispatch", cmd, ...args])
+  // Hyprland is loaded with a Lua config (hyprland.lua), so `hyprctl dispatch`
+  // is eval'd as Lua. The legacy `dispatch workspace N` form fails — confirmed
+  // experimentally that only `hl.dsp.focus({workspace=N})` works.
+  // Numeric targets render bare; string targets (e.g. "e+1") must be quoted.
+  focusWorkspace(target: number | string): Promise<string> {
+    const arg = typeof target === "number" ? String(target) : `"${target}"`
+    return execAsync(["hyprctl", "dispatch", `hl.dsp.focus({workspace=${arg}})`])
   }
 
   #init() {
