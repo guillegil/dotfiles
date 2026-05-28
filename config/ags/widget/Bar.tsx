@@ -19,8 +19,8 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       <centerbox hexpand cssClasses={["bar-inner"]}>
         {/* Left section — start child */}
         <box $type="start" cssClasses={["bar-section"]} spacing={4}>
-          <Workspaces />
           <LauncherPill />
+          <Workspaces />
           <ActiveWindow />
         </box>
 

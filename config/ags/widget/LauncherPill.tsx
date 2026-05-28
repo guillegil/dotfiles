@@ -17,8 +17,6 @@ export default function LauncherPill() {
           [Gtk.AccessibleProperty.LABEL],
           ["Open launcher"],
         )
-        // REQ-LP-02: ≥44px hit target
-        self.set_size_request(44, 44)
       }}
     >
       <image
