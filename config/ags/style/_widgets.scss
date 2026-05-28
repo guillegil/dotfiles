@@ -31,7 +31,15 @@
 // Inside the launcher card the global outline clips on the card border and
 // shows as a purple ghost in the corners + between the search row and the
 // result list. The card already paints a dedicated selected state on
-// .app-item, so suppress the generic outline within the card.
+// .app-item, so suppress the generic outline within the card AND on the
+// Launcher window itself (the window is an ancestor of the card, so
+// `.launcher-card *` does not reach it — its focus outline shows through
+// the card's rounded corners as four purple specks).
+window.Launcher:focus-visible,
+window.Launcher:focus,
+.launcher-card,
+.launcher-card:focus,
+.launcher-card:focus-visible,
 .launcher-card *:focus-visible,
 .launcher-card *:focus {
   outline: none;
