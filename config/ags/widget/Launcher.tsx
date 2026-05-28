@@ -10,13 +10,18 @@
 
 import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { createState } from "ags"
+import { createState, For } from "ags"
 import Apps from "gi://AstalApps"
 
 export default function Launcher() {
   const apps = new Apps.Apps()
   const [query, setQuery] = createState("")
-  const results = query(q => q ? apps.fuzzy_query(q).slice(0, 8) : [])
+  // Pair each Application with its index so we can mark the first row
+  // selected without doing per-render lookups inside <For>.
+  const results = query(q => {
+    const list = q ? apps.fuzzy_query(q).slice(0, 8) : []
+    return list.map((a, i) => ({ a, first: i === 0 }))
+  })
 
   function launch(a: Apps.Application) {
     a.launch()
@@ -67,7 +72,7 @@ export default function Launcher() {
             onNotifyText={self => setQuery(self.text)}
             onActivate={() => {
               const r = results.get()
-              if (r[0]) launch(r[0])
+              if (r[0]) launch(r[0].a)
             }}
             $={self => self.grab_focus()}
           />
@@ -84,10 +89,10 @@ export default function Launcher() {
           cssClasses={["launcher-results"]}
           spacing={2}
         >
-          {results(list =>
-            list.map((a, i) => (
+          <For each={results}>
+            {({ a, first }) => (
               <button
-                cssClasses={i === 0 ? ["app-item", "selected"] : ["app-item"]}
+                cssClasses={first ? ["app-item", "selected"] : ["app-item"]}
                 onClicked={() => launch(a)}
               >
                 <box spacing={12}>
@@ -114,8 +119,8 @@ export default function Launcher() {
                   </box>
                 </box>
               </button>
-            ))
-          )}
+            )}
+          </For>
         </box>
 
         {/* ── Footer hints ───────────────────────────────────────── */}
