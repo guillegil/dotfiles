@@ -158,6 +158,8 @@ export default function Launcher() {
   // the entry's inner GtkText delegate.
   let searchEntry: Gtk.Entry | null = null
   let entryFocused = false
+  // Ref to the imperatively-built grid FlowBox so a single Down/Up enters it.
+  let gridFlowBox: Gtk.FlowBox | null = null
 
   // ── Anchors ────────────────────────────────────────────────────────────────
 
@@ -196,15 +198,28 @@ export default function Launcher() {
               return true
 
             case Gdk.KEY_Up:
-              // Only drive row selection when result rows are showing; in the
-              // empty-query grid state let the event through (FlowBox nav).
-              if (!query.peek()) return false
-              setSelectedIdx(i => Math.max(i - 1, 0))
-              return true
-
             case Gdk.KEY_Down:
-              if (!query.peek()) return false
-              setSelectedIdx(i => Math.min(i + 1, results.peek().length - 1))
+              // Empty-query grid state: a SINGLE arrow enters the grid by
+              // focusing + selecting its first tile (default GTK nav needed two
+              // presses — one to move focus to the FlowBox, one to select).
+              // Once a tile is focused, native FlowBox arrow nav takes over.
+              if (!query.peek()) {
+                if (gridFlowBox && !gridFlowBox.get_focus_child()) {
+                  const first = gridFlowBox.get_child_at_index(0)
+                  if (first) {
+                    gridFlowBox.select_child(first)
+                    first.grab_focus()
+                    return true
+                  }
+                }
+                return false  // already in the grid — let native nav handle it
+              }
+              // Result-rows state: drive the selectedIdx cursor.
+              if (keyval === Gdk.KEY_Up) {
+                setSelectedIdx(i => Math.max(i - 1, 0))
+              } else {
+                setSelectedIdx(i => Math.min(i + 1, results.peek().length - 1))
+              }
               return true
 
             case Gdk.KEY_Return:
@@ -518,6 +533,7 @@ export default function Launcher() {
                 // Gtk.FlowBoxChild; appending a bare widget is a SILENT runtime
                 // no-op that renders nothing and throws no error (ADR-6 Risk 2).
                 const fb = new Gtk.FlowBox()
+                gridFlowBox = fb
                 fb.set_css_classes(["app-grid"])
                 fb.set_max_children_per_line(5)
                 fb.set_min_children_per_line(5)
