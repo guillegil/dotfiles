@@ -561,7 +561,7 @@ export default function Launcher() {
               hscrollbarPolicy={Gtk.PolicyType.NEVER}
               vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
               propagateNaturalHeight={true}
-              maxContentHeight={170}   /* ~2 rows of tiles; scroll for the rest */
+              maxContentHeight={130}   /* ~2 rows of (shorter) tiles; scroll for the rest */
               cssClasses={["app-grid-scroll"]}
               $={(self) => {
                 // FlowBox is built imperatively — no <flowbox> intrinsic exists in

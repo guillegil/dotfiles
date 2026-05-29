@@ -373,7 +373,7 @@ window.Launcher {
 
 // Search row
 .launcher-search {
-  padding:       16px 16px;
+  padding:       10px 16px;
   border-bottom: 1px solid var(--bar-border);
 }
 
@@ -465,7 +465,7 @@ entry.launcher-entry > text {
 
 // Footer with kbd hints
 .launcher-footer {
-  padding:    12px 16px;
+  padding:    10px 16px;
   border-top: 1px solid var(--bar-border);
   background: var(--crust-50);
 }
@@ -638,7 +638,7 @@ calendar.calendar-widget > header {
 
 // RECENT chips strip (REQ-LR-06)
 .recent-row {
-  padding:       8px 16px;
+  padding:       6px 16px;
   border-bottom: 1px solid var(--bar-border);  // delineate RECENT from the list/grid below
 }
 
@@ -746,7 +746,7 @@ calendar.calendar-widget > header {
 // "ALL APPS · N" section header row — extra bottom padding so the first tile
 // row is not cramped against the label.
 .launcher-section-header {
-  padding: 8px 16px 12px;
+  padding: 6px 16px 8px;
 }
 
 // Scrollable viewport wrapper for the FlowBox (REQ-AG-03)
@@ -762,7 +762,7 @@ calendar.calendar-widget > header {
 
 // Inner tile box: icon + name label (REQ-AG-02)
 .grid-tile {
-  padding:       8px 4px;
+  padding:       6px 4px;
   border-radius: var(--radius-inner);
   border:        1px solid transparent;  // reserved so selected border doesn't shift
   min-width:     72px;
@@ -778,7 +778,7 @@ calendar.calendar-widget > header {
 
 // Real .desktop icon — 40×40 px (REQ-AG-02)
 .grid-tile-icon {
-  -gtk-icon-size: 40px;
+  -gtk-icon-size: 34px;
 }
 
 // App name label below the icon
