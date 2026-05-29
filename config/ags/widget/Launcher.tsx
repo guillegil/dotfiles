@@ -220,12 +220,18 @@ export default function Launcher() {
           }
 
           // Printable key while focus is elsewhere (e.g. the app grid) →
-          // refocus the search entry and forward this keystroke to it, so the
-          // user drops straight into search mode without losing the character.
-          if (searchEntry && !searchEntry.has_focus() && Gdk.keyval_to_unicode(keyval) !== 0) {
-            searchEntry.grab_focus()
-            controller.forward(searchEntry)
-            return true
+          // refocus the search entry and append the character ourselves, so the
+          // user drops straight into search mode without losing it. (We insert
+          // manually rather than via controller.forward(), which proved to be a
+          // no-op for the already-targeted grid focus.)
+          if (searchEntry && !searchEntry.has_focus()) {
+            const cp = Gdk.keyval_to_unicode(keyval)
+            if (cp >= 0x20 && cp !== 0x7f) {
+              searchEntry.grab_focus()
+              searchEntry.set_text(searchEntry.text + String.fromCodePoint(cp))
+              searchEntry.set_position(-1)
+              return true
+            }
           }
 
           // All other keys — let the entry receive them.
