@@ -373,7 +373,7 @@ window.Launcher {
 
 // Search row
 .launcher-search {
-  padding:       14px 18px;
+  padding:       16px 16px;
   border-bottom: 1px solid var(--bar-border);
 }
 
@@ -414,7 +414,7 @@ entry.launcher-entry > text {
 
 // Result rows container
 .launcher-results {
-  padding: 8px 14px;
+  padding: 8px 16px;
 }
 
 .app-item {
@@ -465,7 +465,7 @@ entry.launcher-entry > text {
 
 // Footer with kbd hints
 .launcher-footer {
-  padding:    10px 18px;
+  padding:    12px 16px;
   border-top: 1px solid var(--bar-border);
   background: var(--crust-50);
 }
@@ -571,7 +571,7 @@ calendar.calendar-widget > header {
   background:    var(--bg2);
   border-radius: var(--radius-inner);
   border-left:   2px solid var(--mauve);
-  margin:        10px 14px 8px; // breathing room above and below the search row
+  margin:        8px 16px;      // 8px rhythm; breathing room above and below
   padding:       8px 12px;
 }
 
@@ -580,7 +580,7 @@ calendar.calendar-widget > header {
   background:    var(--bg2);
   border-radius: var(--radius-inner);
   border-left:   2px solid var(--green);
-  margin:        10px 14px 8px; // breathing room above and below the search row
+  margin:        8px 16px;      // 8px rhythm; breathing room above and below
   padding:       8px 12px;
 }
 
@@ -638,7 +638,7 @@ calendar.calendar-widget > header {
 
 // RECENT chips strip (REQ-LR-06)
 .recent-row {
-  padding:       8px 14px;
+  padding:       8px 16px;
   border-bottom: 1px solid var(--bar-border);  // delineate RECENT from the list/grid below
 }
 
@@ -746,12 +746,12 @@ calendar.calendar-widget > header {
 // "ALL APPS · N" section header row — extra bottom padding so the first tile
 // row is not cramped against the label.
 .launcher-section-header {
-  padding: 6px 14px 12px;
+  padding: 8px 16px 12px;
 }
 
 // Scrollable viewport wrapper for the FlowBox (REQ-AG-03)
 .app-grid-scroll {
-  padding:    0 14px 8px;
+  padding:    0 16px 8px;
   min-height: 0;
 }
 
