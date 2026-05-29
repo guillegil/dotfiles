@@ -360,7 +360,7 @@ window.Launcher {
   min-width:     560px;
   // Glassy: translucent mantle so the Hyprland blur (ags namespace) shows
   // through behind the card.
-  background:    color-mix(in oklab, var(--mantle) 86%, transparent);
+  background:    color-mix(in oklab, var(--mantle) 96%, transparent);
   border:        1px solid var(--bar-border);
   border-radius: var(--radius-hero);
   // Deep drop shadow + subtle accent glow halo (DESIGN.md AppLauncher) so the
