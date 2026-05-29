@@ -46,13 +46,7 @@ export default function NotificationToasts() {
   return (
     <window
       name="notification-toasts"
-      // Persistent: map the layer surface ONCE and keep it mapped. Unmapping it
-      // per-toast forced a fresh Wayland configure handshake on every arrival,
-      // and the first content-driven resize after each (re)map is what produced
-      // the first-expand contract-then-expand. An empty stack is ~0-size and the
-      // window is transparent (.toast-window), so it neither shows nor blocks
-      // the corner. (Root cause per docs/toast-expand-flicker research.)
-      visible
+      visible={toasts(t => t.length > 0)}
       layer={Astal.Layer.OVERLAY}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
       marginTop={38}
