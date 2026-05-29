@@ -557,6 +557,27 @@ calendar.calendar-widget > header {
   padding:       8px 12px;
 }
 
+// ── Terminal-mode banner (">") ───────────────────────────────────────────────
+.term-banner {
+  background:    var(--bg2);
+  border-radius: var(--radius-inner);
+  border-left:   2px solid var(--green);
+  margin:        0 14px;
+  padding:       8px 12px;
+}
+
+.term-prompt {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color:       var(--green);
+}
+
+.term-cmd {
+  font-family: var(--font-mono);
+  font-size:   13px;
+  color:       var(--text);
+}
+
 // Expression text — dim, shows the raw query
 .calc-expr {
   color:     var(--dim);

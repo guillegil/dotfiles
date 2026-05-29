@@ -79,12 +79,12 @@ export default function Launcher() {
   // Not reactive: the installed app list does not change at runtime within a
   // session; the FlowBox is built imperatively in the $ setter (ADR-6).
   const allApps = apps.list as Apps.Application[]
-  // gridApps: the grid is capped to 2 rows of 5 = 10 tiles, surfacing the
-  // most-used apps (by AstalApps frequency; stable order when all are 0).
+  // gridApps: ALL apps, most-used first (by AstalApps frequency; stable order
+  // when all are 0). The grid is navigable/scrollable through the full list;
+  // only ~2 rows of 5 (10 tiles) are visible at once via the viewport height.
   const gridApps = allApps
     .slice()
     .sort((a, b) => (b.frequency ?? 0) - (a.frequency ?? 0))
-    .slice(0, 10)
 
   const [query, setQuery] = createState("")
   const [selectedIdx, setSelectedIdx] = createState(0)
@@ -92,8 +92,13 @@ export default function Launcher() {
   // results: Apps.Application[] — derived via createComputed (NOT .as(arr => arr.map()))
   // because .as() inside JSX returns "Accessor{}" as text; createComputed returns
   // a proper Accessor<T> that <For> can consume.
+  // termMode: query starting with ">" is a terminal command, NOT an app search.
+  const termMode = createComputed(() => query().startsWith(">"))
+  const termCmd  = createComputed(() => query().replace(/^>\s*/, ""))
+
   const results = createComputed(() => {
     const q = query()
+    if (q.startsWith(">")) return [] as Apps.Application[]  // terminal mode: no search
     return q ? apps.fuzzy_query(q).slice(0, 8) : ([] as Apps.Application[])
   })
 
@@ -104,8 +109,9 @@ export default function Launcher() {
     setSelectedIdx(i => (len === 0 ? 0 : Math.min(i, len - 1)))
   })
 
-  // calc: CalcResult | null — always-on, evaluated per keystroke
-  const calc = createComputed(() => evaluate(query()))
+  // calc: CalcResult | null — always-on, evaluated per keystroke. Suppressed in
+  // terminal mode (a ">" command is not a math expression).
+  const calc = createComputed(() => query().startsWith(">") ? null : evaluate(query()))
 
   // recent: string[] — state, refreshed from disk on init and after each launch.
   // createComputed would only run once (getRecent has no reactive deps); we use
@@ -132,6 +138,16 @@ export default function Launcher() {
     execAsync([term, "-e", a.executable]).catch(() => {})
     recordLaunch(a)
     setRecent(getRecent(8))
+    closeAndClear()
+  }
+
+  // runTerminal: run a raw ">"-prefixed command in a terminal (kept open via a
+  // login shell so output stays visible). Triggered by Enter in terminal mode.
+  function runTerminal(cmd: string) {
+    const c = cmd.trim()
+    if (!c) return
+    const term = GLib.getenv("TERMINAL") || "kitty"
+    execAsync([term, "-e", "sh", "-c", `${c}; exec $SHELL`]).catch(() => {})
     closeAndClear()
   }
 
@@ -176,6 +192,11 @@ export default function Launcher() {
 
             case Gdk.KEY_Return:
             case Gdk.KEY_KP_Enter: {
+              // Terminal mode: run the ">"-stripped command instead of an app.
+              if (termMode.peek()) {
+                runTerminal(termCmd.peek())
+                return true
+              }
               const r = results.peek()[selectedIdx.peek()]
               if (r) {
                 if (sup) launchInTerminal(r)
@@ -257,6 +278,24 @@ export default function Launcher() {
               label="esc"
               valign={Gtk.Align.CENTER}
             />
+          </box>
+
+          {/* ── Terminal-mode banner (">") ─────────────────────────── */}
+          {/* Shown when the query starts with ">". No app search runs; Enter
+              executes the command in $TERMINAL. */}
+          <box
+            cssClasses={["term-banner"]}
+            visible={termMode}
+            spacing={8}
+          >
+            <label label=">" cssClasses={["term-prompt"]} valign={Gtk.Align.CENTER} />
+            <label
+              cssClasses={["term-cmd"]}
+              label={termCmd.as(c => c || "type a command…")}
+              halign={Gtk.Align.START}
+            />
+            <box hexpand={true} />
+            <label cssClasses={["kbd"]} label="↵ run" valign={Gtk.Align.CENTER} />
           </box>
 
           {/* ── Calculator banner (REQ-LR-05) ─────────────────────── */}
@@ -418,7 +457,7 @@ export default function Launcher() {
               hscrollbarPolicy={Gtk.PolicyType.NEVER}
               vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
               propagateNaturalHeight={true}
-              maxContentHeight={320}
+              maxContentHeight={170}   /* ~2 rows of tiles; scroll for the rest */
               cssClasses={["app-grid-scroll"]}
               $={(self) => {
                 // FlowBox is built imperatively — no <flowbox> intrinsic exists in
