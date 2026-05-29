@@ -172,15 +172,14 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
           halign={Gtk.Align.START}
           xalign={0}
           wrap={true}
-          lines={2}
-          ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
+          // maxWidthChars caps the wrap column → no half-screen growth; .toast
+          // min-width floors every toast to the same width. ellipsize stays END
+          // (constant width → no jitter); only `lines` toggles to reveal more.
+          // Use a finite large number, NOT -1 (which rendered as a collapse).
+          maxWidthChars={30}
+          ellipsize={Pango.EllipsizeMode.END}
+          lines={expanded(e => e ? 100 : 2)}
           visible={!!bodyText}
-          // Hard-pin the wrap width in px so the body is the SAME width whether
-          // collapsed or expanded. widthChars/max-width-chars only cap the
-          // NATURAL width — the minimum still jumped when ellipsize flipped
-          // END→NONE, growing the right-anchored toast (which layer-shell then
-          // never shrank back). A fixed size request removes that entirely.
-          $={(self) => self.set_size_request(264, -1)}
         />
         {isLong && (
           <button

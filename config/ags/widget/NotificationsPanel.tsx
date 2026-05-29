@@ -144,10 +144,10 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
           halign={Gtk.Align.START}
           xalign={0}
           wrap={true}
-          lines={2}
-          ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
+          maxWidthChars={32}
+          ellipsize={Pango.EllipsizeMode.END}
+          lines={expanded(e => e ? 100 : 2)}
           visible={!!bodyText}
-          $={(self) => self.set_size_request(300, -1)}
         />
         {isLong && (
           <button
