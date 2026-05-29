@@ -50,7 +50,11 @@ export default function Popover({ name, halign, valign, margins, accessibleName,
         self.add_controller(controller)
       }}
     >
-      {/* Full-screen scrim — clicks outside the card close the popover. */}
+      {/* Full-screen scrim — clicks that land on the scrim itself (i.e. OUTSIDE
+          the card) close the popover. Clicks on the card or any of its children
+          are left untouched so interactive controls (dismiss, Clear all, the DND
+          switch) work normally. We must NOT put a claiming gesture on the card —
+          that would swallow the children's own click gestures. */}
       <box
         cssClasses={["popover-scrim"]}
         hexpand={true}
@@ -59,7 +63,13 @@ export default function Popover({ name, halign, valign, margins, accessibleName,
         valign={Gtk.Align.FILL}
         $={(self) => {
           const close = new Gtk.GestureClick()
-          close.connect("released", () => app.toggle_window(name))
+          close.connect("pressed", (_g, _n, x, y) => {
+            // pick() returns the deepest widget at the point; if it is the scrim
+            // itself the click was on empty space outside the card → close.
+            if (self.pick(x, y, Gtk.PickFlags.DEFAULT) === self) {
+              app.toggle_window(name)
+            }
+          })
           self.add_controller(close)
         }}
       >
@@ -72,14 +82,8 @@ export default function Popover({ name, halign, valign, margins, accessibleName,
           marginBottom={bottom}
           marginStart={left}
           accessibleRole={Gtk.AccessibleRole.DIALOG}
-          $={(self) => {
-            self.update_property([Gtk.AccessibleProperty.LABEL], [accessibleName])
-            // Consume clicks on the card so the scrim's close handler does not
-            // fire when the user clicks inert areas inside the popover.
-            const claim = new Gtk.GestureClick()
-            claim.connect("pressed", (g) => g.set_state(Gtk.EventSequenceState.CLAIMED))
-            self.add_controller(claim)
-          }}
+          $={(self) =>
+            self.update_property([Gtk.AccessibleProperty.LABEL], [accessibleName])}
         >
           {children}
         </box>
