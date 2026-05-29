@@ -288,6 +288,27 @@ progressbar.volume-osd-bar > trough > progress {
   &:hover { background: var(--bg3); color: var(--red); }
 }
 
+// ── Notification toasts (transient arrival popups) ───────────────────────────
+.toast-window { background: transparent; }
+
+.toast {
+  min-width:     360px;
+  padding:       12px;
+  background:    var(--mantle-glass);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-inner);
+  box-shadow:    0 8px 28px -8px rgba(0, 0, 0, 0.5);
+  color:         var(--text);
+  font-family:   var(--font-mono);
+  transition:    background var(--t-base);
+
+  &:hover { background: var(--bg2); }
+}
+
+.toast.urgent {
+  border-left: 3px solid var(--red);
+}
+
 // ── Launcher overlay (Claude design — Phase 1) ───────────────────────────────
 // The launcher window is now full-screen (anchored on all four edges) so a
 // transparent scrim child can capture click-outside events and dismiss the

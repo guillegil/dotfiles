@@ -6,6 +6,7 @@ import Launcher from "./widget/Launcher.tsx"
 import { CalendarPopover } from "./widget/Clock"
 import VolumeOSD, { showVolumeOSD } from "./widget/VolumeOSD"
 import { NotificationsPanel } from "./widget/NotificationsPanel"
+import NotificationToasts from "./widget/NotificationToasts"
 
 app.start({
   css: style,
@@ -26,5 +27,6 @@ app.start({
     CalendarPopover()    // singleton popover window, hidden by default (REQ-CL-03)
     VolumeOSD()          // singleton OSD window, hidden by default (volume keys)
     NotificationsPanel() // singleton panel window, hidden by default (REQ-NT-02)
+    NotificationToasts() // transient arrival popups (top-right), DND-aware
   },
 })
