@@ -219,24 +219,21 @@ export default function Launcher() {
             case Gdk.KEY_Down: {
               // ── Empty-query: navigate the app grid (controller-driven) ──────
               if (!query.peek()) {
+                const n = gridApps.length
                 if (gridIdx < 0) {
                   // Enter the grid with Down (one press). Up/Left/Right from the
-                  // entry do nothing.
-                  if (keyval === Gdk.KEY_Down) { focusGridTile(0); return true }
+                  // entry do nothing. (To return to search, just type.)
+                  if (keyval === Gdk.KEY_Down && n > 0) { focusGridTile(0); return true }
                   return false
                 }
+                const col = gridIdx % GRID_COLS
                 let next = gridIdx
-                if (keyval === Gdk.KEY_Up)    next = gridIdx - GRID_COLS
+                if (keyval === Gdk.KEY_Up)         next = gridIdx - GRID_COLS
                 else if (keyval === Gdk.KEY_Down)  next = gridIdx + GRID_COLS
-                else if (keyval === Gdk.KEY_Left)  next = gridIdx - 1
-                else                                next = gridIdx + 1
-                // Up past the top row returns focus to the search entry.
-                if (next < 0 && keyval === Gdk.KEY_Up) {
-                  gridIdx = -1
-                  searchEntry?.grab_focus()
-                  return true
-                }
-                focusGridTile(next)
+                else if (keyval === Gdk.KEY_Left)  next = col === 0 ? gridIdx : gridIdx - 1
+                else                               next = col === GRID_COLS - 1 ? gridIdx : gridIdx + 1
+                // Edges stay put — no wrap, no re-grab (avoids the stall/jump).
+                if (next !== gridIdx && next >= 0 && next < n) focusGridTile(next)
                 return true
               }
               // ── Result-rows: Up/Down drive the cursor; Left/Right edit text ─
