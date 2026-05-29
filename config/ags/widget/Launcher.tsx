@@ -338,7 +338,7 @@ export default function Launcher() {
                 Colloid's symbolic search icons use a horizontal handle that
                 reads as a flat bar; this gives the classic diagonal lupa. */}
             <label
-              label=""
+              label={""}
               cssClasses={["search-icon"]}
               valign={Gtk.Align.CENTER}
             />
