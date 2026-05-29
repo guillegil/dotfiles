@@ -357,7 +357,7 @@ window.Launcher {
 }
 
 .launcher-card {
-  min-width:     480px;
+  min-width:     360px;
   // Glassy: translucent mantle so the Hyprland blur (ags namespace) shows
   // through behind the card.
   background:    color-mix(in oklab, var(--mantle) 96%, transparent);

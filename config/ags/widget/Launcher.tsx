@@ -609,9 +609,9 @@ export default function Launcher() {
             <KbdHint k=">" hint="terminal" />
             <KbdHint k="=" hint="calc" />
             <KbdHint k="?" hint="ask AI" />
-            <box hexpand={true} />
             {/* AI pill — cosmetic; gradient icon + solid var(--mauve) text
-                (GTK4 can't gradient-fill text, D-LR-1). */}
+                (GTK4 can't gradient-fill text, D-LR-1). Packed right after the
+                hints (no hexpand spacer) so it isn't flung to the far edge. */}
             <box cssClasses={["ai-pill"]} valign={Gtk.Align.CENTER} spacing={5}>
               {/* AI glyph composed of 3 GTK widgets so each animates on its own
                   (GTK can't animate SVG sub-elements): star "breathes",
