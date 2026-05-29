@@ -27,6 +27,10 @@ import { execAsync } from "ags/process"
 import { evaluate } from "../lib/calc"
 import { recordLaunch, getRecent } from "../lib/launcher-history"
 
+// Recent chips shown in the RECENT row. Capped low + ellipsized (below) so the
+// row's natural width never drives the card wider than the rest of the content.
+const RECENT_LIMIT = 5
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function KbdHint({ k, hint }: { k: string; hint: string }) {
@@ -116,7 +120,7 @@ export default function Launcher() {
   // recent: string[] — state, refreshed from disk on init and after each launch.
   // createComputed would only run once (getRecent has no reactive deps); we use
   // createState + explicit refresh so chips update on the same session's launches.
-  const [recent, setRecent] = createState<string[]>(getRecent(8))
+  const [recent, setRecent] = createState<string[]>(getRecent(RECENT_LIMIT))
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
@@ -130,7 +134,7 @@ export default function Launcher() {
   function launch(a: Apps.Application) {
     a.launch()
     recordLaunch(a)
-    setRecent(getRecent(8))
+    setRecent(getRecent(RECENT_LIMIT))
     closeAndClear()
   }
 
@@ -138,7 +142,7 @@ export default function Launcher() {
     const term = GLib.getenv("TERMINAL") || "kitty"
     execAsync([term, "-e", a.executable]).catch(() => {})
     recordLaunch(a)
-    setRecent(getRecent(8))
+    setRecent(getRecent(RECENT_LIMIT))
     closeAndClear()
   }
 
@@ -326,8 +330,9 @@ export default function Launcher() {
           cssClasses={["launcher-card"]}
           halign={Gtk.Align.CENTER}
           valign={Gtk.Align.START}
-          hexpand={false}{/* stop the entry/FlowBox hexpand from propagating up
-                            and stretching the card across the screen */}
+          // hexpand=true so the horizontal scrim allocates full width and
+          // halign=CENTER can center the card; min-width controls its size.
+          hexpand={true}
           marginTop={88}
         >
           {/* No card-claim gesture: the scrim already uses pick() to close only
@@ -457,11 +462,16 @@ export default function Launcher() {
                 return (
                   <button
                     cssClasses={["recent-chip"]}
-                    label={appEntry.name}
                     accessibleRole={Gtk.AccessibleRole.BUTTON}
                     $={self => self.update_property([Gtk.AccessibleProperty.LABEL], [appEntry.name])}
                     onClicked={() => launch(appEntry)}
-                  />
+                  >
+                    <label
+                      label={appEntry.name}
+                      maxWidthChars={14}
+                      ellipsize={Pango.EllipsizeMode.END}
+                    />
+                  </button>
                 )
               }}
             </For>
