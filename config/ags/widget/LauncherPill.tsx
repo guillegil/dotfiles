@@ -8,7 +8,7 @@ import { Gtk } from "ags/gtk4"
 export default function LauncherPill() {
   return (
     <button
-      cssClasses={["launcher-pill", "w", "w--chip"]}
+      cssClasses={["launcher-pill", "w"]}
       onClicked={() => app.toggle_window("launcher")}
       accessibleRole={Gtk.AccessibleRole.BUTTON}
       valign={Gtk.Align.CENTER}

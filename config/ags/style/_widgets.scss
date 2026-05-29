@@ -489,9 +489,9 @@ entry.launcher-entry > text {
 // Padding gives an ~28px hit target — under the 44px touch-target ideal but
 // constrained by the bar's compact height. Acceptable for mouse-driven use.
 .launcher-pill {
-  background:    var(--bg2);
+  background:    transparent;   // no chip box behind the Arch icon
   border-radius: var(--radius-inner);
-  color:         var(--accent);
+  color:         var(--blue);   // Arch logo recolored to Catppuccin blue
   padding:       2px 10px;
   font-size:     14px;
 }
