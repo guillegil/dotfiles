@@ -273,14 +273,19 @@ export default function Launcher() {
               placeholderText="Search apps…"
               hexpand={true}
               onNotifyText={self => {
-                // Typing ">" auto-expands to "> " so the user goes straight into
-                // typing the command (re-fires onNotifyText with "> ").
-                if (self.text === ">") {
-                  self.set_text("> ")
-                  self.set_position(-1)
+                const t = self.text
+                if (t === ">") {
+                  // Distinguish typing ">" (expand to "> ") from deleting back
+                  // down to ">" (exit terminal mode → empty search).
+                  if (query.peek().startsWith("> ")) {
+                    self.set_text("")        // was "> …", user deleted → search mode
+                  } else {
+                    self.set_text("> ")      // just typed ">" → enter terminal mode
+                    self.set_position(-1)
+                  }
                   return
                 }
-                setQuery(self.text)
+                setQuery(t)
               }}
               $={self => self.grab_focus()}
             />
