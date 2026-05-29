@@ -46,7 +46,13 @@ export default function NotificationToasts() {
   return (
     <window
       name="notification-toasts"
-      visible={toasts(t => t.length > 0)}
+      // Persistent: map the layer surface ONCE and keep it mapped. Unmapping it
+      // per-toast forced a fresh Wayland configure handshake on every arrival,
+      // and the first content-driven resize after each (re)map is what produced
+      // the first-expand contract-then-expand. An empty stack is ~0-size and the
+      // window is transparent (.toast-window), so it neither shows nor blocks
+      // the corner. (Root cause per docs/toast-expand-flicker research.)
+      visible
       layer={Astal.Layer.OVERLAY}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
       marginTop={38}
@@ -166,10 +172,11 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
       </box>
 
       {/* Body — indented under the title (icon tile width + gap).
-          Collapsed 2-line preview is shown when not expanded; the full body
-          lives in a Revealer that slides down on expand. The slide animation
-          masks the layer-shell two-phase resize that flickered on first expand.
-          Both labels pin width (min == max) so width never changes. */}
+          Single label: `lines` toggles the clamp (2 ↔ 100); width is pinned
+          (set_size_request 210 + maxWidthChars 30 → min == max) so the card
+          never shifts horizontally. The persistent surface (window above) is
+          what removes the first-expand vertical flicker — no Revealer needed,
+          and a Revealer can't ramp preview↔full without a height jump anyway. */}
       <box orientation={Gtk.Orientation.VERTICAL} spacing={2} marginStart={44}>
         <label
           cssClasses={["notif-body"]}
@@ -179,27 +186,10 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
           wrap={true}
           maxWidthChars={30}
           ellipsize={Pango.EllipsizeMode.END}
-          lines={2}
-          visible={expanded(e => !e && !!bodyText)}
+          lines={expanded(e => e ? 100 : 2)}
+          visible={!!bodyText}
           $={(self) => self.set_size_request(210, -1)}
         />
-        <revealer
-          revealChild={expanded}
-          transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-          transitionDuration={220}
-        >
-          <label
-            cssClasses={["notif-body"]}
-            label={bodyText}
-            halign={Gtk.Align.START}
-            xalign={0}
-            wrap={true}
-            maxWidthChars={30}
-            ellipsize={Pango.EllipsizeMode.END}
-            lines={100}
-            $={(self) => self.set_size_request(210, -1)}
-          />
-        </revealer>
         {isLong && (
           <button
             cssClasses={["toast-expand"]}
