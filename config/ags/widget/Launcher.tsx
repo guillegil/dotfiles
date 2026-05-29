@@ -124,6 +124,7 @@ export default function Launcher() {
     app.toggle_window("launcher")
     setQuery("")
     setSelectedIdx(0)
+    gridIdx = -1
   }
 
   function launch(a: Apps.Application) {
@@ -158,8 +159,23 @@ export default function Launcher() {
   // the entry's inner GtkText delegate.
   let searchEntry: Gtk.Entry | null = null
   let entryFocused = false
-  // Ref to the imperatively-built grid FlowBox so a single Down/Up enters it.
+  // Ref to the imperatively-built grid FlowBox + a controller-driven cursor.
+  // We manage grid nav ourselves (CAPTURE phase fights native FlowBox keynav,
+  // and native selection-vs-focus diverged → looked stuck). gridIdx = -1 means
+  // not in the grid.
   let gridFlowBox: Gtk.FlowBox | null = null
+  const GRID_COLS = 5
+  let gridIdx = -1
+  function focusGridTile(i: number) {
+    if (!gridFlowBox) return
+    const clamped = Math.max(0, Math.min(i, gridApps.length - 1))
+    gridIdx = clamped
+    const child = gridFlowBox.get_child_at_index(clamped)
+    if (child) {
+      gridFlowBox.select_child(child)
+      child.grab_focus()   // also scrolls the viewport to reveal it
+    }
+  }
 
   // ── Anchors ────────────────────────────────────────────────────────────────
 
@@ -197,40 +213,55 @@ export default function Launcher() {
               app.toggle_window("launcher")
               return true
 
+            case Gdk.KEY_Left:
+            case Gdk.KEY_Right:
             case Gdk.KEY_Up:
-            case Gdk.KEY_Down:
-              // Empty-query grid state: a SINGLE arrow enters the grid by
-              // focusing + selecting its first tile (default GTK nav needed two
-              // presses — one to move focus to the FlowBox, one to select).
-              // Once a tile is focused, native FlowBox arrow nav takes over.
+            case Gdk.KEY_Down: {
+              // ── Empty-query: navigate the app grid (controller-driven) ──────
               if (!query.peek()) {
-                // Enter the grid ONLY from the entry (entryFocused is reliable;
-                // get_focus_child() was falsy on later presses, which made this
-                // re-select the first tile every time = stuck). Once focus is in
-                // the grid, fall through to native FlowBox arrow nav.
-                if (entryFocused && gridFlowBox) {
-                  const first = gridFlowBox.get_child_at_index(0)
-                  if (first) {
-                    gridFlowBox.select_child(first)
-                    first.grab_focus()
-                    return true
-                  }
+                if (gridIdx < 0) {
+                  // Enter the grid with Down (one press). Up/Left/Right from the
+                  // entry do nothing.
+                  if (keyval === Gdk.KEY_Down) { focusGridTile(0); return true }
+                  return false
                 }
-                return false  // already in the grid — let native nav handle it
+                let next = gridIdx
+                if (keyval === Gdk.KEY_Up)    next = gridIdx - GRID_COLS
+                else if (keyval === Gdk.KEY_Down)  next = gridIdx + GRID_COLS
+                else if (keyval === Gdk.KEY_Left)  next = gridIdx - 1
+                else                                next = gridIdx + 1
+                // Up past the top row returns focus to the search entry.
+                if (next < 0 && keyval === Gdk.KEY_Up) {
+                  gridIdx = -1
+                  searchEntry?.grab_focus()
+                  return true
+                }
+                focusGridTile(next)
+                return true
               }
-              // Result-rows state: drive the selectedIdx cursor.
+              // ── Result-rows: Up/Down drive the cursor; Left/Right edit text ─
               if (keyval === Gdk.KEY_Up) {
                 setSelectedIdx(i => Math.max(i - 1, 0))
-              } else {
-                setSelectedIdx(i => Math.min(i + 1, results.peek().length - 1))
+                return true
               }
-              return true
+              if (keyval === Gdk.KEY_Down) {
+                setSelectedIdx(i => Math.min(i + 1, results.peek().length - 1))
+                return true
+              }
+              return false  // Left/Right → entry cursor movement
+            }
 
             case Gdk.KEY_Return:
             case Gdk.KEY_KP_Enter: {
               // Terminal mode: run the ">"-stripped command instead of an app.
               if (termMode.peek()) {
                 runTerminal(termCmd.peek())
+                return true
+              }
+              // Grid mode: launch the focused tile.
+              if (!query.peek()) {
+                const g = gridApps[gridIdx]
+                if (g) (sup ? launchInTerminal(g) : launch(g))
                 return true
               }
               const r = results.peek()[selectedIdx.peek()]
@@ -332,7 +363,7 @@ export default function Launcher() {
               $={self => {
                 searchEntry = self
                 const fc = new Gtk.EventControllerFocus()
-                fc.connect("enter", () => { entryFocused = true })
+                fc.connect("enter", () => { entryFocused = true; gridIdx = -1 })
                 fc.connect("leave", () => { entryFocused = false })
                 self.add_controller(fc)
                 self.grab_focus()
