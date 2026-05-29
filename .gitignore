@@ -12,3 +12,7 @@ config/ags/node_modules/
 *.env
 
 
+
+# personal wallpaper (per-machine; hyprpaper falls back to background_color)
+config/hypr/wallpaper.jpg
+config/hypr/wallpaper.png
