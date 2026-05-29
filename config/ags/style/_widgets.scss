@@ -398,9 +398,9 @@ entry.launcher-entry > text {
   background:     var(--bg2);
   border:         1px solid var(--bar-border);
   border-radius:  4px;
-  padding:        1px 5px;
-  font-size:      9px;
-  font-weight:    600;
+  padding:        2px 7px;
+  font-size:      12px;        // was 9px — glyphs (esp. ↑↓) were hairline-thin
+  font-weight:    700;
   letter-spacing: 0.04em;
   color:          var(--text);
   font-family:    var(--font-mono);
@@ -464,7 +464,7 @@ entry.launcher-entry > text {
 
 .kbd-hint {
   color:     var(--dim);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 // ── Bar inner layout ─────────────────────────────────────────────────────────
@@ -633,9 +633,9 @@ calendar.calendar-widget > header {
   border-radius:    var(--radius-inner);
   color:            var(--mauve);  // solid — gradient text impossible in GTK4 4.22 (D-LR-1)
   font-family:      var(--font-mono);
-  font-size:        9px;
-  font-weight:      600;
-  padding:          2px 10px;
+  font-size:        11px;
+  font-weight:      700;
+  padding:          3px 11px;
 }
 
 // Trailing ⏎ glyph on the selected result row (REQ-LR-04)
