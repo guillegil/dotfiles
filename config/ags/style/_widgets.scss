@@ -690,11 +690,12 @@ calendar.calendar-widget > header {
 
 // AI glyph: star + 2 satellite dots, each its own widget so they animate
 // independently (GTK can't target SVG sub-elements). All recolored to mauve.
-.ai-glyph { min-width: 16px; min-height: 16px; }
+.ai-glyph { min-width: 18px; min-height: 18px; }
 .ai-star  { -gtk-icon-size: 16px; color: var(--mauve); }
-.ai-dot   { -gtk-icon-size: 6px;  color: var(--mauve); }
-.ai-dot1  { margin: -1px -1px 0 0; }   // nudge to the top-right corner
-.ai-dot2  { margin: 0 0 -1px -1px; }   // nudge to the bottom-left corner
+.ai-dot   { -gtk-icon-size: 4px;  color: var(--mauve); }
+// Positive margins pull the dots IN from the corners, closer to the star tips.
+.ai-dot1  { margin: 1px 3px 0 0; }   // top-right, nudged in
+.ai-dot2  { margin: 0 0 1px 3px; }   // bottom-left, nudged in
 
 // Hover: the star "breathes" like an inflating bubble; the dots "twinkle"
 // (scale + fade) on staggered delays for an effervescent feel. GTK scales from
