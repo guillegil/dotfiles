@@ -334,8 +334,11 @@ export default function Launcher() {
 
           {/* ── Search row ─────────────────────────────────────────── */}
           <box cssClasses={["launcher-search"]} spacing={12}>
-            <image
-              iconName="edit-find-symbolic"
+            {/* Nerd Font magnifier glyph (nf-fa-search) — theme-independent.
+                Colloid's symbolic search icons use a horizontal handle that
+                reads as a flat bar; this gives the classic diagonal lupa. */}
+            <label
+              label=""
               cssClasses={["search-icon"]}
               valign={Gtk.Align.CENTER}
             />

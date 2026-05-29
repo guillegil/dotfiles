@@ -373,8 +373,9 @@ window.Launcher {
 }
 
 .search-icon {
-  -gtk-icon-size: 18px;
-  color:          var(--accent);
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size:   15px;
+  color:       var(--accent);
 }
 
 // GTK4 entry has a default background and border. Reset both for a flat
