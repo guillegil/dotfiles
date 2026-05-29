@@ -326,6 +326,8 @@ export default function Launcher() {
           cssClasses={["launcher-card"]}
           halign={Gtk.Align.CENTER}
           valign={Gtk.Align.START}
+          hexpand={false}{/* stop the entry/FlowBox hexpand from propagating up
+                            and stretching the card across the screen */}
           marginTop={88}
         >
           {/* No card-claim gesture: the scrim already uses pick() to close only
