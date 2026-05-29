@@ -204,7 +204,11 @@ export default function Launcher() {
               // presses — one to move focus to the FlowBox, one to select).
               // Once a tile is focused, native FlowBox arrow nav takes over.
               if (!query.peek()) {
-                if (gridFlowBox && !gridFlowBox.get_focus_child()) {
+                // Enter the grid ONLY from the entry (entryFocused is reliable;
+                // get_focus_child() was falsy on later presses, which made this
+                // re-select the first tile every time = stuck). Once focus is in
+                // the grid, fall through to native FlowBox arrow nav.
+                if (entryFocused && gridFlowBox) {
                   const first = gridFlowBox.get_child_at_index(0)
                   if (first) {
                     gridFlowBox.select_child(first)
