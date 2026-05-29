@@ -20,7 +20,7 @@ export default function LauncherPill() {
       }}
     >
       <image
-        iconName="arch-symbolic"
+        iconName="cachy-arch-symbolic"
         cssClasses={["launcher-pill-icon"]}
         valign={Gtk.Align.CENTER}
       />
