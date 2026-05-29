@@ -203,7 +203,7 @@ install_icons() {
     local dest="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/actions"
     mkdir -p "$dest"
     local found=0
-    for svg in "$src"/*-symbolic.svg; do
+    for svg in "$src"/*.svg; do
         [[ -e "$svg" ]] || continue
         cp -f "$svg" "$dest/"
         found=1
