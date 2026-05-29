@@ -399,7 +399,7 @@ entry.launcher-entry > text {
   border:         1px solid var(--bar-border);
   border-radius:  4px;
   padding:        2px 7px;
-  font-size:      12px;        // was 9px — glyphs (esp. ↑↓) were hairline-thin
+  font-size:      10px;        // 9px was hairline; 10px reads clean with weight 700
   font-weight:    700;
   letter-spacing: 0.04em;
   color:          var(--text);
@@ -629,9 +629,16 @@ calendar.calendar-widget > header {
 // This is accepted degradation D-LR-1: the gradient is on the background,
 // the text colour is solid var(--mauve). This pill is cosmetic only (D-LR-2).
 .ai-pill {
-  background-image: linear-gradient(90deg, var(--mauve), var(--pink));
+  // Subtle mauve→blue tint over transparent + mauve border — matches the
+  // reference (design/src/popovers.jsx footer), not the old saturated
+  // mauve→pink fill. Text stays solid --mauve (gradient text impossible in
+  // GTK4 4.22 — D-LR-1).
+  background-image: linear-gradient(135deg,
+                      color-mix(in oklab, var(--mauve) 22%, transparent),
+                      color-mix(in oklab, var(--blue) 22%, transparent));
+  border:           1px solid color-mix(in oklab, var(--mauve) 30%, transparent);
   border-radius:    var(--radius-inner);
-  color:            var(--mauve);  // solid — gradient text impossible in GTK4 4.22 (D-LR-1)
+  color:            var(--mauve);
   font-family:      var(--font-mono);
   font-size:        11px;
   font-weight:      700;
