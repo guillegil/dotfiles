@@ -104,36 +104,50 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
   return (
     <box
       cssClasses={urgent ? ["notification-row", "urgent"] : ["notification-row"]}
-      spacing={10}
+      orientation={Gtk.Orientation.VERTICAL}
+      spacing={4}
     >
-      <image
-        iconName={n.appIcon || "dialog-information-symbolic"}
-        cssClasses={["notif-icon"]}
-        valign={Gtk.Align.CENTER}
-      />
-      <box orientation={Gtk.Orientation.VERTICAL} hexpand={true} spacing={2}>
-        <box spacing={6}>
-          <label
-            cssClasses={["notif-summary"]}
-            label={n.summary ?? ""}
-            halign={Gtk.Align.START}
-            hexpand={true}
-            maxWidthChars={28}
-            ellipsize={Pango.EllipsizeMode.END}
-            singleLineMode={true}
-          />
-          <label cssClasses={["notif-time", "tabular"]} label={time} valign={Gtk.Align.START} />
-        </box>
+      {/* Title row — icon aligns with the title line. */}
+      <box spacing={10}>
+        <image
+          iconName={n.appIcon || "dialog-information-symbolic"}
+          cssClasses={["notif-icon"]}
+          valign={Gtk.Align.CENTER}
+        />
+        <label
+          cssClasses={["notif-summary"]}
+          label={n.summary ?? ""}
+          halign={Gtk.Align.START}
+          valign={Gtk.Align.CENTER}
+          hexpand={true}
+          maxWidthChars={26}
+          ellipsize={Pango.EllipsizeMode.END}
+          singleLineMode={true}
+        />
+        <label cssClasses={["notif-time", "tabular"]} label={time} valign={Gtk.Align.CENTER} />
+        <button
+          cssClasses={["notif-dismiss"]}
+          valign={Gtk.Align.CENTER}
+          onClicked={() => n.dismiss()}
+          $={(self) => self.update_property(
+            [Gtk.AccessibleProperty.LABEL], ["Dismiss notification"])}
+        >
+          <image iconName="window-close-symbolic" />
+        </button>
+      </box>
+
+      {/* Body indented under the title. */}
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={2} marginStart={34}>
         <label
           cssClasses={["notif-body"]}
           label={bodyText}
           halign={Gtk.Align.START}
           xalign={0}
           wrap={true}
-          widthChars={34}
-          maxWidthChars={34}
-          lines={expanded(e => e ? -1 : 2)}
-          ellipsize={Pango.EllipsizeMode.END}
+          widthChars={32}
+          maxWidthChars={32}
+          lines={2}
+          ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
           visible={!!bodyText}
         />
         {isLong && (
@@ -145,15 +159,6 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
           />
         )}
       </box>
-      <button
-        cssClasses={["notif-dismiss"]}
-        valign={Gtk.Align.START}
-        onClicked={() => n.dismiss()}
-        $={(self) => self.update_property(
-          [Gtk.AccessibleProperty.LABEL], ["Dismiss notification"])}
-      >
-        <image iconName="window-close-symbolic" />
-      </button>
     </box>
   )
 }

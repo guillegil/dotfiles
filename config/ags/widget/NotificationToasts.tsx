@@ -132,68 +132,69 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
         self.add_controller(click)
       }}
     >
+      {/* Title row — icon + summary + × on one line so the icon aligns with
+          the TITLE (centered against this row's height), not the whole block. */}
       <box spacing={10}>
         <box cssClasses={["toast-icon-tile"]} valign={Gtk.Align.CENTER}>
           <image iconName={n.appIcon || "dialog-information-symbolic"} />
         </box>
-        <box orientation={Gtk.Orientation.VERTICAL} hexpand={true} spacing={2}>
-          <box spacing={6}>
-            <label
-              cssClasses={["notif-summary"]}
-              label={n.summary ?? ""}
-              halign={Gtk.Align.START}
-              hexpand={true}
-              maxWidthChars={30}
-              ellipsize={Pango.EllipsizeMode.END}
-              singleLineMode={true}
-            />
-            <button
-              cssClasses={["toast-close"]}
-              valign={Gtk.Align.START}
-              // × fully dismisses (removes from the panel too), unlike a click
-              // on the card body which only clears the popup.
-              onClicked={() => { clearTimer(); n.dismiss() }}
-              $={(self) => self.update_property(
-                [Gtk.AccessibleProperty.LABEL], ["Dismiss"])}
-            >
-              <image iconName="window-close-symbolic" />
-            </button>
-          </box>
-          <label
-            cssClasses={["notif-body"]}
-            label={bodyText}
+        <label
+          cssClasses={["notif-summary"]}
+          label={n.summary ?? ""}
+          halign={Gtk.Align.START}
+          valign={Gtk.Align.CENTER}
+          hexpand={true}
+          maxWidthChars={28}
+          ellipsize={Pango.EllipsizeMode.END}
+          singleLineMode={true}
+        />
+        <button
+          cssClasses={["toast-close"]}
+          valign={Gtk.Align.CENTER}
+          // × fully dismisses (removes from the panel too), unlike a click on
+          // the card body which only clears the popup.
+          onClicked={() => { clearTimer(); n.dismiss() }}
+          $={(self) => self.update_property(
+            [Gtk.AccessibleProperty.LABEL], ["Dismiss"])}
+        >
+          <image iconName="window-close-symbolic" />
+        </button>
+      </box>
+
+      {/* Body — indented under the title (icon tile width + gap). */}
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={2} marginStart={44}>
+        <label
+          cssClasses={["notif-body"]}
+          label={bodyText}
+          halign={Gtk.Align.START}
+          xalign={0}
+          wrap={true}
+          // widthChars pins the column so the toast width never changes between
+          // short/long or collapsed/expanded (GTK4 has no max-width). Expansion
+          // is done by toggling ellipsize END→NONE (END clamps to `lines`, NONE
+          // shows all wrapped lines) — that is what actually reveals more text.
+          widthChars={30}
+          maxWidthChars={30}
+          lines={2}
+          ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
+          visible={!!bodyText}
+        />
+        {isLong && (
+          <button
+            cssClasses={["toast-expand"]}
             halign={Gtk.Align.START}
-            xalign={0}            // text left-aligned in its allocation (no re-justify)
-            wrap={true}
-            // Pin the text column to exactly 34 chars (width = max = min) so the
-            // toast width is identical for short/long and collapsed/expanded —
-            // GTK4 has no max-width, so widthChars is how we stop the jitter.
-            widthChars={34}
-            maxWidthChars={34}
-            // Keep ellipsize END constant — only `lines` changes between states,
-            // so Show more changes HEIGHT only (toggling ellipsize recomputed the
-            // width and caused the jitter).
-            lines={expanded(e => e ? -1 : 2)}
-            ellipsize={Pango.EllipsizeMode.END}
-            visible={!!bodyText}
+            label={expanded(e => e ? "Show less" : "Show more")}
+            onClicked={() => {
+              const next = !expanded.get()
+              setExpanded(next)
+              if (next) {
+                pauseTimer() // (3) keep it up while expanded
+              } else {
+                maybeResume()
+              }
+            }}
           />
-          {isLong && (
-            <button
-              cssClasses={["toast-expand"]}
-              halign={Gtk.Align.START}
-              label={expanded(e => e ? "Show less" : "Show more")}
-              onClicked={() => {
-                const next = !expanded.get()
-                setExpanded(next)
-                if (next) {
-                  pauseTimer() // (3) keep it up while expanded
-                } else {
-                  maybeResume()
-                }
-              }}
-            />
-          )}
-        </box>
+        )}
       </box>
     </box>
   )
