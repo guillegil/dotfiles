@@ -748,6 +748,23 @@ calendar.calendar-widget > header {
 
 // Selected tile (FlowBox SINGLE selection mode — activated by click or keyboard)
 // Mirrors .app-item.selected runtime color-mix pattern (already validated on GTK 4.22)
+// Kill Adwaita's default FlowBoxChild selection (a solid blue square) and its
+// focus ring — the only highlight we want is the rounded mauve .grid-tile below.
+flowboxchild {
+  padding:       0;
+  border-radius: var(--radius-inner);
+  outline:       none;
+}
+flowboxchild:selected,
+flowboxchild:focus,
+flowboxchild:focus-visible,
+flowboxchild:focus-within {
+  background: transparent;
+  outline:    none;
+  box-shadow: none;
+}
+
+// Our selected highlight: a rounded mauve fill + border on the tile itself.
 flowboxchild:selected .grid-tile {
   background:   color-mix(in oklab, var(--accent) 18%, transparent);
   border:       1px solid color-mix(in oklab, var(--accent) 40%, transparent);
