@@ -158,7 +158,11 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
               onClicked={() => {
                 const next = !expanded.get()
                 setExpanded(next)
-                if (next) pauseTimer() else maybeResume() // (3)
+                if (next) {
+                  pauseTimer() // (3) keep it up while expanded
+                } else {
+                  maybeResume()
+                }
               }}
             />
           )}
