@@ -703,9 +703,10 @@ calendar.calendar-widget > header {
 // as object properties, not CSS. The CSS class .app-grid is the selector for any
 // visual overrides. Transitions gated by :not(.motion-off) per REQ-A11Y-LR-03.
 
-// "ALL APPS · N" section header row
+// "ALL APPS · N" section header row — extra bottom padding so the first tile
+// row is not cramped against the label.
 .launcher-section-header {
-  padding: 6px 14px 2px;
+  padding: 6px 14px 12px;
 }
 
 // Scrollable viewport wrapper for the FlowBox (REQ-AG-03)
