@@ -320,16 +320,10 @@ export default function Launcher() {
           halign={Gtk.Align.CENTER}
           valign={Gtk.Align.START}
           marginTop={88}
-          $={self => {
-            // Claim clicks on the card so the scrim handler does not fire
-            // when the user clicks non-interactive areas of the card.
-            const claim = new Gtk.GestureClick()
-            claim.connect("pressed", g => {
-              g.set_state(Gtk.EventSequenceState.CLAIMED)
-            })
-            self.add_controller(claim)
-          }}
         >
+          {/* No card-claim gesture: the scrim already uses pick() to close only
+              on clicks that land on the scrim itself, so clicks inside the card
+              are safe. A claim here stole the FlowBox tiles' click-activate. */}
 
           {/* ── Search row ─────────────────────────────────────────── */}
           <box cssClasses={["launcher-search"]} spacing={12}>
@@ -571,6 +565,7 @@ export default function Launcher() {
                 fb.set_min_children_per_line(5)
                 fb.set_homogeneous(true)
                 fb.set_selection_mode(Gtk.SelectionMode.SINGLE)
+                fb.set_activate_on_single_click(true)  // single click → child-activated → launch
                 fb.set_row_spacing(8)
                 fb.set_column_spacing(8)
                 fb.set_halign(Gtk.Align.FILL)
