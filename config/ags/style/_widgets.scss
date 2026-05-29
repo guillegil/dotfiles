@@ -681,7 +681,8 @@ calendar.calendar-widget > header {
   color:       var(--accent);
   font-size:   10px;
   font-weight: 600;
-  margin-left: auto;
+  // No margin-left:auto — GTK4 has no auto margins ("Expected a number").
+  // The name column's hexpand already pushes this glyph to the right edge.
 }
 
 // Query-prefix highlight on result row names (REQ-LR-04)
