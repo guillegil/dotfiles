@@ -174,6 +174,11 @@ export default function Launcher() {
         // the entry sees them; all other keyvals return false (printable keys
         // still reach the entry). ADR-1.
         const controller = new Gtk.EventControllerKey()
+        // CAPTURE phase: the controller must see Up/Down/Enter/Esc BEFORE the
+        // focused entry consumes them (a focused GtkText eats arrows + Enter in
+        // the default BUBBLE phase, which is why nav + terminal-Enter did
+        // nothing). Printable keys return false below → still reach the entry.
+        controller.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
         controller.connect("key-pressed", (_c, keyval, _code, state) => {
           const sup = (state & Gdk.ModifierType.SUPER_MASK) !== 0
 
@@ -183,10 +188,14 @@ export default function Launcher() {
               return true
 
             case Gdk.KEY_Up:
+              // Only drive row selection when result rows are showing; in the
+              // empty-query grid state let the event through (FlowBox nav).
+              if (!query.peek()) return false
               setSelectedIdx(i => Math.max(i - 1, 0))
               return true
 
             case Gdk.KEY_Down:
+              if (!query.peek()) return false
               setSelectedIdx(i => Math.min(i + 1, results.peek().length - 1))
               return true
 
@@ -263,7 +272,16 @@ export default function Launcher() {
               cssClasses={["launcher-entry"]}
               placeholderText="Search apps…"
               hexpand={true}
-              onNotifyText={self => setQuery(self.text)}
+              onNotifyText={self => {
+                // Typing ">" auto-expands to "> " so the user goes straight into
+                // typing the command (re-fires onNotifyText with "> ").
+                if (self.text === ">") {
+                  self.set_text("> ")
+                  self.set_position(-1)
+                  return
+                }
+                setQuery(self.text)
+              }}
               $={self => self.grab_focus()}
             />
             {/* "N RESULTS" pill — hidden when query is empty (REQ-LR-03) */}
