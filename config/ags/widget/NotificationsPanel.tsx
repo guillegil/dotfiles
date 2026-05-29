@@ -112,22 +112,22 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
         <image
           iconName={n.appIcon || "dialog-information-symbolic"}
           cssClasses={["notif-icon"]}
-          valign={Gtk.Align.CENTER}
+          valign={Gtk.Align.START}
         />
         <label
           cssClasses={["notif-summary"]}
           label={n.summary ?? ""}
           halign={Gtk.Align.START}
-          valign={Gtk.Align.CENTER}
+          valign={Gtk.Align.START}
           hexpand={true}
           maxWidthChars={26}
           ellipsize={Pango.EllipsizeMode.END}
           singleLineMode={true}
         />
-        <label cssClasses={["notif-time", "tabular"]} label={time} valign={Gtk.Align.CENTER} />
+        <label cssClasses={["notif-time", "tabular"]} label={time} valign={Gtk.Align.START} />
         <button
           cssClasses={["notif-dismiss"]}
-          valign={Gtk.Align.CENTER}
+          valign={Gtk.Align.START}
           onClicked={() => n.dismiss()}
           $={(self) => self.update_property(
             [Gtk.AccessibleProperty.LABEL], ["Dismiss notification"])}
@@ -143,6 +143,7 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
           label={bodyText}
           halign={Gtk.Align.START}
           xalign={0}
+          hexpand={true}
           wrap={true}
           widthChars={32}
           maxWidthChars={32}

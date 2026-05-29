@@ -135,14 +135,17 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
       {/* Title row — icon + summary + × on one line so the icon aligns with
           the TITLE (centered against this row's height), not the whole block. */}
       <box spacing={10}>
-        <box cssClasses={["toast-icon-tile"]} valign={Gtk.Align.CENTER}>
-          <image iconName={n.appIcon || "dialog-information-symbolic"} />
+        <box cssClasses={["toast-icon-tile"]} valign={Gtk.Align.START}>
+          <image
+            iconName={n.appIcon || "dialog-information-symbolic"}
+            valign={Gtk.Align.START}
+          />
         </box>
         <label
           cssClasses={["notif-summary"]}
           label={n.summary ?? ""}
           halign={Gtk.Align.START}
-          valign={Gtk.Align.CENTER}
+          valign={Gtk.Align.START}
           hexpand={true}
           maxWidthChars={28}
           ellipsize={Pango.EllipsizeMode.END}
@@ -150,7 +153,7 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
         />
         <button
           cssClasses={["toast-close"]}
-          valign={Gtk.Align.CENTER}
+          valign={Gtk.Align.START}
           // × fully dismisses (removes from the panel too), unlike a click on
           // the card body which only clears the popup.
           onClicked={() => { clearTimer(); n.dismiss() }}
@@ -168,6 +171,9 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
           label={bodyText}
           halign={Gtk.Align.START}
           xalign={0}
+          hexpand={true}            // fill the fixed column in BOTH states so
+                                    // toggling ellipsize can't change the
+                                    // allocation → no first-expand width jump
           wrap={true}
           // widthChars pins the column so the toast width never changes between
           // short/long or collapsed/expanded (GTK4 has no max-width). Expansion
