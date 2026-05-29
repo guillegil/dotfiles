@@ -1,14 +1,18 @@
-// NotificationToasts.tsx — transient arrival popups (swaync parity)
+// NotificationToasts.tsx — transient arrival popups (swaync parity + DESIGN.md)
 //
 // notifd alone does NOT show toasts — it only collects notifications. This
-// widget listens to the `notified` signal and shows a transient popup in the
-// top-right for each new notification, auto-dismissing after a timeout. DND is
-// respected (no toast while dont-disturb is on). Critical notifications stay
-// until clicked. Clicking a toast dismisses the popup (the notification remains
-// in the panel history).
+// widget listens to the `notified` signal and shows a transient popup per new
+// notification in the top-right. Behaviours:
+//   1. Normal notifications stay 5s; urgent stay 10s — both auto-dismiss.
+//   2. Hovering a toast PAUSES its countdown; leaving RESUMES it (remaining
+//      time, not a restart — tracked via GLib monotonic clock).
+//   3. Long bodies are clamped to 2 lines with a "Show more" toggle; expanding
+//      pauses the countdown until the pointer leaves (same as hover).
+//   4. DND suppresses toasts entirely.
+//   5. Clicking × dismisses the popup (the notification stays in panel history).
 //
-// Mounted once as a singleton in app.ts. The window is only mapped while at
-// least one toast is showing, so it never blocks clicks in the corner.
+// Mounted once as a singleton in app.ts. The window is only mapped while ≥1
+// toast shows, so it never blocks clicks in the corner.
 
 import app from "ags/gtk4/app"
 import GLib from "gi://GLib"
@@ -18,7 +22,9 @@ import Pango from "gi://Pango"
 import Notifd from "gi://AstalNotifd"
 
 const notifd = Notifd.get_default()
-const TOAST_MS = 5000
+const NORMAL_MS = 5000
+const URGENT_MS = 10000
+const LONG_BODY = 90 // chars beyond which a body is considered "long"
 
 export default function NotificationToasts() {
   const [toasts, setToasts] = createState<Notifd.Notification[]>([])
@@ -27,20 +33,10 @@ export default function NotificationToasts() {
     setToasts(prev => prev.filter(n => n.id !== id))
 
   notifd.connect("notified", (_src, id: number) => {
-    // REQ-NT (DND): no toast while do-not-disturb is on.
-    if (notifd.get_dont_disturb()) return
+    if (notifd.get_dont_disturb()) return // (4) DND suppresses toasts
     const n = notifd.get_notification(id)
     if (!n) return
-
     setToasts(prev => [n, ...prev.filter(p => p.id !== id)])
-
-    // Critical notifications persist until clicked; others auto-dismiss.
-    if (n.urgency !== Notifd.Urgency.CRITICAL) {
-      GLib.timeout_add(GLib.PRIORITY_DEFAULT, TOAST_MS, () => {
-        remove(id)
-        return GLib.SOURCE_REMOVE
-      })
-    }
   })
 
   // If a notification is closed/dismissed elsewhere, drop its toast too.
@@ -63,42 +59,111 @@ export default function NotificationToasts() {
         spacing={8}
       >
         <For each={toasts}>
-          {(n: Notifd.Notification) => (
-            <button
-              cssClasses={n.urgency === Notifd.Urgency.CRITICAL
-                ? ["toast", "urgent"]
-                : ["toast"]}
-              onClicked={() => remove(n.id)}
-            >
-              <box spacing={10}>
-                <image
-                  iconName={n.appIcon || "dialog-information-symbolic"}
-                  cssClasses={["notif-icon"]}
-                  valign={Gtk.Align.START}
-                />
-                <box orientation={Gtk.Orientation.VERTICAL} hexpand={true} spacing={2}>
-                  <label
-                    cssClasses={["notif-summary"]}
-                    label={n.summary ?? ""}
-                    halign={Gtk.Align.START}
-                    ellipsize={Pango.EllipsizeMode.END}
-                    singleLineMode={true}
-                  />
-                  <label
-                    cssClasses={["notif-body"]}
-                    label={n.body ?? ""}
-                    halign={Gtk.Align.START}
-                    wrap={true}
-                    lines={2}
-                    ellipsize={Pango.EllipsizeMode.END}
-                    visible={!!n.body}
-                  />
-                </box>
-              </box>
-            </button>
-          )}
+          {(n: Notifd.Notification) => <Toast n={n} onClose={() => remove(n.id)} />}
         </For>
       </box>
     </window>
+  )
+}
+
+function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) {
+  const urgent = n.urgency === Notifd.Urgency.CRITICAL
+  const duration = urgent ? URGENT_MS : NORMAL_MS // (1)(4: urgent 10s)
+  const bodyText = n.body ?? ""
+  const isLong = bodyText.length > LONG_BODY || bodyText.includes("\n")
+
+  const [expanded, setExpanded] = createState(false)
+
+  // Pausable countdown tracked against the monotonic clock (µs).
+  let remaining = duration
+  let timerId = 0
+  let startedAt = 0
+  let hovered = false
+
+  const clearTimer = () => {
+    if (timerId) { GLib.source_remove(timerId); timerId = 0 }
+  }
+  const startTimer = () => {
+    clearTimer()
+    if (remaining <= 0) { onClose(); return }
+    startedAt = GLib.get_monotonic_time()
+    timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, Math.round(remaining), () => {
+      timerId = 0
+      onClose()
+      return GLib.SOURCE_REMOVE
+    })
+  }
+  const pauseTimer = () => {
+    if (!timerId) return
+    clearTimer()
+    const elapsedMs = (GLib.get_monotonic_time() - startedAt) / 1000
+    remaining = Math.max(0, remaining - elapsedMs)
+  }
+  // (2)/(3): resume only when neither hovered nor expanded.
+  const maybeResume = () => { if (!hovered && !expanded.get()) startTimer() }
+
+  const close = () => { clearTimer(); onClose() }
+
+  return (
+    <box
+      cssClasses={urgent ? ["toast", "urgent"] : ["toast"]}
+      orientation={Gtk.Orientation.VERTICAL}
+      spacing={6}
+      $={(self) => {
+        startTimer()
+        const motion = new Gtk.EventControllerMotion()
+        motion.connect("enter", () => { hovered = true; pauseTimer() })   // (2)
+        motion.connect("leave", () => { hovered = false; maybeResume() }) // (2)
+        self.add_controller(motion)
+      }}
+    >
+      <box spacing={10}>
+        <box cssClasses={["toast-icon-tile"]} valign={Gtk.Align.START}>
+          <image iconName={n.appIcon || "dialog-information-symbolic"} />
+        </box>
+        <box orientation={Gtk.Orientation.VERTICAL} hexpand={true} spacing={2}>
+          <box spacing={6}>
+            <label
+              cssClasses={["notif-summary"]}
+              label={n.summary ?? ""}
+              halign={Gtk.Align.START}
+              hexpand={true}
+              ellipsize={Pango.EllipsizeMode.END}
+              singleLineMode={true}
+            />
+            <button
+              cssClasses={["toast-close"]}
+              valign={Gtk.Align.START}
+              onClicked={close}
+              $={(self) => self.update_property(
+                [Gtk.AccessibleProperty.LABEL], ["Dismiss"])}
+            >
+              <image iconName="window-close-symbolic" />
+            </button>
+          </box>
+          <label
+            cssClasses={["notif-body"]}
+            label={bodyText}
+            halign={Gtk.Align.START}
+            wrap={true}
+            lines={expanded(e => e ? -1 : 2)}        // (3) clamp vs full
+            ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
+            visible={!!bodyText}
+          />
+          {isLong && (
+            <button
+              cssClasses={["toast-expand"]}
+              halign={Gtk.Align.START}
+              label={expanded(e => e ? "Show less" : "Show more")}
+              onClicked={() => {
+                const next = !expanded.get()
+                setExpanded(next)
+                if (next) pauseTimer() else maybeResume() // (3)
+              }}
+            />
+          )}
+        </box>
+      </box>
+    </box>
   )
 }

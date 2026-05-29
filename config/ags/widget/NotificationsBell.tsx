@@ -15,6 +15,11 @@ export default function NotificationsBell() {
   const dnd = createBinding(notifd, "dontDisturb")
 
   const hasNotifs = notifications.as(n => n.length > 0)
+  // REQ-NT-05 (extended): dot is red if ANY notification is urgent, else blue.
+  const dotClasses = notifications.as(list =>
+    list.some(n => n.urgency === Notifd.Urgency.CRITICAL)
+      ? ["notif-dot", "urgent"]
+      : ["notif-dot", "normal"])
 
   return (
     <button
@@ -40,10 +45,11 @@ export default function NotificationsBell() {
               : "preferences-system-notifications-symbolic")}
           valign={Gtk.Align.CENTER}
         />
-        {/* REQ-NT-05: presence dot, top-right, only when unread > 0 */}
+        {/* REQ-NT-05: presence dot, top-right, only when unread > 0.
+            Color encodes urgency: red if any urgent, blue otherwise. */}
         <box
           $type="overlay"
-          cssClasses={["notif-dot"]}
+          cssClasses={dotClasses}
           visible={hasNotifs}
           halign={Gtk.Align.END}
           valign={Gtk.Align.START}

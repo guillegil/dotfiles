@@ -192,16 +192,18 @@ progressbar.volume-osd-bar > trough > progress {
   color:   var(--text);
 }
 
-// Unread indicator — a small red dot in the top-right corner of the bell.
+// Unread indicator — a small dot in the top-right corner of the bell.
 // (Per design feedback: a count number crowds the glyph and adds little value
-// at a glance; a presence dot reads cleaner.)
+// at a glance; a presence dot reads cleaner.) Color encodes urgency.
 .notif-dot {
-  background:    var(--red);
   border-radius: 9999px;
   min-width:     8px;
   min-height:    8px;
   margin:        1px 1px 0 0;
   border:        1.5px solid var(--mantle);
+
+  &.urgent { background: var(--red); }
+  &.normal { background: var(--blue); }
 }
 
 // DND state on bell
@@ -307,6 +309,35 @@ progressbar.volume-osd-bar > trough > progress {
 
 .toast.urgent {
   border-left: 3px solid var(--red);
+}
+
+// Rounded app-icon tile (DESIGN.md §6 toast anatomy).
+.toast-icon-tile {
+  background:     var(--bg2);
+  border-radius:  var(--radius-inner);
+  padding:        6px;
+
+  image { -gtk-icon-size: 22px; }
+}
+
+// × dismiss in the toast header.
+.toast-close {
+  padding:       2px;
+  border-radius: 9999px;
+  color:         var(--dim);
+  background:    transparent;
+
+  &:hover { background: var(--bg3); color: var(--red); }
+}
+
+// "Show more / Show less" toggle for long bodies.
+.toast-expand {
+  padding:       2px 0;
+  background:    transparent;
+  color:         var(--accent);
+  font-size:     10px;
+
+  &:hover { color: var(--text); }
 }
 
 // ── Launcher overlay (Claude design — Phase 1) ───────────────────────────────
