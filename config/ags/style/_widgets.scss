@@ -357,7 +357,7 @@ window.Launcher {
 }
 
 .launcher-card {
-  min-width:     360px;
+  min-width:     480px;
   // Glassy: translucent mantle so the Hyprland blur (ags namespace) shows
   // through behind the card.
   background:    color-mix(in oklab, var(--mantle) 96%, transparent);
@@ -765,7 +765,7 @@ calendar.calendar-widget > header {
   padding:       8px 4px;
   border-radius: var(--radius-inner);
   border:        1px solid transparent;  // reserved so selected border doesn't shift
-  min-width:     58px;
+  min-width:     72px;
   transition:    background var(--t-base);
 
   &:hover { background: var(--bg2); }
