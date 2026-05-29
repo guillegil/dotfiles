@@ -195,6 +195,25 @@ link_configs() {
     c_ok "config linking complete"
 }
 
+# Install bundled custom symbolic icons (e.g. arch-symbolic for the launcher
+# pill) into the user hicolor theme so GTK can resolve them by name + recolor.
+install_icons() {
+    local src="$CONFIG_SRC/ags/assets"
+    [[ -d "$src" ]] || return 0
+    local dest="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/actions"
+    mkdir -p "$dest"
+    local found=0
+    for svg in "$src"/*-symbolic.svg; do
+        [[ -e "$svg" ]] || continue
+        cp -f "$svg" "$dest/"
+        found=1
+    done
+    (( found )) || return 0
+    command -v gtk-update-icon-cache >/dev/null 2>&1 \
+        && gtk-update-icon-cache -f -t "${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor" 2>/dev/null
+    c_ok "custom symbolic icons installed"
+}
+
 # --- main ------------------------------------------------------------------
 
 c_info "Dotfiles repo: $DOTFILES"
@@ -202,6 +221,7 @@ c_info "Dotfiles repo: $DOTFILES"
 (( DO_PACKAGES )) && install_packages
 (( DO_PACKAGES )) && enable_services
 (( DO_LINK ))     && link_configs
+(( DO_LINK ))     && install_icons
 
 if [[ -d "$BACKUP_DIR" ]]; then
     c_info "Replaced files were backed up to: $BACKUP_DIR"
