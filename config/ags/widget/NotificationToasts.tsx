@@ -24,7 +24,8 @@ import Notifd from "gi://AstalNotifd"
 const notifd = Notifd.get_default()
 const NORMAL_MS = 5000
 const URGENT_MS = 10000
-const LONG_BODY = 90 // chars beyond which a body is considered "long"
+const LONG_BODY = 60 // chars beyond which a body needs the Show more toggle
+                     // (~2 lines at the 30-char body column)
 
 export default function NotificationToasts() {
   const [toasts, setToasts] = createState<Notifd.Notification[]>([])
@@ -164,7 +165,11 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
         </button>
       </box>
 
-      {/* Body — indented under the title (icon tile width + gap). */}
+      {/* Body — indented under the title (icon tile width + gap).
+          Collapsed 2-line preview is shown when not expanded; the full body
+          lives in a Revealer that slides down on expand. The slide animation
+          masks the layer-shell two-phase resize that flickered on first expand.
+          Both labels pin width (min == max) so width never changes. */}
       <box orientation={Gtk.Orientation.VERTICAL} spacing={2} marginStart={44}>
         <label
           cssClasses={["notif-body"]}
@@ -172,19 +177,29 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
           halign={Gtk.Align.START}
           xalign={0}
           wrap={true}
-          // maxWidthChars caps the wrap column → no half-screen growth; .toast
-          // min-width floors every toast to the same width. ellipsize stays END
-          // (constant width → no jitter); only `lines` toggles to reveal more.
-          // Use a finite large number, NOT -1 (which rendered as a collapse).
           maxWidthChars={30}
           ellipsize={Pango.EllipsizeMode.END}
-          lines={expanded(e => e ? 100 : 2)}
-          visible={!!bodyText}
-          // Pin the MIN width too (maxWidthChars only caps the max). With min ==
-          // max the label width is fully fixed, so the first expand can't briefly
-          // recompute a wider natural width and shove the right-anchored toast.
+          lines={2}
+          visible={expanded(e => !e && !!bodyText)}
           $={(self) => self.set_size_request(210, -1)}
         />
+        <revealer
+          revealChild={expanded}
+          transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+          transitionDuration={220}
+        >
+          <label
+            cssClasses={["notif-body"]}
+            label={bodyText}
+            halign={Gtk.Align.START}
+            xalign={0}
+            wrap={true}
+            maxWidthChars={30}
+            ellipsize={Pango.EllipsizeMode.END}
+            lines={100}
+            $={(self) => self.set_size_request(210, -1)}
+          />
+        </revealer>
         {isLong && (
           <button
             cssClasses={["toast-expand"]}
