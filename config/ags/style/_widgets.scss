@@ -693,6 +693,16 @@ calendar.calendar-widget > header {
   color:          var(--mauve);
 }
 
+// Hover: the stars gently bob up + pulse, like a rising bubble.
+// (Auto-gated by .motion-off * which collapses animation duration.)
+@keyframes ai-bob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-3px) scale(1.12); }
+}
+.ai-pill:hover .ai-pill-icon {
+  animation: ai-bob 0.9s ease-in-out infinite;
+}
+
 // Trailing ⏎ glyph on the selected result row (REQ-LR-04)
 .row-enter {
   color:       var(--accent);
