@@ -114,6 +114,43 @@ popover.volume-osd > arrow {
   border:      1px solid var(--bar-border);
 }
 
+// ── Centered volume OSD (macOS-style, triggered by volume keys) ──────────────
+.volume-osd-window {
+  background: transparent;   // Hyprland blur shows through; card carries alpha
+}
+
+.volume-osd-card {
+  background:    var(--mantle);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-hero);
+  box-shadow:    0 12px 40px -12px rgba(0, 0, 0, 0.7);
+  padding:       14px 20px;
+  min-width:     280px;
+}
+
+.volume-osd-icon {
+  -gtk-icon-size: 24px;
+  color:          var(--text);
+}
+
+.volume-osd-bar-wrap {
+  min-width: 200px;
+}
+
+// macOS-style solid fill bar via Gtk.ProgressBar nodes.
+progressbar.volume-osd-bar > trough {
+  min-height:    6px;
+  border-radius: 9999px;
+  background:    color-mix(in oklab, var(--text) 12%, transparent);
+}
+
+progressbar.volume-osd-bar > trough > progress {
+  min-height:    6px;
+  border-radius: 9999px;
+  background:    var(--accent);
+  transition:    min-width var(--t-base) ease;
+}
+
 .battery {
   &.high    { color: var(--green); }
   &.mid     { color: var(--yellow); }
