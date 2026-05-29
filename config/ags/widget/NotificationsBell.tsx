@@ -14,7 +14,6 @@ export default function NotificationsBell() {
   const notifications = createBinding(notifd, "notifications")
   const dnd = createBinding(notifd, "dontDisturb")
 
-  const count = notifications.as(n => n.length)
   const hasNotifs = notifications.as(n => n.length > 0)
 
   return (
@@ -41,11 +40,10 @@ export default function NotificationsBell() {
               : "preferences-system-notifications-symbolic")}
           valign={Gtk.Align.CENTER}
         />
-        {/* REQ-NT-05: count badge, top-right, only when unread > 0 */}
-        <label
+        {/* REQ-NT-05: presence dot, top-right, only when unread > 0 */}
+        <box
           $type="overlay"
-          cssClasses={["notif-badge"]}
-          label={count.as(c => `${c}`)}
+          cssClasses={["notif-dot"]}
           visible={hasNotifs}
           halign={Gtk.Align.END}
           valign={Gtk.Align.START}

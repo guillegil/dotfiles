@@ -68,6 +68,10 @@ $mocha-accent-bg:      rgba($mocha-mauve, 0.18);
 $mocha-accent-border:  rgba($mocha-mauve, 0.40);
 // crust at 50% — launcher footer surface
 $mocha-crust-50:       rgba($mocha-crust, 0.50);
+// popover surface — near-opaque mantle for readable content (DESIGN.md §1.4
+// uses 0.92 for glass; bumped to 0.97 so notification/calendar text stays
+// legible while keeping a faint Hyprland-blur hint).
+$mocha-mantle-glass:   rgba($mocha-mantle, 0.97);
 
 // ── Latte build-time alpha helpers ───────────────────────────────────────────
 $latte-bg-alpha:       rgba($latte-base, 0.92);
@@ -117,6 +121,7 @@ $latte-border-tint:    color.mix($latte-text, $latte-base, 6%);
   --accent-bg:     #{$mocha-accent-bg};
   --accent-border: #{$mocha-accent-border};
   --crust-50:      #{$mocha-crust-50};
+  --mantle-glass:  #{$mocha-mantle-glass};
 
   // Shape
   --radius:        14px;

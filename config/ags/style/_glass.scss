@@ -16,10 +16,12 @@
 }
 
 // Generic popover surface (calendar, notifications panel, etc.)
+// Near-opaque mantle (not the 0.82 bar bg) so popover content is readable —
+// the bar uses translucency, popovers prioritise legibility (DESIGN.md §1.4).
 .popover {
-  background:    var(--bg);
+  background:    var(--mantle-glass);
   border:        1px solid var(--bar-border);
   border-radius: var(--radius-popover);
-  box-shadow:    0 4px 24px rgba(0, 0, 0, 0.4);
+  box-shadow:    0 20px 60px -16px rgba(0, 0, 0, 0.7);
   font-family:   var(--font-mono);
 }
