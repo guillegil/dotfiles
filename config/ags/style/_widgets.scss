@@ -709,9 +709,12 @@ calendar.calendar-widget > header {
   0%, 100% { transform: scale(0.55); opacity: 0.35; }
   50%      { transform: scale(1.2);  opacity: 1; }
 }
-.ai-pill:hover .ai-star  { animation: ai-bubble  2.6s ease-in-out infinite; }
-.ai-pill:hover .ai-dot1  { animation: ai-twinkle 2.6s ease-in-out 0.25s infinite; }
-.ai-pill:hover .ai-dot2  { animation: ai-twinkle 2.6s ease-in-out 1.05s infinite; }
+// fill-mode both → the dots sit at the keyframe-0 state during their delay
+// (no abrupt static→0.55 jump on hover); shorter delays so neither dot freezes
+// for ~a second before it starts.
+.ai-pill:hover .ai-star  { animation: ai-bubble  2.6s ease-in-out 0s    infinite both; }
+.ai-pill:hover .ai-dot1  { animation: ai-twinkle 2.6s ease-in-out 0.3s  infinite both; }
+.ai-pill:hover .ai-dot2  { animation: ai-twinkle 2.6s ease-in-out 0.65s infinite both; }
 
 // Trailing ⏎ glyph on the selected result row (REQ-LR-04)
 .row-enter {
