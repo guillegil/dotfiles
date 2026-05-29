@@ -60,7 +60,7 @@ $latte-crust:     #dce0e8;
 
 // ── Mocha build-time alpha helpers ───────────────────────────────────────────
 // bar background at 0.82 alpha
-$mocha-bg-alpha:       rgba($mocha-base, 0.82);
+$mocha-bg-alpha:       rgba($mocha-base, 0.94);
 // tinted border: 6% text mixed into base (resolved at build time)
 $mocha-border-tint:    color.mix($mocha-text, $mocha-base, 6%);
 // accent tints used by launcher selected state etc. Accent = Catppuccin green.
