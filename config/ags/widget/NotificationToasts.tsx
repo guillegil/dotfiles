@@ -180,6 +180,10 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
           ellipsize={Pango.EllipsizeMode.END}
           lines={expanded(e => e ? 100 : 2)}
           visible={!!bodyText}
+          // Pin the MIN width too (maxWidthChars only caps the max). With min ==
+          // max the label width is fully fixed, so the first expand can't briefly
+          // recompute a wider natural width and shove the right-anchored toast.
+          $={(self) => self.set_size_request(210, -1)}
         />
         {isLong && (
           <button
