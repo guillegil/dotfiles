@@ -169,7 +169,27 @@ $={(self) => self.set_size_request(210, -1)}
   correctly, uniform width). BUT the **first-expand vertical flicker remains** (top contracts
   then expands). This is the current baseline minus the revealer below.
 
-### 8. (CURRENT) `Gtk.Revealer` SLIDE_DOWN to mask the flicker
+### 9. (TESTED, REVERTED) Persistent window + single body label
+
+Per the research write-up (`sol.md`): the flicker was diagnosed as a
+`gtk4-layer-shell` first-resize-after-map artifact, exposed because the window is
+`visible={count>0}` and so unmaps/remaps per (usually solo) toast. Proposed fix:
+make the window persistent (`visible` always) so the surface stays mapped, and
+revert to a single body label.
+
+- **Result on this Hyprland build:** REGRESSED. With the window always mapped, the
+  toast broke — `×` did not dismiss, `Show less` stopped working, and the
+  auto-dismiss timer never fired (the timer is plain JS in the root `$` setup, so
+  its failure indicates the always-mapped surface disrupted toast
+  construction/lifecycle). The first-expand flicker was also only partially
+  reduced, not eliminated. Reverted to `visible={count>0}`.
+- **Conclusion:** the persistent-window approach is not viable here as-is. The
+  reasoning (surface first-resize-after-map) may still be the root cause, but a
+  fix must keep the per-toast lifecycle intact. Open follow-up: attack the
+  layer-shell configure handshake directly, or pre-warm the surface without
+  keeping an empty window mapped.
+
+### 8. (TESTED, REVERTED) `Gtk.Revealer` SLIDE_DOWN to mask the flicker
 ```tsx
 <label class="notif-body" lines=2 visible={expanded(e => !e && !!bodyText)} .../>   // preview
 <revealer
