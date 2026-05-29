@@ -109,7 +109,7 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
       <image
         iconName={n.appIcon || "dialog-information-symbolic"}
         cssClasses={["notif-icon"]}
-        valign={Gtk.Align.START}
+        valign={Gtk.Align.CENTER}
       />
       <box orientation={Gtk.Orientation.VERTICAL} hexpand={true} spacing={2}>
         <box spacing={6}>
@@ -133,7 +133,7 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
           widthChars={34}
           maxWidthChars={34}
           lines={expanded(e => e ? -1 : 2)}
-          ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
+          ellipsize={Pango.EllipsizeMode.END}
           visible={!!bodyText}
         />
         {isLong && (

@@ -133,7 +133,7 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
       }}
     >
       <box spacing={10}>
-        <box cssClasses={["toast-icon-tile"]} valign={Gtk.Align.START}>
+        <box cssClasses={["toast-icon-tile"]} valign={Gtk.Align.CENTER}>
           <image iconName={n.appIcon || "dialog-information-symbolic"} />
         </box>
         <box orientation={Gtk.Orientation.VERTICAL} hexpand={true} spacing={2}>
@@ -150,7 +150,9 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
             <button
               cssClasses={["toast-close"]}
               valign={Gtk.Align.START}
-              onClicked={close}
+              // × fully dismisses (removes from the panel too), unlike a click
+              // on the card body which only clears the popup.
+              onClicked={() => { clearTimer(); n.dismiss() }}
               $={(self) => self.update_property(
                 [Gtk.AccessibleProperty.LABEL], ["Dismiss"])}
             >
@@ -168,8 +170,11 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
             // GTK4 has no max-width, so widthChars is how we stop the jitter.
             widthChars={34}
             maxWidthChars={34}
-            lines={expanded(e => e ? -1 : 2)}        // (3) clamp vs full
-            ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
+            // Keep ellipsize END constant — only `lines` changes between states,
+            // so Show more changes HEIGHT only (toggling ellipsize recomputed the
+            // width and caused the jitter).
+            lines={expanded(e => e ? -1 : 2)}
+            ellipsize={Pango.EllipsizeMode.END}
             visible={!!bodyText}
           />
           {isLong && (
