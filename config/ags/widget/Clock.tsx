@@ -5,7 +5,7 @@
 
 import app from "ags/gtk4/app"
 import GLib from "gi://GLib"
-import { Astal, Gtk } from "ags/gtk4"
+import { Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import Popover from "./Popover"
 
@@ -61,7 +61,8 @@ export function CalendarPopover() {
   return (
     <Popover
       name="calendar"
-      anchor={Astal.WindowAnchor.TOP}
+      halign={Gtk.Align.CENTER}
+      valign={Gtk.Align.START}
       margins={[38, 0, 0, 0]}
       accessibleName="Calendar"
     >

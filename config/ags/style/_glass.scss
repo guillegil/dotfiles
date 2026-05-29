@@ -15,7 +15,12 @@
   font-family:   var(--font-mono);
 }
 
-// Generic popover surface (calendar, notifications panel, etc.)
+// Popover toplevel is full-screen + transparent; the scrim catches
+// click-outside (Popover.tsx). Only the inner .popover card paints.
+.popover-window { background: transparent; }
+.popover-scrim  { background: transparent; }
+
+// Generic popover card surface (calendar, notifications panel, etc.)
 // Near-opaque mantle (not the 0.82 bar bg) so popover content is readable —
 // the bar uses translucency, popovers prioritise legibility (DESIGN.md §1.4).
 .popover {

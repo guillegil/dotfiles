@@ -8,7 +8,7 @@ import app from "ags/gtk4/app"
 import GLib from "gi://GLib"
 import { createBinding, For } from "ags"
 import Notifd from "gi://AstalNotifd"
-import { Astal, Gtk } from "ags/gtk4"
+import { Gtk } from "ags/gtk4"
 import Pango from "gi://Pango"
 import Popover from "./Popover"
 
@@ -25,7 +25,8 @@ export function NotificationsPanel() {
   return (
     <Popover
       name="notifications-panel"
-      anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
+      halign={Gtk.Align.END}
+      valign={Gtk.Align.START}
       margins={[38, 12, 0, 0]}
       accessibleName="Notifications"
     >
