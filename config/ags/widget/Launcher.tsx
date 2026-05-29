@@ -613,11 +613,26 @@ export default function Launcher() {
                 GTK4 4.22 cannot clip gradient into text glyphs (D-LR-1).
                 Functionality deferred (D-LR-2). */}
             <box cssClasses={["ai-pill"]} valign={Gtk.Align.CENTER} spacing={5}>
-              <image
-                iconName="ai-stars-symbolic"
-                cssClasses={["ai-pill-icon"]}
-                valign={Gtk.Align.CENTER}
-              />
+              {/* AI glyph composed of 3 GTK widgets so each animates on its own
+                  (GTK can't animate SVG sub-elements): star "breathes",
+                  the two dots "twinkle" with staggered delays — on hover. */}
+              <overlay cssClasses={["ai-glyph"]} valign={Gtk.Align.CENTER}>
+                <image iconName="ai-star-symbolic" cssClasses={["ai-star"]} />
+                <image
+                  $type="overlay"
+                  iconName="ai-dot-symbolic"
+                  cssClasses={["ai-dot", "ai-dot1"]}
+                  halign={Gtk.Align.END}
+                  valign={Gtk.Align.START}
+                />
+                <image
+                  $type="overlay"
+                  iconName="ai-dot-symbolic"
+                  cssClasses={["ai-dot", "ai-dot2"]}
+                  halign={Gtk.Align.START}
+                  valign={Gtk.Align.END}
+                />
+              </overlay>
               <label label="ask cachy::ai" valign={Gtk.Align.CENTER} />
             </box>
           </box>

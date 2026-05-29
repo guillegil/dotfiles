@@ -688,22 +688,29 @@ calendar.calendar-widget > header {
   padding:          3px 11px;
 }
 
-.ai-pill-icon {
-  -gtk-icon-size: 12px;
-  color:          var(--mauve);
-}
+// AI glyph: star + 2 satellite dots, each its own widget so they animate
+// independently (GTK can't target SVG sub-elements). All recolored to mauve.
+.ai-glyph { min-width: 16px; min-height: 16px; }
+.ai-star  { -gtk-icon-size: 16px; color: var(--mauve); }
+.ai-dot   { -gtk-icon-size: 6px;  color: var(--mauve); }
+.ai-dot1  { margin: -1px -1px 0 0; }   // nudge to the top-right corner
+.ai-dot2  { margin: 0 0 -1px -1px; }   // nudge to the bottom-left corner
 
-// Hover: the stars float up and back down (rising-bubble bob). Pure vertical
-// motion so the rise is visible — a combined scale drowned it out before.
-// (Auto-gated by .motion-off * which collapses animation duration.)
-@keyframes ai-bob {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-5px); }
-  100% { transform: translateY(0); }
+// Hover: the star "breathes" like an inflating bubble; the dots "twinkle"
+// (scale + fade) on staggered delays for an effervescent feel. GTK scales from
+// each widget's own centre (transform-origin defaults to center).
+// Auto-gated by .motion-off * which collapses animation duration.
+@keyframes ai-bubble {
+  0%, 100% { transform: scale(0.88); }
+  50%      { transform: scale(1.08); }
 }
-.ai-pill:hover .ai-pill-icon {
-  animation: ai-bob 0.8s ease-in-out infinite;
+@keyframes ai-twinkle {
+  0%, 100% { transform: scale(0.55); opacity: 0.35; }
+  50%      { transform: scale(1.2);  opacity: 1; }
 }
+.ai-pill:hover .ai-star  { animation: ai-bubble  2.6s ease-in-out infinite; }
+.ai-pill:hover .ai-dot1  { animation: ai-twinkle 2.6s ease-in-out 0.25s infinite; }
+.ai-pill:hover .ai-dot2  { animation: ai-twinkle 2.6s ease-in-out 1.05s infinite; }
 
 // Trailing ⏎ glyph on the selected result row (REQ-LR-04)
 .row-enter {
