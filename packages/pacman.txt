@@ -16,7 +16,9 @@ sddm                        # login screen; enabled by install.sh
 
 # --- Core desktop pieces ---------------------------------------------------
 kitty                       # terminal
-swaync                      # notification daemon (placeholder; AGS may replace)
+# swaync removed — AGS (AstalNotifd) is the notification daemon. swaync's
+# systemd user unit is Type=dbus on org.freedesktop.Notifications, so leaving
+# it installed lets D-Bus re-activate it and steal the bus from notifd.
 hyprpolkitagent             # polkit agent; enabled by install.sh
 thunar                      # file manager
 
