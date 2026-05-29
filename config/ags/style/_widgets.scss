@@ -527,3 +527,133 @@ calendar.calendar-widget > header {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
 }
+
+// ── Launcher Slice 1 — Core UX classes (launcher-redesign) ───────────────────
+// All classes below are additive — no existing class is modified or removed.
+// Colour tokens: --mauve, --accent, --text, --dim, --bg2, --bg3, --mantle,
+// --bar-border, --radius-inner, --t-base. Shape tokens already in _tokens.scss.
+
+// "N RESULTS" pill in the search row (REQ-LR-03)
+// Uses the same runtime color-mix pattern as .app-item.selected (already
+// validated on GTK 4.22 in the comment above .app-item.selected above).
+.results-pill {
+  background:     color-mix(in oklab, var(--accent) 16%, transparent);
+  border-radius:  var(--radius-inner);
+  color:          var(--accent);
+  font-family:    var(--font-mono);
+  font-size:      9px;
+  font-weight:    600;
+  letter-spacing: 0.06em;
+  padding:        2px 8px;
+}
+
+// Calculator banner — shown above result rows when the evaluator returns non-null.
+// (REQ-LR-05). Accent left border gives it a distinct-but-subtle identity.
+.calc-banner {
+  background:    var(--bg2);
+  border-radius: var(--radius-inner);
+  border-left:   2px solid var(--mauve);
+  margin:        0 14px;
+  padding:       8px 12px;
+}
+
+// Expression text — dim, shows the raw query
+.calc-expr {
+  color:     var(--dim);
+  font-size: 11px;
+}
+
+// Arrow separator
+.calc-arrow {
+  color:     var(--dim);
+  font-size: 11px;
+}
+
+// Numeric result — mauve bold (the answer)
+.calc-value {
+  color:       var(--mauve);
+  font-weight: 700;
+  font-size:   13px;
+}
+
+// Constant label text (e.g. "· golden ratio") — dim, secondary
+.calc-label {
+  color:     var(--dim);
+  font-size: 10px;
+}
+
+// "↵ copy" affordance — styled like a kbd chip
+.calc-copy {
+  background:     var(--bg2);
+  border:         1px solid var(--bar-border);
+  border-radius:  4px;
+  color:          var(--text);
+  font-family:    var(--font-mono);
+  font-size:      9px;
+  font-weight:    600;
+  letter-spacing: 0.04em;
+  padding:        1px 5px;
+
+  &:hover { background: var(--bg3); }
+}
+
+// RECENT chips strip (REQ-LR-06)
+.recent-row {
+  padding: 6px 14px;
+}
+
+// Each RECENT chip button
+.recent-chip {
+  background:     var(--bg2);
+  border-radius:  var(--radius-inner);
+  color:          var(--text);
+  font-family:    var(--font-mono);
+  font-size:      11px;
+  padding:        2px 8px;
+
+  &:hover { background: var(--bg3); }
+}
+
+// Section label — "RECENT" / "ALL APPS" etc.
+.section-label {
+  color:          var(--dim);
+  font-family:    var(--font-mono);
+  font-size:      10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+// "ask cachy::ai" pill in the footer (REQ-LR-07, D-LR-1, D-LR-2).
+// NOTE: GTK4 4.22 does not support background-clip: text or
+// -webkit-text-fill-color, so gradient-filled text glyphs are impossible.
+// This is accepted degradation D-LR-1: the gradient is on the background,
+// the text colour is solid var(--mauve). This pill is cosmetic only (D-LR-2).
+.ai-pill {
+  background-image: linear-gradient(90deg, var(--mauve), var(--pink));
+  border-radius:    var(--radius-inner);
+  color:            var(--mauve);  // solid — gradient text impossible in GTK4 4.22 (D-LR-1)
+  font-family:      var(--font-mono);
+  font-size:        9px;
+  font-weight:      600;
+  padding:          2px 10px;
+}
+
+// Trailing ⏎ glyph on the selected result row (REQ-LR-04)
+.row-enter {
+  color:       var(--accent);
+  font-size:   10px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+// Query-prefix highlight on result row names (REQ-LR-04)
+.match-prefix {
+  color:       var(--accent);
+  font-weight: 700;
+  font-size:   13px;
+}
+
+.match-rest {
+  color:     var(--text);
+  font-size: 13px;
+}
