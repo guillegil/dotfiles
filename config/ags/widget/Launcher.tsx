@@ -151,9 +151,13 @@ export default function Launcher() {
     closeAndClear()
   }
 
-  // Reference to the search entry so the key controller can refocus it when the
-  // user starts typing while focus is elsewhere (e.g. navigating the app grid).
+  // Reference to the search entry + a tracked focus flag so the key controller
+  // can refocus it when the user starts typing while focus is elsewhere (e.g.
+  // navigating the app grid). We track focus via an EventControllerFocus rather
+  // than has_focus() (not a method in this binding) — it also correctly follows
+  // the entry's inner GtkText delegate.
   let searchEntry: Gtk.Entry | null = null
+  let entryFocused = false
 
   // ── Anchors ────────────────────────────────────────────────────────────────
 
@@ -224,7 +228,7 @@ export default function Launcher() {
           // user drops straight into search mode without losing it. (We insert
           // manually rather than via controller.forward(), which proved to be a
           // no-op for the already-targeted grid focus.)
-          if (searchEntry && !searchEntry.has_focus()) {
+          if (searchEntry && !entryFocused) {
             const cp = Gdk.keyval_to_unicode(keyval)
             if (cp >= 0x20 && cp !== 0x7f) {
               searchEntry.grab_focus()
@@ -306,7 +310,14 @@ export default function Launcher() {
                 }
                 setQuery(t)
               }}
-              $={self => { searchEntry = self; self.grab_focus() }}
+              $={self => {
+                searchEntry = self
+                const fc = new Gtk.EventControllerFocus()
+                fc.connect("enter", () => { entryFocused = true })
+                fc.connect("leave", () => { entryFocused = false })
+                self.add_controller(fc)
+                self.grab_focus()
+              }}
             />
             {/* "N RESULTS" pill — hidden when query is empty (REQ-LR-03) */}
             <label
