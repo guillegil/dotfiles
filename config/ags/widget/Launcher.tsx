@@ -461,8 +461,13 @@ export default function Launcher() {
             {/* AI pill — cosmetic only; gradient bg + solid var(--mauve) text.
                 GTK4 4.22 cannot clip gradient into text glyphs (D-LR-1).
                 Functionality deferred (D-LR-2). */}
-            <box cssClasses={["ai-pill"]} valign={Gtk.Align.CENTER}>
-              <label label="ask cachy::ai" />
+            <box cssClasses={["ai-pill"]} valign={Gtk.Align.CENTER} spacing={5}>
+              <image
+                iconName="starred-symbolic"
+                cssClasses={["ai-pill-icon"]}
+                valign={Gtk.Align.CENTER}
+              />
+              <label label="ask cachy::ai" valign={Gtk.Align.CENTER} />
             </box>
           </box>
 
