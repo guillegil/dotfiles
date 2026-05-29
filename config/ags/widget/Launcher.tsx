@@ -151,6 +151,10 @@ export default function Launcher() {
     closeAndClear()
   }
 
+  // Reference to the search entry so the key controller can refocus it when the
+  // user starts typing while focus is elsewhere (e.g. navigating the app grid).
+  let searchEntry: Gtk.Entry | null = null
+
   // ── Anchors ────────────────────────────────────────────────────────────────
 
   const anchorAll =
@@ -213,6 +217,15 @@ export default function Launcher() {
               }
               return true
             }
+          }
+
+          // Printable key while focus is elsewhere (e.g. the app grid) →
+          // refocus the search entry and forward this keystroke to it, so the
+          // user drops straight into search mode without losing the character.
+          if (searchEntry && !searchEntry.has_focus() && Gdk.keyval_to_unicode(keyval) !== 0) {
+            searchEntry.grab_focus()
+            controller.forward(searchEntry)
+            return true
           }
 
           // All other keys — let the entry receive them.
@@ -287,7 +300,7 @@ export default function Launcher() {
                 }
                 setQuery(t)
               }}
-              $={self => self.grab_focus()}
+              $={self => { searchEntry = self; self.grab_focus() }}
             />
             {/* "N RESULTS" pill — hidden when query is empty (REQ-LR-03) */}
             <label
