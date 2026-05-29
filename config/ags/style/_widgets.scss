@@ -97,6 +97,23 @@ window.Launcher:focus,
   &:hover { background: color-mix(in oklab, var(--text) 8%, transparent); }
 }
 
+// Transient volume OSD — native Gtk.Popover. Style its contents + arrow nodes.
+popover.volume-osd > contents {
+  background:    var(--mantle);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-inner);
+  padding:       4px 10px;
+  color:         var(--text);
+  font-family:   var(--font-mono);
+  font-size:     12px;
+  font-weight:   600;
+}
+
+popover.volume-osd > arrow {
+  background:  var(--mantle);
+  border:      1px solid var(--bar-border);
+}
+
 .battery {
   &.high    { color: var(--green); }
   &.mid     { color: var(--yellow); }
