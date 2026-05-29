@@ -1,0 +1,31 @@
+change: launcher-redesign
+status: in_progress
+current_phase: apply
+phases:
+  explore:   { status: complete }
+  proposal:  { status: complete }
+  spec:      { status: complete }
+  design:    { status: complete }
+  tasks:     { status: complete }
+  apply:     { status: in_progress, completed_slices: [], pending_slices: [1, 2] }
+  verify:    { status: pending }
+  archive:   { status: pending }
+artifact_store: hybrid
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+sequencing: {}
+notes: |
+  Bring the AGS app launcher to the full Claude-design reference
+  (docs/assets/App-Launcher.png). Decisions: 2-slice delivery (commit to main,
+  no PRs); hand-rolled JS calculator + constants (no qalc/eval); real .desktop
+  icons in the grid; always-on auto calculator; ⌘↵ terminal via $TERMINAL||kitty;
+  AI mode deferred; gradient text degrades to solid var(--mauve).
+
+  Slice 1 (Core UX, ~410 lines): lib/calc.ts, lib/launcher-history.ts,
+  Launcher.tsx rewrite (selectedIdx + key nav, results pill, calc banner,
+  recent chips, footer + AI pill, ⌘↵ terminal), _widgets.scss additions.
+  Slice 2 (App grid, ~180 lines): Gtk.FlowBox 6-col real-icon grid + scrolledwindow.
+
+  Runtime verify risks (no automated test runner — manual smoke per slice):
+  key controller must not eat printable keys; Gtk.FlowBoxChild wrappers; selectedIdx
+  clamp on query shrink; calc.ts never uses eval.
