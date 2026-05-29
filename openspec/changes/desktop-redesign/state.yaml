@@ -1,13 +1,13 @@
 change: desktop-redesign
 status: in_progress
-current_phase: apply
+current_phase: verify
 phases:
   explore:   { status: complete }
   proposal:  { status: complete }
   spec:      { status: complete }
   design:    { status: complete }
   tasks:     { status: complete }
-  apply:     { status: in_progress, completed_slices: [A0, A, B], pending_slices: [C, D] }
+  apply:     { status: complete, completed_slices: [A0, A, B, C, D], pending_slices: [] }
   verify:    { status: pending }
   archive:   { status: pending }
 artifact_store: hybrid
@@ -56,7 +56,30 @@ notes: |
     - Clock shows HH:MM + date, click toggles Calendar popover (GTK4 calendar widget appears)
     - Stderr clean (no CSS / JSX intrinsic errors)
 
+  Slice C complete on bare-metal — Volume/Battery/Network smoke PASSED. Fixes:
+    - 35961f7 Network icon derived from Wifi/Wired sub-object (Network has no icon-name)
+    - 6f0df90 Volume hides % when muted
+    - 4958bc2 Volume redesign: icon-only chip + transient % popover OSD on scroll
+    - 52d5768 Centered macOS-style OSD on volume KEYS via `ags request volume-osd`
+  Battery hidden on desktop (isBattery=false) confirmed working.
+
+  Slice D complete on bare-metal — notifd cutover smoke PASSED. Fixes:
+    - swaync (pid 3433) had to be killed by hand once; autostart removed so it stays dead
+    - 90d1fc4 bell uses existing symbolic icons (preferences-system-notifications / notifications-disabled)
+    - 2105693 design pass: opaque popover (--mantle-glass), dot badge (no number)
+    - a345449 Clear all stays visible+disabled when empty; more panel space; mono retained
+  Notification design decisions (per user): monospace kept (DESIGN.md §1.2 identity);
+  unread = red presence dot (no count); Clear all grays out instead of disappearing.
+
+  ALL APPLY SLICES COMPLETE. Apply phase done.
+
   Next steps:
-    1. sdd-continue → Slice C: Volume, Battery, Network widgets (+ lib/a11y.ts).
-    2. Continue through Slice D as stacked commit to main.
-    3. After Slice D: sdd-verify desktop-redesign (incl. task 1.22) → sdd-archive.
+    1. sdd-verify desktop-redesign — validate 4 slices vs specs/design/tasks.
+       Includes deferred manual checks: task 1.22 (gsettings animations off → motion-off),
+       task 3.5 (a11y audit: accessible-name/role/44px on all interactive widgets),
+       task 3.6 (contrast ≥4.5:1 spot check).
+    2. sdd-archive desktop-redesign — merge delta specs to openspec/specs/, close cycle.
+
+  Note: DESIGN.md (full 12-palette design spec) added by user at repo root — supersedes
+  the older explore.md reference for any future design work (Latte theme, more bar layouts,
+  popovers like ControlCenter/NowPlaying, login screens).
