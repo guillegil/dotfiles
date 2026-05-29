@@ -63,9 +63,9 @@ $latte-crust:     #dce0e8;
 $mocha-bg-alpha:       rgba($mocha-base, 0.82);
 // tinted border: 6% text mixed into base (resolved at build time)
 $mocha-border-tint:    color.mix($mocha-text, $mocha-base, 6%);
-// accent tints used by launcher selected state etc.
-$mocha-accent-bg:      rgba($mocha-mauve, 0.18);
-$mocha-accent-border:  rgba($mocha-mauve, 0.40);
+// accent tints used by launcher selected state etc. Accent = Catppuccin green.
+$mocha-accent-bg:      rgba($mocha-green, 0.18);
+$mocha-accent-border:  rgba($mocha-green, 0.40);
 // crust at 50% — launcher footer surface
 $mocha-crust-50:       rgba($mocha-crust, 0.50);
 // popover surface — near-opaque mantle for readable content (DESIGN.md §1.4
@@ -116,7 +116,7 @@ $latte-border-tint:    color.mix($latte-text, $latte-base, 6%);
   --bg2:       #{$mocha-surface0};
   --bg3:       #{$mocha-surface1};
   --dim:       #{$mocha-overlay1};
-  --accent:    #{$mocha-mauve};
+  --accent:    #{$mocha-green};   // Catppuccin Mocha green #a6e3a1
   --bar-border: #{$mocha-border-tint};
   --accent-bg:     #{$mocha-accent-bg};
   --accent-border: #{$mocha-accent-border};
