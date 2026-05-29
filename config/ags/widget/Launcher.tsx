@@ -614,7 +614,7 @@ export default function Launcher() {
                 Functionality deferred (D-LR-2). */}
             <box cssClasses={["ai-pill"]} valign={Gtk.Align.CENTER} spacing={5}>
               <image
-                iconName="starred-symbolic"
+                iconName="ai-stars-symbolic"
                 cssClasses={["ai-pill-icon"]}
                 valign={Gtk.Align.CENTER}
               />
