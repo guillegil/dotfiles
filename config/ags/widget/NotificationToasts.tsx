@@ -128,6 +128,7 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
               label={n.summary ?? ""}
               halign={Gtk.Align.START}
               hexpand={true}
+              maxWidthChars={30}
               ellipsize={Pango.EllipsizeMode.END}
               singleLineMode={true}
             />
@@ -146,6 +147,10 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
             label={bodyText}
             halign={Gtk.Align.START}
             wrap={true}
+            // maxWidthChars caps the natural width so a long body WRAPS at a
+            // fixed column instead of stretching the toast (GTK4 has no
+            // max-width). This is also what makes lines=2 clamp + Show more work.
+            maxWidthChars={34}
             lines={expanded(e => e ? -1 : 2)}        // (3) clamp vs full
             ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
             visible={!!bodyText}

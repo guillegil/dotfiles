@@ -6,13 +6,14 @@
 
 import app from "ags/gtk4/app"
 import GLib from "gi://GLib"
-import { createBinding, For } from "ags"
+import { createBinding, createState, For } from "ags"
 import Notifd from "gi://AstalNotifd"
 import { Gtk } from "ags/gtk4"
 import Pango from "gi://Pango"
 import Popover from "./Popover"
 
 const notifd = Notifd.get_default()
+const LONG_BODY = 90 // chars beyond which a body gets a Show more toggle
 
 export function NotificationsPanel() {
   const notifications = createBinding(notifd, "notifications")
@@ -96,6 +97,9 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
   const time = n.time
     ? GLib.DateTime.new_from_unix_local(n.time).format("%H:%M") ?? ""
     : ""
+  const bodyText = n.body ?? ""
+  const isLong = bodyText.length > LONG_BODY || bodyText.includes("\n")
+  const [expanded, setExpanded] = createState(false)
 
   return (
     <box
@@ -114,6 +118,7 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
             label={n.summary ?? ""}
             halign={Gtk.Align.START}
             hexpand={true}
+            maxWidthChars={28}
             ellipsize={Pango.EllipsizeMode.END}
             singleLineMode={true}
           />
@@ -121,13 +126,22 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
         </box>
         <label
           cssClasses={["notif-body"]}
-          label={n.body ?? ""}
+          label={bodyText}
           halign={Gtk.Align.START}
           wrap={true}
-          lines={2}
-          ellipsize={Pango.EllipsizeMode.END}
-          visible={!!n.body}
+          maxWidthChars={34}
+          lines={expanded(e => e ? -1 : 2)}
+          ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
+          visible={!!bodyText}
         />
+        {isLong && (
+          <button
+            cssClasses={["toast-expand"]}
+            halign={Gtk.Align.START}
+            label={expanded(e => e ? "Show less" : "Show more")}
+            onClicked={() => setExpanded(!expanded.get())}
+          />
+        )}
       </box>
       <button
         cssClasses={["notif-dismiss"]}
