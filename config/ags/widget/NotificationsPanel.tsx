@@ -55,7 +55,7 @@ export function NotificationsPanel() {
           <button
             cssClasses={["notif-clear"]}
             label="Clear all"
-            visible={hasNotifs}
+            sensitive={hasNotifs}
             onClicked={() => notifd.get_notifications().forEach(n => n.dismiss())}
           />
         </box>
@@ -75,7 +75,11 @@ export function NotificationsPanel() {
           propagateNaturalHeight={true}
           maxContentHeight={600}
         >
-          <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
+          <box
+            cssClasses={["notif-list"]}
+            orientation={Gtk.Orientation.VERTICAL}
+            spacing={6}
+          >
             <For each={notifications}>
               {(n: Notifd.Notification) => <NotificationRow n={n} />}
             </For>

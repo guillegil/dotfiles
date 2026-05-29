@@ -212,7 +212,12 @@ progressbar.volume-osd-bar > trough > progress {
 // ── Notifications panel (REQ-NT-02,04) ───────────────────────────────────────
 .notif-panel {
   min-width: 380px;
-  padding:   4px;
+  padding:   8px;
+}
+
+// Bottom breathing room so the last row is never clipped by the scroll viewport.
+.notif-list {
+  padding-bottom: 4px;
 }
 
 .notif-header {
@@ -239,6 +244,13 @@ progressbar.volume-osd-bar > trough > progress {
   font-size:     11px;
 
   &:hover { background: var(--bg3); }
+
+  // Stays visible when there is nothing to clear — grayed out, not hidden
+  // (a disappearing control is a worse affordance than a disabled one).
+  &:disabled {
+    background: transparent;
+    color:      var(--overlay0);
+  }
 }
 
 .notif-empty {
@@ -262,20 +274,10 @@ progressbar.volume-osd-bar > trough > progress {
 }
 
 .notif-icon   { -gtk-icon-size: 24px; }
-// Prose (summary + body) uses the sans family for readability; time stays
-// tabular mono (DESIGN.md §1.2: --font-sans is for popover prose).
-.notif-summary {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size:   12px;
-  color:       var(--text);
-}
+// Monospace throughout — DESIGN.md §1.2 system identity (kept per request).
+.notif-summary { font-weight: 600; font-size: 12px; color: var(--text); }
 .notif-time   { font-size: 10px; color: var(--dim); }
-.notif-body   {
-  font-family: var(--font-sans);
-  font-size:   11px;
-  color:       var(--dim);
-}
+.notif-body   { font-size: 11px; color: var(--dim); }
 
 .notif-dismiss {
   padding:       2px;
