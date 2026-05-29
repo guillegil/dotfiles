@@ -468,6 +468,12 @@ entry.launcher-entry > text {
   padding:    12px 16px;
   border-top: 1px solid var(--bar-border);
   background: var(--crust-50);
+  // Footer is the card's last child and has its own fill; GTK4 doesn't clip a
+  // child's background to the parent's border-radius, so its square corners
+  // poked out under the card's rounded bottom. Match the card's hero radius
+  // (minus the 1px card border) so the fill follows the curve.
+  border-bottom-left-radius:  calc(var(--radius-hero) - 1px);
+  border-bottom-right-radius: calc(var(--radius-hero) - 1px);
 }
 
 .kbd-hint {
