@@ -633,7 +633,7 @@ export default function Launcher() {
                   valign={Gtk.Align.END}
                 />
               </overlay>
-              <label label="ask cachy::ai" valign={Gtk.Align.CENTER} />
+              <label label="Ask Cachy:ai" valign={Gtk.Align.CENTER} />
             </box>
           </box>
 
