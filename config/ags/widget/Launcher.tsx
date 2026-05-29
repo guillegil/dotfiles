@@ -603,17 +603,24 @@ export default function Launcher() {
             />
           </box>
 
-          {/* ── Footer hints + AI pill (REQ-LR-07) ───────────────── */}
-          <box cssClasses={["launcher-footer"]} spacing={14}>
-            <KbdHint k="↑↓" hint="nav" />
-            <KbdHint k="↵" hint="launch" />
-            <KbdHint k=">" hint="terminal" />
-            <KbdHint k="=" hint="calc" />
-            <KbdHint k="?" hint="ask AI" />
-            <box hexpand={true} />
-            {/* AI pill — cosmetic only; gradient bg + solid var(--mauve) text.
-                GTK4 4.22 cannot clip gradient into text glyphs (D-LR-1).
-                Functionality deferred (D-LR-2). */}
+          {/* ── Footer: hints row + AI pill row, stacked (REQ-LR-07) ──────
+                A single row of all 5 hints + the pill forced the card wide;
+                stacking keeps everything while letting the card stay narrow. */}
+          <box
+            cssClasses={["launcher-footer"]}
+            orientation={Gtk.Orientation.VERTICAL}
+            spacing={8}
+          >
+            <box cssClasses={["footer-hints"]} spacing={12}>
+              <KbdHint k="↑↓" hint="nav" />
+              <KbdHint k="↵" hint="launch" />
+              <KbdHint k=">" hint="terminal" />
+              <KbdHint k="=" hint="calc" />
+              <KbdHint k="?" hint="ask AI" />
+            </box>
+            {/* AI pill — cosmetic; gradient icon + solid var(--mauve) text
+                (GTK4 can't gradient-fill text, D-LR-1). Right-aligned row. */}
+            <box halign={Gtk.Align.END}>
             <box cssClasses={["ai-pill"]} valign={Gtk.Align.CENTER} spacing={5}>
               {/* AI glyph composed of 3 GTK widgets so each animates on its own
                   (GTK can't animate SVG sub-elements): star "breathes",
@@ -636,6 +643,7 @@ export default function Launcher() {
                 />
               </overlay>
               <label label="Ask Cachy:ai" valign={Gtk.Align.CENTER} />
+            </box>
             </box>
           </box>
 
