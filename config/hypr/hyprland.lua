@@ -45,7 +45,7 @@ local menu        = "rofi -show drun"
 hl.on("hyprland.start", function ()
    hl.exec_cmd("uwsm app -- ags run")
    -- swaync removed: AGS notifd is now the notification daemon (REQ-NT-01).
-   -- hyprpaper disabled until hyprpaper.conf exists; misc.background_color used instead
+   hl.exec_cmd("uwsm app -- hyprpaper")  -- wallpaper (config/hypr/hyprpaper.conf)
    -- polkit agent: hyprpolkitagent runs as a systemd user service
    -- (enabled by install.sh: `systemctl --user enable hyprpolkitagent.service`)
    hl.exec_cmd("uwsm app -- wl-paste --watch cliphist store")
@@ -217,7 +217,7 @@ hl.config({
         force_default_wallpaper = 0,
         disable_hyprland_logo   = true,
         -- 32-bit ARGB: alpha 0xff = opaque, else Hyprland renders the void (black).
-        background_color        = 0xff1e1e2e, -- Catppuccin Mocha base (stopgap until hyprpaper.conf exists)
+        background_color        = 0xff1e1e2e, -- Catppuccin Mocha base (fallback shown before hyprpaper loads)
     },
 })
 
