@@ -1,6 +1,7 @@
 change: desktop-redesign
-status: in_progress
-current_phase: verify
+status: archived
+current_phase: archived
+archived_date: 2026-05-29
 phases:
   explore:   { status: complete }
   proposal:  { status: complete }
@@ -8,8 +9,8 @@ phases:
   design:    { status: complete }
   tasks:     { status: complete }
   apply:     { status: complete, completed_slices: [A0, A, B, C, D], pending_slices: [] }
-  verify:    { status: pending }
-  archive:   { status: pending }
+  verify:    { status: complete, verdict: ARCHIVE-READY }
+  archive:   { status: complete }
 artifact_store: hybrid
 delivery_strategy: ask-on-risk
 chain_strategy: stacked-to-main
