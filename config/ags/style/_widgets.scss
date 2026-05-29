@@ -695,7 +695,7 @@ calendar.calendar-widget > header {
 .ai-dot   { -gtk-icon-size: 4px;  color: var(--mauve); }
 // Positive margins pull the dots IN from the corners, closer to the star tips.
 .ai-dot1  { margin: 1px 3px 0 0; }   // top-right, nudged in
-.ai-dot2  { margin: 0 0 1px 3px; }   // bottom-left, nudged in
+.ai-dot2  { margin: 0 0 3px 5px; }   // bottom-left, nudged in a bit more
 
 // Hover: the star "breathes" like an inflating bubble; the dots "twinkle"
 // (scale + fade) on staggered delays for an effervescent feel. GTK scales from
