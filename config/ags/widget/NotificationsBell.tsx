@@ -36,7 +36,9 @@ export default function NotificationsBell() {
       <overlay>
         <image
           iconName={dnd.as(d =>
-            d ? "notification-disabled-symbolic" : "notification-symbolic")}
+            d
+              ? "notifications-disabled-symbolic"
+              : "preferences-system-notifications-symbolic")}
           valign={Gtk.Align.CENTER}
         />
         {/* REQ-NT-05: count badge, top-right, only when unread > 0 */}
