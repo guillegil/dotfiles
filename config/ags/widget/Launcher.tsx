@@ -335,7 +335,7 @@ export default function Launcher() {
           {/* ── Search row ─────────────────────────────────────────── */}
           <box cssClasses={["launcher-search"]} spacing={12}>
             <image
-              iconName="system-search-symbolic"
+              iconName="edit-find-symbolic"
               cssClasses={["search-icon"]}
               valign={Gtk.Align.CENTER}
             />
