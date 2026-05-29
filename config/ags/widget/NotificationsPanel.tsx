@@ -128,7 +128,9 @@ function NotificationRow({ n }: { n: Notifd.Notification }) {
           cssClasses={["notif-body"]}
           label={bodyText}
           halign={Gtk.Align.START}
+          xalign={0}
           wrap={true}
+          widthChars={34}
           maxWidthChars={34}
           lines={expanded(e => e ? -1 : 2)}
           ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}

@@ -115,6 +115,21 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
         motion.connect("enter", () => { hovered = true; pauseTimer() })   // (2)
         motion.connect("leave", () => { hovered = false; maybeResume() }) // (2)
         self.add_controller(motion)
+
+        // Click on the card dismisses the popup (the notification stays in the
+        // panel as read). A parent gesture still fires even when a child button
+        // claims, so skip dismissal when the click landed on a control (×,
+        // Show more) — walk ancestors from the picked widget up to the card.
+        const click = new Gtk.GestureClick()
+        click.connect("released", (_g, _n, x, y) => {
+          let node: Gtk.Widget | null = self.pick(x, y, Gtk.PickFlags.DEFAULT)
+          while (node && node !== self) {
+            if (node instanceof Gtk.Button) return
+            node = node.get_parent()
+          }
+          close()
+        })
+        self.add_controller(click)
       }}
     >
       <box spacing={10}>
@@ -146,10 +161,12 @@ function Toast({ n, onClose }: { n: Notifd.Notification; onClose: () => void }) 
             cssClasses={["notif-body"]}
             label={bodyText}
             halign={Gtk.Align.START}
+            xalign={0}            // text left-aligned in its allocation (no re-justify)
             wrap={true}
-            // maxWidthChars caps the natural width so a long body WRAPS at a
-            // fixed column instead of stretching the toast (GTK4 has no
-            // max-width). This is also what makes lines=2 clamp + Show more work.
+            // Pin the text column to exactly 34 chars (width = max = min) so the
+            // toast width is identical for short/long and collapsed/expanded —
+            // GTK4 has no max-width, so widthChars is how we stop the jitter.
+            widthChars={34}
             maxWidthChars={34}
             lines={expanded(e => e ? -1 : 2)}        // (3) clamp vs full
             ellipsize={expanded(e => e ? Pango.EllipsizeMode.NONE : Pango.EllipsizeMode.END)}
