@@ -657,3 +657,59 @@ calendar.calendar-widget > header {
   color:     var(--text);
   font-size: 13px;
 }
+
+// ── Launcher Slice 2 — App Grid classes (launcher-redesign) ──────────────────
+// All classes below are additive. Grid spacing is set imperatively in the $ setter
+// (ADR-6: set_row_spacing/set_column_spacing) because Gtk.FlowBox exposes those
+// as object properties, not CSS. The CSS class .app-grid is the selector for any
+// visual overrides. Transitions gated by :not(.motion-off) per REQ-A11Y-LR-03.
+
+// "ALL APPS · N" section header row
+.launcher-section-header {
+  padding: 6px 14px 2px;
+}
+
+// Scrollable viewport wrapper for the FlowBox (REQ-AG-03)
+.app-grid-scroll {
+  padding:    0 14px 8px;
+  min-height: 0;
+}
+
+// The FlowBox itself — spacing set via Gtk properties in the $ setter
+.app-grid {
+  padding: 4px 0;
+}
+
+// Inner tile box: icon + name label (REQ-AG-02)
+.grid-tile {
+  padding:       8px 4px;
+  border-radius: var(--radius-inner);
+  min-width:     72px;
+  transition:    background var(--t-base);
+
+  &:hover { background: var(--bg2); }
+
+  // Suppress motion inside .motion-off (REQ-A11Y-LR-03)
+  .motion-off & {
+    transition: none;
+  }
+}
+
+// Real .desktop icon — 40×40 px (REQ-AG-02)
+.grid-tile-icon {
+  -gtk-icon-size: 40px;
+}
+
+// App name label below the icon
+.grid-tile-name {
+  font-size:  11px;
+  color:      var(--text);
+  // text-align is set per-label via Gtk.Justification in TSX
+}
+
+// Selected tile (FlowBox SINGLE selection mode — activated by click or keyboard)
+// Mirrors .app-item.selected runtime color-mix pattern (already validated on GTK 4.22)
+flowboxchild:selected .grid-tile {
+  background:   color-mix(in oklab, var(--accent) 18%, transparent);
+  border:       1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+}

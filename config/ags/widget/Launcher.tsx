@@ -1,4 +1,4 @@
-// Launcher.tsx — Spotlight-class app launcher overlay (Slice 1 — Core UX)
+// Launcher.tsx — Spotlight-class app launcher overlay (Slice 1 + Slice 2)
 //
 // State model:
 //   query       — entry text
@@ -6,18 +6,23 @@
 //   results     — fuzzy query results (max 8), derived from query
 //   calc        — CalcResult | null, derived from query (always-on auto)
 //   recent      — string[] of recent entry IDs, read fresh on each open
+//   allApps     — static list of all installed apps for the grid (Slice 2)
 //
 // Key controller lives on the WINDOW (not the entry) so Up/Down/Enter/Esc are
 // intercepted before the entry receives them. Printable keys return false so
 // typing flows into the entry normally.
 //
-// Slice 2 (app grid) will extend this file; Slice 1 ships and smoke-tests first.
+// Slice 2 (ADR-2, ADR-6): when query is EMPTY the ALL APPS FlowBox grid is
+// the navigable surface; when query is non-empty result rows take over.
+// The FlowBox owns its own SINGLE selection (native arrow nav) — selectedIdx
+// governs result rows only.
 
 import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { createState, createComputed, For } from "ags"
 import Apps from "gi://AstalApps"
 import GLib from "gi://GLib"
+import Pango from "gi://Pango"
 import { execAsync } from "ags/process"
 import { evaluate } from "../lib/calc"
 import { recordLaunch, getRecent } from "../lib/launcher-history"
@@ -33,12 +38,48 @@ function KbdHint({ k, hint }: { k: string; hint: string }) {
   )
 }
 
+// buildGridTile — builds the inner widget for a FlowBox grid tile.
+// MUST be wrapped in a Gtk.FlowBoxChild before appending to the FlowBox
+// (appending a bare widget is a silent runtime no-op — ADR-6 Risk 2).
+function buildGridTile(a: Apps.Application): Gtk.Widget {
+  const box = new Gtk.Box()
+  box.set_orientation(Gtk.Orientation.VERTICAL)
+  box.set_spacing(4)
+  box.set_css_classes(["grid-tile"])
+  box.set_halign(Gtk.Align.CENTER)
+  box.set_valign(Gtk.Align.CENTER)
+  box.update_property([Gtk.AccessibleProperty.LABEL], [a.name])
+
+  const icon = new Gtk.Image()
+  icon.set_from_icon_name(a.iconName || "application-x-executable")
+  icon.set_css_classes(["grid-tile-icon"])
+  icon.set_halign(Gtk.Align.CENTER)
+
+  const name = new Gtk.Label()
+  name.set_label(a.name)
+  name.set_css_classes(["grid-tile-name"])
+  name.set_ellipsize(Pango.EllipsizeMode.END)
+  name.set_max_width_chars(10)
+  name.set_halign(Gtk.Align.CENTER)
+  name.set_justify(Gtk.Justification.CENTER)
+  name.set_wrap(false)
+
+  box.append(icon)
+  box.append(name)
+  return box
+}
+
 // ── Main widget ───────────────────────────────────────────────────────────────
 
 export default function Launcher() {
   // ── State ──────────────────────────────────────────────────────────────────
 
   const apps = new Apps.Apps()
+  // allApps: static snapshot of installed apps — evaluated once at init.
+  // Not reactive: the installed app list does not change at runtime within a
+  // session; the FlowBox is built imperatively in the $ setter (ADR-6).
+  const allApps = apps.list as Apps.Application[]
+
   const [query, setQuery] = createState("")
   const [selectedIdx, setSelectedIdx] = createState(0)
 
@@ -276,10 +317,12 @@ export default function Launcher() {
           </box>
 
           {/* ── Result rows (REQ-LR-01, REQ-LR-04) ───────────────── */}
+          {/* Hidden when query is empty — grid takes over in that state (ADR-2) */}
           <box
             orientation={Gtk.Orientation.VERTICAL}
             cssClasses={["launcher-results"]}
             spacing={2}
+            visible={query.as(q => q.length > 0)}
           >
             <For each={results}>
               {(a: Apps.Application, idx) => {
@@ -341,6 +384,70 @@ export default function Launcher() {
                 )
               }}
             </For>
+          </box>
+
+          {/* ── ALL APPS section (Slice 2 — REQ-AG-01..04, ADR-2, ADR-6) ─── */}
+          {/* Visible only when query is EMPTY — grid is the browse surface.
+              When the user types, result rows take over and the grid hides. */}
+          <box
+            orientation={Gtk.Orientation.VERTICAL}
+            visible={query.as(q => q.length === 0)}
+          >
+            {/* ALL APPS header with live count (REQ-AG-01) */}
+            <box cssClasses={["launcher-section-header"]} spacing={8}>
+              <label
+                label="ALL APPS"
+                cssClasses={["section-label"]}
+                valign={Gtk.Align.CENTER}
+              />
+              <label
+                label={String(allApps.length)}
+                cssClasses={["section-label"]}
+                valign={Gtk.Align.CENTER}
+              />
+            </box>
+
+            {/* Scrollable FlowBox grid — 6 columns, real .desktop icons (REQ-AG-02..04) */}
+            <scrolledwindow
+              hscrollbarPolicy={Gtk.PolicyType.NEVER}
+              vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
+              propagateNaturalHeight={true}
+              maxContentHeight={320}
+              cssClasses={["app-grid-scroll"]}
+              $={(self) => {
+                // FlowBox is built imperatively — no <flowbox> intrinsic exists in
+                // this AGS build (ADR-6). Every tile MUST be wrapped in a
+                // Gtk.FlowBoxChild; appending a bare widget is a SILENT runtime
+                // no-op that renders nothing and throws no error (ADR-6 Risk 2).
+                const fb = new Gtk.FlowBox()
+                fb.set_css_classes(["app-grid"])
+                fb.set_max_children_per_line(6)
+                fb.set_min_children_per_line(6)
+                fb.set_homogeneous(true)
+                fb.set_selection_mode(Gtk.SelectionMode.SINGLE)
+                fb.set_row_spacing(8)
+                fb.set_column_spacing(8)
+                fb.set_halign(Gtk.Align.FILL)
+                fb.set_hexpand(true)
+
+                for (const a of allApps) {
+                  // REQUIRED: wrap every tile in FlowBoxChild before append.
+                  // Raw fb.append(widget) is a silent no-op (ADR-6 Risk 2).
+                  const child = new Gtk.FlowBoxChild()
+                  child.set_child(buildGridTile(a))
+                  fb.append(child)
+                }
+
+                // child-activated fires on click AND keyboard Enter when a child
+                // is focused — FlowBox native SINGLE selection handles both.
+                fb.connect("child-activated", (_box, child) => {
+                  const a = allApps[(child as Gtk.FlowBoxChild).get_index()]
+                  if (a) launch(a)
+                })
+
+                ;(self as Gtk.ScrolledWindow).set_child(fb)
+              }}
+            />
           </box>
 
           {/* ── Footer hints + AI pill (REQ-LR-07) ───────────────── */}
