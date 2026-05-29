@@ -5,6 +5,7 @@ import Bar from "./widget/Bar"
 import Launcher from "./widget/Launcher.tsx"
 import { CalendarPopover } from "./widget/Clock"
 import VolumeOSD, { showVolumeOSD } from "./widget/VolumeOSD"
+import { NotificationsPanel } from "./widget/NotificationsPanel"
 
 app.start({
   css: style,
@@ -22,7 +23,8 @@ app.start({
     initMotionGate()
     app.get_monitors().map(Bar)
     Launcher()
-    CalendarPopover()   // singleton popover window, hidden by default (REQ-CL-03)
-    VolumeOSD()         // singleton OSD window, hidden by default (volume keys)
+    CalendarPopover()    // singleton popover window, hidden by default (REQ-CL-03)
+    VolumeOSD()          // singleton OSD window, hidden by default (volume keys)
+    NotificationsPanel() // singleton panel window, hidden by default (REQ-NT-02)
   },
 })

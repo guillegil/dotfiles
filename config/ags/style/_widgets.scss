@@ -186,14 +186,94 @@ progressbar.volume-osd-bar > trough > progress {
   background: var(--red);
 }
 
-// Notification panel rows
-.notification-row.urgent {
-  border-left: 3px solid var(--red);
+// ── Notifications: bell + badge (REQ-NT-03,05) ───────────────────────────────
+.notif-bell {
+  padding: 0 6px;
+  color:   var(--text);
+}
+
+// Red count badge, top-right corner of the bell.
+.notif-badge {
+  background:    var(--red);
+  color:         var(--crust);
+  border-radius: 9999px;
+  min-width:     14px;
+  min-height:    14px;
+  margin:        -2px -2px 0 0;
+  padding:       0 4px;
+  font-size:     9px;
+  font-weight:   700;
 }
 
 // DND state on bell
 .dnd {
   color: var(--dim);
+}
+
+// ── Notifications panel (REQ-NT-02,04) ───────────────────────────────────────
+.notif-panel {
+  min-width: 380px;
+  padding:   4px;
+}
+
+.notif-header {
+  padding:       0 4px 8px;
+  border-bottom: 1px solid var(--bar-border);
+}
+
+.notif-count {
+  font-weight: 700;
+  font-size:   13px;
+  color:       var(--text);
+}
+
+.notif-dnd-label {
+  font-size: 10px;
+  color:     var(--dim);
+}
+
+.notif-clear {
+  padding:       2px 10px;
+  border-radius: var(--radius-inner);
+  background:    var(--bg2);
+  color:         var(--text);
+  font-size:     11px;
+
+  &:hover { background: var(--bg3); }
+}
+
+.notif-empty {
+  padding:    24px;
+  color:      var(--dim);
+  font-size:  12px;
+}
+
+.notification-row {
+  padding:       10px;
+  border-radius: var(--radius-inner);
+  background:    var(--bg2);
+  transition:    background var(--t-base);
+
+  &:hover { background: color-mix(in oklab, var(--text) 8%, transparent); }
+}
+
+// Urgent rows get a red left border (REQ-NT-04).
+.notification-row.urgent {
+  border-left: 3px solid var(--red);
+}
+
+.notif-icon   { -gtk-icon-size: 24px; }
+.notif-summary { font-weight: 600; font-size: 12px; color: var(--text); }
+.notif-time   { font-size: 10px; color: var(--dim); }
+.notif-body   { font-size: 11px; color: var(--dim); }
+
+.notif-dismiss {
+  padding:       2px;
+  border-radius: 9999px;
+  color:         var(--dim);
+  background:    transparent;
+
+  &:hover { background: var(--bg3); color: var(--red); }
 }
 
 // ── Launcher overlay (Claude design — Phase 1) ───────────────────────────────

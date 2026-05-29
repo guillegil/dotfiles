@@ -15,6 +15,7 @@ import Clock from "./Clock"
 import Volume from "./Volume"
 import Battery from "./Battery"
 import Network from "./Network"
+import NotificationsBell from "./NotificationsBell"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return (
@@ -32,13 +33,13 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <Clock />
         </box>
 
-        {/* Right section — end child; Bell arrives in Slice D */}
+        {/* Right section — end child */}
         <box $type="end" cssClasses={["bar-section"]} spacing={4}>
           <Mic />
           <Volume />
           <Network />
           <Battery />
-          <label label="bell" cssClasses={["w"]} />
+          <NotificationsBell />
         </box>
       </centerbox>
     </BarShell>
