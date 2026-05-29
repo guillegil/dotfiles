@@ -275,7 +275,7 @@ commit — both still target `main` in order.
 
 ### Phase 2a: Launcher.tsx — app grid section
 
-- [ ] **2.1** Add **ALL APPS section header** to `Launcher.tsx`. **small** (~10 lines delta)
+- [x] **2.1** Add **ALL APPS section header** to `Launcher.tsx`. **small** (~10 lines delta)
   - `const allApps = apps.list` (evaluated once at init — static, not reactive).
   - A `<box cssClasses={["launcher-section-header"]}` with:
     - `<label label="ALL APPS" cssClasses={["section-label"]}>` and
@@ -285,7 +285,7 @@ commit — both still target `main` in order.
     (ADR-2: grid is the query-empty browse surface; result rows own query-non-empty).
   - *Satisfies: REQ-AG-01*
 
-- [ ] **2.2** Add **Gtk.FlowBox grid** inside a `<scrolledwindow>` to `Launcher.tsx`.
+- [x] **2.2** Add **Gtk.FlowBox grid** inside a `<scrolledwindow>` to `Launcher.tsx`.
   **medium** (~60 lines delta)
   - The FlowBox MUST be constructed imperatively in a `$` setter (no intrinsic
     `<flowbox>` in this AGS build):
@@ -322,7 +322,7 @@ commit — both still target `main` in order.
 
 ### Phase 2b: SCSS — app grid classes
 
-- [ ] **2.3** Extend `config/ags/style/_widgets.scss` with Slice 2 grid classes.
+- [x] **2.3** Extend `config/ags/style/_widgets.scss` with Slice 2 grid classes.
   **small** (~40 lines added after Slice 1 block)
   - `.app-grid` — `row-spacing` and `column-spacing` via the `$` setter (set via
     `self.set_row_spacing(8)` / `self.set_column_spacing(8)` in TSX); CSS class is
