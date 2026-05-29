@@ -255,6 +255,13 @@ export default function Launcher() {
                 runTerminal(termCmd.peek())
                 return true
               }
+              // Calculator: Enter copies the result (matches the "↵ copy" hint).
+              const c = calc.peek()
+              if (c) {
+                execAsync(["wl-copy", String(c.value)]).catch(() => {})
+                closeAndClear()
+                return true
+              }
               // Grid mode: launch the focused tile.
               if (!query.peek()) {
                 const g = gridApps[gridIdx]
