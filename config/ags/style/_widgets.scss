@@ -358,10 +358,15 @@ window.Launcher {
 
 .launcher-card {
   min-width:     560px;
-  background:    var(--mantle);
+  // Glassy: translucent mantle so the Hyprland blur (ags namespace) shows
+  // through behind the card.
+  background:    color-mix(in oklab, var(--mantle) 86%, transparent);
   border:        1px solid var(--bar-border);
   border-radius: var(--radius-hero);
-  box-shadow:    0 28px 80px -20px rgba(0, 0, 0, 0.75);
+  // Deep drop shadow + subtle accent glow halo (DESIGN.md AppLauncher) so the
+  // card floats over the wallpaper.
+  box-shadow:    0 28px 80px -20px rgba(0, 0, 0, 0.75),
+                 0 0 64px -24px color-mix(in oklab, var(--accent) 35%, transparent);
   color:         var(--text);
   font-family:   var(--font-mono);
 }
@@ -623,7 +628,8 @@ calendar.calendar-widget > header {
 
 // RECENT chips strip (REQ-LR-06)
 .recent-row {
-  padding: 6px 14px;
+  padding:       8px 14px;
+  border-bottom: 1px solid var(--bar-border);  // delineate RECENT from the list/grid below
 }
 
 // Each RECENT chip button
