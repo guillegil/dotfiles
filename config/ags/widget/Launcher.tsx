@@ -578,8 +578,10 @@ export default function Launcher() {
                 fb.set_activate_on_single_click(true)  // single click → child-activated → launch
                 fb.set_row_spacing(8)
                 fb.set_column_spacing(8)
-                fb.set_halign(Gtk.Align.FILL)
-                fb.set_hexpand(true)
+                // CENTER + no hexpand: tiles pack tightly (just column_spacing)
+                // and center, instead of spreading across the card width.
+                fb.set_halign(Gtk.Align.CENTER)
+                fb.set_hexpand(false)
 
                 for (const a of gridApps) {
                   // REQUIRED: wrap every tile in FlowBoxChild before append.
