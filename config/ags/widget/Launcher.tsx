@@ -79,6 +79,12 @@ export default function Launcher() {
   // Not reactive: the installed app list does not change at runtime within a
   // session; the FlowBox is built imperatively in the $ setter (ADR-6).
   const allApps = apps.list as Apps.Application[]
+  // gridApps: the grid is capped to 2 rows of 5 = 10 tiles, surfacing the
+  // most-used apps (by AstalApps frequency; stable order when all are 0).
+  const gridApps = allApps
+    .slice()
+    .sort((a, b) => (b.frequency ?? 0) - (a.frequency ?? 0))
+    .slice(0, 10)
 
   const [query, setQuery] = createState("")
   const [selectedIdx, setSelectedIdx] = createState(0)
@@ -421,8 +427,8 @@ export default function Launcher() {
                 // no-op that renders nothing and throws no error (ADR-6 Risk 2).
                 const fb = new Gtk.FlowBox()
                 fb.set_css_classes(["app-grid"])
-                fb.set_max_children_per_line(6)
-                fb.set_min_children_per_line(6)
+                fb.set_max_children_per_line(5)
+                fb.set_min_children_per_line(5)
                 fb.set_homogeneous(true)
                 fb.set_selection_mode(Gtk.SelectionMode.SINGLE)
                 fb.set_row_spacing(8)
@@ -430,7 +436,7 @@ export default function Launcher() {
                 fb.set_halign(Gtk.Align.FILL)
                 fb.set_hexpand(true)
 
-                for (const a of allApps) {
+                for (const a of gridApps) {
                   // REQUIRED: wrap every tile in FlowBoxChild before append.
                   // Raw fb.append(widget) is a silent no-op (ADR-6 Risk 2).
                   const child = new Gtk.FlowBoxChild()
@@ -441,7 +447,7 @@ export default function Launcher() {
                 // child-activated fires on click AND keyboard Enter when a child
                 // is focused — FlowBox native SINGLE selection handles both.
                 fb.connect("child-activated", (_box, child) => {
-                  const a = allApps[(child as Gtk.FlowBoxChild).get_index()]
+                  const a = gridApps[(child as Gtk.FlowBoxChild).get_index()]
                   if (a) launch(a)
                 })
 
@@ -454,7 +460,7 @@ export default function Launcher() {
           <box cssClasses={["launcher-footer"]} spacing={14}>
             <KbdHint k="↑↓" hint="nav" />
             <KbdHint k="↵" hint="launch" />
-            <KbdHint k="⌘↵" hint="terminal" />
+            <KbdHint k=">" hint="terminal" />
             <KbdHint k="=" hint="calc" />
             <KbdHint k="?" hint="ask AI" />
             <box hexpand={true} />
