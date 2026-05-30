@@ -63,30 +63,89 @@ window.popover-window:focus,
   outline: none;
 }
 
-// ── Workspaces dot/pill morph (ADR-9) ────────────────────────────────────────
-// Outer hit-target wrapper — 44×44px invisible tap zone (REQ-A11Y-01)
-// GTK4 widgets center their children via halign/valign on the widget itself,
-// NOT via CSS flex (GTK4 does not implement flexbox).
-.ws-target {
-  min-width:  44px;
-  min-height: 44px;
-  padding:    0;
-  border:     0;
-  background: transparent;
+// ── Workspaces number pill (workspaces-redesign) ─────────────────────────────
+//
+// Pill container → Gtk.Overlay (row of buttons + sliding bar underneath).
+// Numbers carry state via class: ws-focused / ws-occupied / ws-empty.
+// The green bar slides by swapping .ws-bar-N (translateX per slot width).
+// GTK4 supports transform + transition on layout-independent props (verified
+// docs/gtk_css_reference_overview.md §3 and the .app-item example above it).
+//
+// Slot width: 26px (all buttons fixed). Bar width: 16px. Base offset centers
+// the 16px bar under a 26px slot: (26 - 16) / 2 = 5px.
+
+// Container — no background (zero chrome); just holds the numbers + bar.
+.workspaces {
+  padding: 2px 6px;
 }
 
-// Inner dot/pill
-.ws {
-  min-width:   8px;
-  min-height:  8px;
+// Row box — no extra gap; button min-width provides natural spacing.
+// (spacing is a GTK widget property, not a CSS property.)
+.ws-row {}
+
+// Number button — fixed slot width so bar offset is deterministic.
+.ws-num {
+  min-width:   26px;
+  min-height:  26px;
+  padding:     0;
+  border:      0;
+  background:  transparent;
+  box-shadow:  none;
+  font-family: var(--font-mono);
+  font-size:   13px;
+  font-weight: 600;
+
+  &:focus-visible { outline: none; }
+
+  // Immediate press feedback.
+  &:active { opacity: 0.7; }
+}
+
+// State colours. The color must target the inner `label` node directly — a
+// Gtk.Button does NOT reliably cascade `color` to its label child (same gotcha
+// as the bar clock). State classes are mutually exclusive (one per button).
+.ws-empty,    .ws-empty    label { color: var(--dim);    }
+.ws-occupied, .ws-occupied label { color: var(--text);   }
+.ws-focused,  .ws-focused  label { color: var(--accent); }
+
+// Urgent dot — small pink badge near the number's top-right (overlay child,
+// halign END / valign START). margin-top nudges it down onto the digit corner
+// (the label box has line-height space above the glyph).
+.ws-urgent-dot {
+  min-width:     5px;
+  min-height:    5px;
   border-radius: 9999px;
-  background:  var(--overlay0);
-  transition:  min-width var(--t-morph), background var(--t-base);
+  background:    var(--maroon);
+  margin-top:    5px;
+  margin-right:  4px;   // nudge left, closer to the number
 }
 
-.ws.active {
-  min-width:  22px;
-  background: var(--accent);
+// Sliding bar — sits at the bottom of the overlay, start-aligned.
+// Transform slides it right; transition animates the class swap.
+.ws-bar {
+  min-width:     16px;
+  min-height:    3px;
+  border-radius: 9999px;
+  background:    var(--accent);
+  transition:    transform var(--t-base) ease;
+}
+
+// Per-index transform classes — one per possible slot position (0..8).
+// Base offset: 5px centres the 16px bar inside the 26px slot.
+// Each subsequent slot adds 26px (the slot width).
+.ws-bar-0 { transform: translateX(5px); }
+.ws-bar-1 { transform: translateX(calc(5px + 26px)); }
+.ws-bar-2 { transform: translateX(calc(5px + 52px)); }
+.ws-bar-3 { transform: translateX(calc(5px + 78px)); }
+.ws-bar-4 { transform: translateX(calc(5px + 104px)); }
+.ws-bar-5 { transform: translateX(calc(5px + 130px)); }
+.ws-bar-6 { transform: translateX(calc(5px + 156px)); }
+.ws-bar-7 { transform: translateX(calc(5px + 182px)); }
+.ws-bar-8 { transform: translateX(calc(5px + 208px)); }
+
+// Motion gate — honour reduced-motion / .motion-off shell class.
+.motion-off .ws-bar {
+  transition: none;
 }
 
 // Mic widget states (token-driven, replaces hardcoded hex in original)

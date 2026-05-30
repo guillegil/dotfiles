@@ -9,6 +9,12 @@ class Hyprland extends GObject.Object {
   @property(Object)
   workspaces: number[] = []
 
+  @property(Object)
+  occupied: number[] = []
+
+  @property(Object)
+  urgent: number[] = []
+
   @property(Number)
   activeWorkspace: number = 0
 
@@ -38,11 +44,18 @@ class Hyprland extends GObject.Object {
     return execAsync(["hyprctl", "dispatch", `hl.dsp.focus({workspace=${arg}})`])
   }
 
-  #init() {
-    execAsync(["hyprctl", "-j", "workspaces"]).then(out => {
-      const ws = JSON.parse(out) as Array<{ id: number }>
+  // Fetch workspace list + occupied set from hyprctl.
+  // The `windows` field in `hyprctl -j workspaces` gives the window count per ws.
+  #fetchWorkspaces() {
+    return execAsync(["hyprctl", "-j", "workspaces"]).then(out => {
+      const ws = JSON.parse(out) as Array<{ id: number; windows: number }>
       this.workspaces = ws.map(w => w.id).sort((a, b) => a - b)
+      this.occupied   = ws.filter(w => w.windows > 0).map(w => w.id)
     })
+  }
+
+  #init() {
+    this.#fetchWorkspaces()
 
     execAsync(["hyprctl", "-j", "activewindow"]).then(out => {
       const w = JSON.parse(out) as { title?: string; class?: string; workspace?: { id: number } }
@@ -88,10 +101,7 @@ class Hyprland extends GObject.Object {
         const ws = JSON.parse(out) as { id: number }
         if (this.activeWorkspace !== ws.id) {
           this.activeWorkspace = ws.id
-          execAsync(["hyprctl", "-j", "workspaces"]).then(o => {
-            const list = JSON.parse(o) as Array<{ id: number }>
-            this.workspaces = list.map(w => w.id).sort((a, b) => a - b)
-          })
+          this.#fetchWorkspaces()
         }
       })
 
@@ -113,28 +123,68 @@ class Hyprland extends GObject.Object {
 
     if (event === "workspace") {
       const id = parseInt(data, 10)
-      if (!isNaN(id)) this.activeWorkspace = id
+      if (!isNaN(id)) {
+        this.activeWorkspace = id
+        // Clear urgency for the workspace we just switched to.
+        if (this.urgent.includes(id)) {
+          this.urgent = this.urgent.filter(u => u !== id)
+        }
+      }
     } else if (event === "workspacev2") {
       const id = parseInt(data.split(",")[0], 10)
-      if (!isNaN(id)) this.activeWorkspace = id
+      if (!isNaN(id)) {
+        this.activeWorkspace = id
+        // Clear urgency for the workspace we just switched to.
+        if (this.urgent.includes(id)) {
+          this.urgent = this.urgent.filter(u => u !== id)
+        }
+      }
     } else if (event === "createworkspace" || event === "createworkspacev2") {
-      execAsync(["hyprctl", "-j", "workspaces"]).then(out => {
-        const ws = JSON.parse(out) as Array<{ id: number }>
-        this.workspaces = ws.map(w => w.id).sort((a, b) => a - b)
-      })
+      this.#fetchWorkspaces()
     } else if (event === "destroyworkspace" || event === "destroyworkspacev2") {
-      execAsync(["hyprctl", "-j", "workspaces"]).then(out => {
-        const ws = JSON.parse(out) as Array<{ id: number }>
-        this.workspaces = ws.map(w => w.id).sort((a, b) => a - b)
-      })
+      this.#fetchWorkspaces()
+    } else if (event === "openwindow") {
+      // A window opened — re-fetch to update the occupied set.
+      this.#fetchWorkspaces()
+    } else if (event === "closewindow") {
+      // A window closed — re-fetch occupied set + clear active title.
+      this.#fetchWorkspaces()
+      this.activeTitle = ""
+      this.activeClass = ""
     } else if (event === "activewindow") {
       const comma = data.indexOf(",")
       if (comma === -1) return
       this.activeClass = data.slice(0, comma)
       this.activeTitle = data.slice(comma + 1)
-    } else if (event === "closewindow") {
-      this.activeTitle = ""
-      this.activeClass = ""
+    } else if (event === "urgent") {
+      // Socket2 emits: urgent>>WINDOWADDRESS (hex, no 0x prefix per Hyprland wiki)
+      // Resolve the address to a workspace id via hyprctl -j clients.
+      // On failure we silently skip — never crash. If the format changes this
+      // becomes a no-op rather than an error.
+      // TODO: verify exact address format against Hyprland IPC wiki (may or may
+      // not include "0x" prefix — clients json has `address` with "0x" prefix).
+      const addr = data.trim()
+      execAsync(["hyprctl", "-j", "clients"]).then(out => {
+        try {
+          const clients = JSON.parse(out) as Array<{ address: string; workspace: { id: number } }>
+          // Hyprland clients list addresses with "0x" prefix; socket2 event
+          // omits it. Try both forms.
+          const client = clients.find(
+            c => c.address === addr ||
+                 c.address === `0x${addr}` ||
+                 c.address.toLowerCase() === addr.toLowerCase() ||
+                 c.address.toLowerCase() === `0x${addr}`.toLowerCase()
+          )
+          if (client) {
+            const wsId = client.workspace.id
+            if (!this.urgent.includes(wsId)) {
+              this.urgent = [...this.urgent, wsId]
+            }
+          }
+        } catch {
+          // JSON parse failure or unexpected format — ignore silently.
+        }
+      }).catch(() => { /* hyprctl failure — ignore */ })
     }
   }
 }
