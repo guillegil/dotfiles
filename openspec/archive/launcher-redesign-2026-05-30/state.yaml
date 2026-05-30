@@ -1,15 +1,16 @@
 change: launcher-redesign
-status: in_progress
-current_phase: apply
+status: archived
+archived_at: 2026-05-30
+current_phase: archive
 phases:
   explore:   { status: complete }
   proposal:  { status: complete }
   spec:      { status: complete }
   design:    { status: complete }
   tasks:     { status: complete }
-  apply:     { status: in_progress, completed_slices: [], pending_slices: [1, 2] }
-  verify:    { status: pending }
-  archive:   { status: pending }
+  apply:     { status: complete }
+  verify:    { status: complete }
+  archive:   { status: complete }
 artifact_store: hybrid
 delivery_strategy: ask-on-risk
 chain_strategy: stacked-to-main
@@ -26,6 +27,9 @@ notes: |
   recent chips, footer + AI pill, ⌘↵ terminal), _widgets.scss additions.
   Slice 2 (App grid, ~180 lines): Gtk.FlowBox 6-col real-icon grid + scrolledwindow.
 
-  Runtime verify risks (no automated test runner — manual smoke per slice):
-  key controller must not eat printable keys; Gtk.FlowBoxChild wrappers; selectedIdx
-  clamp on query shrink; calc.ts never uses eval.
+  ARCHIVED: 2026-05-30 — implementation complete, verified, merged to main, archived.
+
+  ACCEPTED DEVIATIONS (spec amendments recorded at archive):
+  - D-LR-3: Grid uses 5 columns (spec said 6) — deliberate post-apply polish
+  - D-LR-4: History cap is 8 entries (spec said "min 10") — design ADR-4 override
+  - D-LR-5: Footer hints `> terminal` mode (spec said `⌘↵ terminal`) — new terminal-command mode

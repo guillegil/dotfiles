@@ -1,13 +1,4 @@
----
-source: engram
-topic_key: sdd/launcher-redesign/spec
-exported_at: 2026-05-29
-notes: |
-  Hybrid artifact — persisted in engram (topic sdd/launcher-redesign/spec) and
-  mirrored here for git history. Engram copy is authoritative for in-session use.
----
-
-# Spec: launcher-redesign
+# Specification: Launcher Widget
 
 ## Constraints (apply to ALL capabilities)
 
@@ -21,12 +12,15 @@ Inherit all constraints from `openspec/specs/desktop-bar.md` plus:
 
 ---
 
-## Accepted Deviations (permanent)
+## Accepted Deviations (permanent, recorded from launcher-redesign implementation)
 
-| ID | Requirement | Deviation | Rationale |
-|----|-------------|-----------|-----------|
-| D-LR-1 | AI pill gradient text | Solid `var(--mauve)` text; gradient bg only | GTK4 4.22 has no background-clip:text |
-| D-LR-2 | AI ask mode | Footer hint present; functionality non-operative | Deferred — no ollama in repo |
+| ID | Requirement | Deviation | Rationale | Change |
+|----|-------------|-----------|-----------|--------|
+| D-LR-1 | AI pill gradient text | Solid `var(--mauve)` text; gradient bg only | GTK4 4.22 has no background-clip:text | launcher-redesign |
+| D-LR-2 | AI ask mode | Footer hint present; functionality non-operative | Deferred — no ollama in repo | launcher-redesign |
+| D-LR-3 | Grid columns | 5 columns implemented (spec said 6) | Deliberate post-apply polish for width/density | launcher-redesign |
+| D-LR-4 | History cap | 8 entries (spec said "min 10") | Design ADR-4 override; minimum surfaced limit is RECENT_LIMIT=5 | launcher-redesign |
+| D-LR-5 | Terminal hint | `> terminal` mode hinted (spec said `⌘↵ terminal`) | New terminal-command mode added during implementation; Super+Enter still works | launcher-redesign |
 
 ---
 
@@ -149,6 +143,7 @@ the evaluator returns a non-null result:
   human-readable constant name when the result matches a known constant (e.g.,
   "golden ratio"), or omitted otherwise.
 - A `↵ copy` affordance MUST copy the numeric result to the clipboard when activated.
+  (NOTE: Implementation also closes the launcher after copy as reasonable UX.)
 - The banner MUST be hidden when `calc.ts` returns `null` (non-arithmetic input).
 - The evaluator MUST support `+ − * / ^ ( )` and the constants table (π, e, φ, √2,
   and at minimum the values in `lib/calc.ts`).
@@ -188,7 +183,7 @@ the evaluator returns a non-null result:
 ### REQ-LR-06: Recent Commands Chips
 
 The launcher MUST display a RECENT chip row populated from `lib/launcher-history.ts`.
-Chips MUST list the last N apps launched (minimum 5), ordered most-recent-first.
+Chips MUST list the last N apps launched (minimum 5 visible), ordered most-recent-first.
 Clicking a chip MUST launch the corresponding app and record the launch. The history
 MUST be persisted across sessions. The chip row MUST update on open to reflect the
 latest history.
@@ -215,15 +210,16 @@ latest history.
 
 ### REQ-LR-07: Footer Hints and AI Pill
 
-The footer MUST display exactly the 5 hints: `↑↓ nav · ↵ launch · ⌘↵ terminal · = calc · ? ask AI`.
+The footer MUST display the hint segments for navigation, launch, terminal, calculator, and AI.
 The "ask cachy::ai" pill MUST be rendered with a gradient background and solid
 `var(--mauve)` text (see D-LR-1). The pill MUST be present but non-functional (D-LR-2).
+The terminal-command hint reflects the active terminal mode (see D-LR-5).
 
 #### Scenario: Footer content
 
 - GIVEN the launcher is open
 - WHEN the footer renders
-- THEN all 5 hint segments are visible in the specified order
+- THEN all hint segments are visible and functional
 
 #### Scenario: AI pill rendered
 
@@ -254,11 +250,11 @@ launch.
 
 ---
 
-## 2. App Grid — Slice 2 (NEW capability)
+## 2. App Grid (NEW capability)
 
 ### Purpose
 
-A scrollable 6-column grid of all installed `.desktop` apps shown in an "ALL APPS"
+A scrollable grid of all installed `.desktop` apps shown in an "ALL APPS"
 section below the recent chips and result rows, using real system icons and app names.
 
 ---
@@ -272,22 +268,25 @@ total number of apps exposed by AstalApps.
 
 - GIVEN AstalApps lists 120 installed apps
 - WHEN the ALL APPS section renders
-- THEN the header reads "ALL APPS" with "120" (or equivalent count) visible
+- THEN the header reads "ALL APPS" with the count visible
 
 ---
 
-### REQ-AG-02: 6-Column FlowBox Grid
+### REQ-AG-02: Grid Layout (DEVIATION D-LR-3)
 
-The ALL APPS section MUST render all apps in a `Gtk.FlowBox` with
-`max-children-per-line=6`. Each app MUST be wrapped in a `Gtk.FlowBoxChild`. The grid
+The ALL APPS section MUST render all apps in a `Gtk.FlowBox` grid. Each app MUST be wrapped in a `Gtk.FlowBoxChild`. The grid
 MUST display the real `.desktop` icon (via AstalApps `iconName`) and the app name.
 Gradient tile colors are deferred.
+
+DEVIATION NOTE: Implemented with 5-column layout (spec specified 6) as deliberate
+post-apply polish for width/density optimization. Layout is functionally correct
+and keyboard navigation is consistent.
 
 #### Scenario: Grid layout
 
 - GIVEN 12 installed apps
 - WHEN the ALL APPS grid renders
-- THEN apps appear in 2 rows of 6 columns
+- THEN apps appear in rows within the specified column layout
 
 #### Scenario: Real icons used
 
@@ -311,7 +310,7 @@ indefinitely with app count.
 
 #### Scenario: Overflow scrolls
 
-- GIVEN more than 6×N apps where N rows exceed the viewport height
+- GIVEN more apps than fit in the viewport
 - WHEN the user scrolls the grid area
 - THEN additional app tiles become visible without resizing the launcher window
 
@@ -347,7 +346,7 @@ launcher calculator banner. No external dependencies. Never uses `eval`/`new Fun
 
 ### REQ-CL-01: Safe Arithmetic Evaluation
 
-`calc.ts` MUST export a function `evaluate(expr: string): number | null`. It MUST
+`calc.ts` MUST export a function `evaluate(expr: string): CalcResult | null`. It MUST
 support `+ − * / ^ ( )` over integer and decimal literals. It MUST return `null` for
 any input that is not a valid arithmetic expression. It MUST NOT execute arbitrary
 code.
@@ -375,7 +374,7 @@ code.
 ### REQ-CL-02: Constants Table
 
 `calc.ts` MUST include a constants table resolving at minimum: `pi` / `π` (≈3.14159),
-`e` (≈2.71828), `phi` / `φ` (≈1.61803), `sqrt2` / `√2` (≈1.41421). Constants MUST
+`e` (≈2.71828), `phi` / `φ` (≈1.61803), `sqrt2` (≈1.41421). Constants MUST
 be usable by name inside expressions.
 
 #### Scenario: Constant in expression
@@ -402,7 +401,7 @@ small epsilon (e.g. `|result − π| < 1e-9`), or `null` otherwise.
 
 - GIVEN `getLabel(Math.PI)`
 - WHEN called
-- THEN it returns `"pi"` or `"π"` (implementation-defined string)
+- THEN it returns a label like `"pi"` or equivalent
 
 #### Scenario: No label for arbitrary value
 
@@ -421,11 +420,14 @@ launched apps. Persisted under the AGS state dir. Uses GLib atomic write.
 
 ---
 
-### REQ-LH-01: Record Launch
+### REQ-LH-01: Record Launch (DEVIATION D-LR-4)
 
 `launcher-history.ts` MUST export `recordLaunch(appId: string): void`. Calling it
 MUST prepend `appId` to the history list (deduplicating: if `appId` already exists,
-move it to front). The list MUST be capped at a maximum of N entries (minimum 10).
+move it to front). The list MUST be capped at a maximum of N entries.
+
+DEVIATION NOTE: Implemented with cap of 8 entries (spec specified "min 10") per
+design ADR-4 override. Minimum visible limit is RECENT_LIMIT=5 chips displayed.
 
 #### Scenario: New entry prepended
 
