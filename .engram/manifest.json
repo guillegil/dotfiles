@@ -24,6 +24,22 @@
       "sessions": 4,
       "memories": 17,
       "prompts": 0
+    },
+    {
+      "id": "bdc00348",
+      "created_by": "guille",
+      "created_at": "2026-05-30T18:50:27Z",
+      "sessions": 0,
+      "memories": 10,
+      "prompts": 0
+    },
+    {
+      "id": "7c4bc0c3",
+      "created_by": "guille",
+      "created_at": "2026-05-30T18:52:40Z",
+      "sessions": 0,
+      "memories": 1,
+      "prompts": 0
     }
   ]
 }
