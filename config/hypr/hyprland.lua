@@ -43,7 +43,9 @@ local menu        = "rofi -show drun"
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function ()
-   hl.exec_cmd("uwsm app -- ags run")
+   -- LC_TIME forces the shell's date/calendar names (weekday, month) to English
+   -- regardless of the system locale (the rest of the session keeps its locale).
+   hl.exec_cmd("uwsm app -- env LC_TIME=en_US.UTF-8 ags run")
    -- swaync removed: AGS notifd is now the notification daemon (REQ-NT-01).
    hl.exec_cmd("uwsm app -- hyprpaper")  -- wallpaper (config/hypr/hyprpaper.conf)
    -- polkit agent: hyprpolkitagent runs as a systemd user service

@@ -45,6 +45,24 @@ window.Launcher:focus,
   outline: none;
 }
 
+// Calendar popover: the global accent outline draws a thick green box around
+// the whole widget when a CONTAINER (the card, a column, the grid, the agenda
+// scroll) gets focus while typing/navigating. Suppress the outline on those
+// container node types + the popover window — but NOT on buttons/entries, so
+// genuinely interactive elements keep their keyboard focus ring (REQ-A11Y-02).
+window.popover-window:focus-visible,
+window.popover-window:focus,
+.popover-bare:focus-visible,
+.popover-bare:focus,
+.popover-bare box:focus-visible,
+.popover-bare box:focus,
+.popover-bare grid:focus-visible,
+.popover-bare grid:focus,
+.popover-bare scrolledwindow:focus-visible,
+.popover-bare scrolledwindow:focus {
+  outline: none;
+}
+
 // ── Workspaces dot/pill morph (ADR-9) ────────────────────────────────────────
 // Outer hit-target wrapper — 44×44px invisible tap zone (REQ-A11Y-01)
 // GTK4 widgets center their children via halign/valign on the widget itself,
@@ -516,34 +534,738 @@ entry.launcher-entry > text {
 .clock {
   padding:    2px 8px;
   min-height: 30px;
+  // No chip frame — the bar clock is just text (background + border removed).
+  background:    transparent;
+  border:        none;
+  box-shadow:    none;
 }
 
+// Bar clock — macOS-style: Inter, date + time SAME size (uniform) so their
+// baselines line up; hierarchy comes from weight + color, not size.
 .clock-time {
+  font-family:    var(--font-display);
+  font-size:      13px;
+  font-weight:    600;
+  color:          var(--text);
+  letter-spacing: 0.01em;
+}
+
+.clock-date {
+  font-family:    var(--font-display);
+  font-size:      13px;
+  font-weight:    500;
+  color:          var(--dim);
+  letter-spacing: 0.01em;
+}
+
+// ── CalendarGrid — new custom month grid + popover shell (calendar-redesign Slices 1–2) ──────────
+//
+// Token references: --accent (green #a6e3a1), --blue, --mauve, --peach, --green,
+// --base, --dim, --bg2, --surface0, --radius-inner, --t-base.
+// 8px spacing rhythm. Dots are real Gtk.Box widgets (no ::before — GTK4 unsupported).
+// min-width/min-height used (not width/height — GTK CSS constraint).
+
+.cal-container {
+  padding: 4px 0;
+}
+
+// ── Month header (title + ‹ › nav) ──────────────────────────────────────────
+.cal-month-header {
+  padding:       0 2px 8px;
+}
+
+.cal-month-title {
+  // Monospace to match the project's identity + the rest of the calendar
+  // (weekdays, day numbers, agenda are all --font-mono).
   font-family: var(--font-mono);
-  font-size:   13px;
+  font-size:   14px;
   font-weight: 600;
   color:       var(--text);
 }
 
-.clock-date {
+.cal-nav-btn {
+  min-width:     28px;
+  min-height:    28px;
+  border-radius: var(--radius-inner);
+  color:         var(--dim);
+  font-size:     16px;
+  padding:       0 6px;
+  transition:    background var(--t-base) ease, color var(--t-base) ease;
+}
+
+.cal-nav-btn:hover {
+  background: color-mix(in oklab, var(--text) 8%, transparent);
+  color:      var(--text);
+}
+
+// ── Grid ─────────────────────────────────────────────────────────────────────
+.cal-grid {
+  // GTK Gtk.Grid — spacing is set imperatively (column/row-spacing props).
+  // This class is mostly a hook for spacing overrides if needed.
+}
+
+// ── Weekday headers (S M T W T F S) ─────────────────────────────────────────
+.cal-weekday {
   font-family: var(--font-mono);
-  font-size:   9px;
+  font-size:   10px;
+  font-weight: 600;
   color:       var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  min-width:    36px;
+  min-height:   24px;
 }
 
-// ── CalendarPopover (REQ-CL-03) ──────────────────────────────────────────────
-.calendar-popover {
-  padding: 8px;
+// Weekend column headers (S / S) — soft red to match the weekend days.
+.cal-weekday.cal-weekday-weekend {
+  color: var(--maroon);
 }
 
-.calendar-widget {
-  font-family: var(--font-sans);
+// ── Day cell button ───────────────────────────────────────────────────────────
+.cal-day {
+  min-width:     36px;
+  min-height:    36px;
+  border-radius: var(--radius-inner);
+  padding:       2px;
+  background:    transparent;
+  transition:    background var(--t-base) ease;
+}
+
+.cal-day:hover {
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+}
+
+// Empty leading/trailing cells — no hover
+.cal-day.cal-day-empty {
+  background: transparent;
+}
+
+.cal-day.cal-day-empty:hover {
+  background: transparent;
+}
+
+// ── Day number label ──────────────────────────────────────────────────────────
+.cal-day-num {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  font-weight: 400;
   color:       var(--text);
 }
 
-// Today cell highlighted via accent color (GTK Calendar CSS node)
-calendar.calendar-widget > header {
-  color: var(--accent);
+// Weekend days (Sat/Sun columns) get a soft-red number (classic calendar
+// convention) so they read clearly different from weekdays. Lower specificity
+// than the selected/today rules below, so those still win.
+.cal-day-weekend .cal-day-num {
+  color: var(--maroon);
+}
+
+// ── SELECTED highlight ────────────────────────────────────────────────────────
+// The selected day owns the green accent fill. Mutually exclusive with today
+// highlight — a cell gets cal-selected OR cal-today, never both.
+.cal-day.cal-selected {
+  background: var(--accent);
+}
+
+.cal-day.cal-selected:hover {
+  background: color-mix(in oklab, var(--accent) 88%, var(--text));
+}
+
+.cal-day.cal-selected .cal-day-num {
+  color:       var(--base);
+  font-weight: 700;
+}
+
+// ── TODAY subtle marker ───────────────────────────────────────────────────────
+// When another day is selected, today shows an accent-colored number so it is
+// still identifiable — but has no background fill (that belongs to cal-selected).
+// When today IS selected, the cell gets cal-selected (above) and this rule has
+// no effect (the class is not present on selected cells).
+.cal-day.cal-today {
+  background: transparent;
+}
+
+.cal-day.cal-today .cal-day-num {
+  color:       var(--accent);
+  font-weight: 700;
+}
+
+// ── Event dots row ────────────────────────────────────────────────────────────
+.cal-dots {
+  // Horizontal box, spacing set imperatively. No CSS layout needed.
+}
+
+// Base dot — a real Gtk.Box widget. ~5 px circle.
+// min-width + min-height + border-radius:50% → circle (GTK4 equivalent of web
+// border-radius trick; ::before is NOT supported so dots must be real widgets).
+.cal-dot {
+  min-width:     5px;
+  min-height:    5px;
+  border-radius: 999px; // ensure circle
+}
+
+// Per-category dot colors — matches CATEGORY_COLOR in calendar-events.ts
+.cal-dot-work     { background: var(--blue);  }
+.cal-dot-personal { background: var(--green); }
+.cal-dot-health   { background: var(--mauve); }
+.cal-dot-social   { background: var(--peach); }
+// Todoist dot — distinct from calendar categories
+.cal-dot-todoist  { background: var(--red);   }
+
+// Muted "more" dot when > 3 events on a day
+.cal-dot-more {
+  background: var(--dim);
+  opacity:    0.5;
+}
+
+// ── Motion gate ───────────────────────────────────────────────────────────────
+// Honor the prefers-reduced-motion / .motion-off project pattern.
+.motion-off .cal-day,
+.motion-off .cal-nav-btn,
+.motion-off .cal-agenda-row {
+  transition: none;
+}
+
+// ── Slice 2 — CalendarPopover shell + NextEventPill + AgendaSection ──────────
+// Token references: all --cal-* below are mapped to the Catppuccin token set.
+// 8px rhythm throughout. GTK4 CSS constraints respected:
+//   - no max-width/height → use min-width + Pango maxWidthChars for caps
+//   - no ::before/::after → real Gtk.Box/Gtk.Label widgets
+//   - no margin:auto → halign=CENTER on the root box
+//   - color property recolors the glyph label in cal-pill-icon
+
+// Root vertical stack: pill (with bottom gap) + card
+.cal-root {
+  // halign=CENTER is set on the widget in TSX; we just define the gap here.
+}
+
+// ── NextEventPill ─────────────────────────────────────────────────────────────
+.cal-next-pill {
+  // A self-contained chip: its OWN opaque background + border, floating
+  // over the wallpaper (the popover container is transparent — .popover-bare).
+  background:    var(--mantle);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-hero);
+  box-shadow:    0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  padding:       6px 14px;
+  margin-bottom: 12px;
+  // halign=CENTER set in TSX
+}
+
+// Calendar glyph (JetBrainsMono Nerd Font U+F073) — recolored via CSS color
+.cal-pill-icon {
+  font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+  font-size:   13px;
+  color:       var(--accent);
+  margin-right: 8px;
+}
+
+.cal-pill-time {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  font-weight: 600;
+  color:       var(--accent);
+}
+
+.cal-pill-title {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  color:       var(--text);
+}
+
+.cal-pill-text {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  color:       var(--dim);
+}
+
+// ── CalendarCard ──────────────────────────────────────────────────────────────
+// The card is now a HORIZONTAL container: left column | divider | right column.
+// Consistent with .launcher-card / .volume-osd-card patterns.
+.cal-card {
+  background:    var(--mantle);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-hero);
+  box-shadow:    0 12px 40px -12px rgba(0, 0, 0, 0.7);
+  padding:       14px;
+  min-width:     520px;
+  font-family:   var(--font-mono);
+  color:         var(--text);
+}
+
+// Left column: CalendarGrid + CalendarLegend + CalendarSync
+// border-right acts as the column divider.
+.cal-col-left {
+  border-right:   1px solid var(--bar-border);
+  padding-right:  14px;
+  min-width:      248px;
+}
+
+// Right column: DayHeader+NewTask / TasksDue / AgendaSection
+// hexpand={true} set in TSX; min-width reserves space so switching days
+// doesn't reflow the layout ("content jumping" prevention).
+.cal-col-right {
+  padding-left: 14px;
+  min-width:    240px;
+}
+
+// Day header — "Monday, May 25" (top of right column)
+.cal-day-header {
+  font-family: var(--font-mono);
+  font-size:   14px;
+  font-weight: 600;
+  color:       var(--text);
+}
+
+// Agenda source label — "Google · N" (dim, right-aligned in header centerbox)
+.cal-agenda-source {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+  padding:     0 2px 6px;
+}
+
+// CalendarLegend — horizontal strip below the grid (left column)
+.cal-legend {
+  margin-top:  8px;
+  padding-top: 8px;
+}
+
+// CalendarSync — dim status line at the bottom of the left column
+.cal-sync {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+  margin-top:  6px;
+}
+
+// ── AgendaSection ─────────────────────────────────────────────────────────────
+.cal-agenda {
+  border-top: 1px solid var(--bar-border);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+// "TODAY · MAY 30" uppercase header
+.cal-agenda-header {
+  font-family:    var(--font-mono);
+  font-size:      10px;
+  font-weight:    600;
+  color:          var(--dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding:        0 2px 6px;
+}
+
+// Scrolled viewport — max-content-height is set imperatively in TSX
+.cal-agenda-scroll {
+  // No visual styling needed; content background shows through.
+}
+
+// Nothing scheduled fallback
+.cal-agenda-empty {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  color:       var(--dim);
+  padding:     12px 2px;
+}
+
+// Each event row
+.cal-agenda-row {
+  padding:       4px 2px;
+  border-radius: var(--radius-inner);
+  transition:    background var(--t-base);
+}
+
+.cal-agenda-row:hover {
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+}
+
+// Time column — two stacked labels
+.cal-agenda-time {
+  min-width: 36px;
+}
+
+// Start time — brighter, slightly bolder
+.cal-agenda-time-start {
+  font-family: var(--font-mono);
+  font-size:   11px;
+  font-weight: 600;
+  color:       var(--text);
+}
+
+// End time — dim + smaller
+.cal-agenda-time-end {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+}
+
+// Category bar — ~3px wide, full row height, rounded
+.cal-agenda-bar {
+  min-width:     3px;
+  border-radius: 9999px;
+  margin:        2px 0;
+}
+
+// Per-category bar colors — parallel to cal-dot-* in Slice 1
+.cal-bar-work     { background: var(--blue);  }
+.cal-bar-personal { background: var(--green); }
+.cal-bar-health   { background: var(--mauve); }
+.cal-bar-social   { background: var(--peach); }
+
+// Event title — hexpand + ellipsize END set in TSX
+.cal-agenda-title {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  color:       var(--text);
+}
+
+// ── TasksDue section (calendar-redesign Slice 4) ─────────────────────────────
+//
+// Mirrors the .cal-agenda visual rhythm (border-top separator, 8px rhythm).
+// Checkbox is a real Gtk.Button widget — CSS ::before is NOT supported in GTK4.
+// Strikethrough is via Pango markup (<s>) in the TSX layer, not text-decoration
+// (GTK4 text-decoration is unreliable across versions — Pango markup is safer).
+// Token refs: --green, --dim, --overlay0, --bar-border, --base, --text,
+//             --radius-inner, --font-mono, --t-base.
+
+// Section wrapper — top separator removed (day-header row above provides separation)
+.cal-tasks {
+  margin-top:  4px;
+}
+
+// Header row container — centerbox, no extra padding needed
+.cal-tasks-header-row {}
+
+// "TASKS DUE" left label — replicates .cal-agenda-header look
+.cal-tasks-header {
+  font-family:    var(--font-mono);
+  font-size:      10px;
+  font-weight:    600;
+  color:          var(--dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding:        0 2px 6px;
+}
+
+// "• Todoist" right label — dim, smaller, source attribution
+.cal-todoist-label {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+  padding:     0 2px 6px;
+}
+
+// Each task row
+.cal-task-row {
+  padding:       4px 2px;
+  border-radius: var(--radius-inner);
+  transition:    background var(--t-base);
+
+  &:hover { background: color-mix(in oklab, var(--text) 6%, transparent); }
+}
+
+// Checkbox button — empty bordered square when unchecked; filled green when checked
+.cal-task-check {
+  min-width:     16px;
+  min-height:    16px;
+  border:        1px solid var(--overlay0);
+  border-radius: 4px;
+  background:    transparent;
+  padding:       0;
+
+  // Checked state: green fill, matching border
+  &.checked {
+    background:   var(--green);
+    border-color: var(--green);
+  }
+
+  // Kill GtkButton default frame/shadow
+  &:focus-visible { outline: none; }
+}
+
+// Check glyph (Nerd Font U+F00C — only rendered when done; hidden otherwise)
+.cal-task-check-glyph {
+  font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+  font-size:   10px;
+  color:       var(--base);
+}
+
+// Task title — hexpand + ellipsize END set in TSX
+.cal-task-title {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  color:       var(--text);
+
+  // Done state: dim (strikethrough is Pango markup <s> in TSX — not CSS)
+  &.done { color: var(--dim); }
+}
+
+// Meta label — "Project · dueLabel", dim + small
+.cal-task-meta {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+}
+
+// Empty state label
+.cal-tasks-empty {
+  font-family: var(--font-mono);
+  font-size:   12px;
+  color:       var(--dim);
+  padding:     12px 2px;
+}
+
+// Motion gate — no transitions when .motion-off is active
+.motion-off .cal-task-row {
+  transition: none;
+}
+
+// ── Relative-day badge (calendar-redesign final slice) ───────────────────────
+//
+// Small pill in the month header: "TODAY" / "in 3d" / "5d ago".
+// Clicking it jumps view + selection back to today.
+// 8px rhythm: padding 1px 8px. color-mix for subtlety; no background on resting.
+
+.cal-today-badge {
+  padding:        1px 8px;
+  border-radius:  9999px;
+  background:     color-mix(in oklab, var(--text) 8%, transparent);
+  color:          var(--dim);
+  font-family:    var(--font-mono);
+  font-size:      10px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition:     background var(--t-base) ease, color var(--t-base) ease;
+
+  &:hover {
+    background: color-mix(in oklab, var(--text) 14%, transparent);
+    color:      var(--text);
+  }
+}
+
+// ── Agenda section header row ─────────────────────────────────────────────────
+// Contains "SCHEDULE" on the left and "Google · N" source label on the right.
+.cal-agenda-header-row {
+  // Centerbox — no extra padding; header label carries its own bottom padding.
+}
+
+// Legend dot — 5px circle, reuses base cal-dot dimension + category colors.
+// No separate class needed for color — cal-dot-<cat> already defines it.
+.cal-legend-dot {
+  min-width:  5px;
+  min-height: 5px;
+  border-radius: 999px;
+}
+
+// Legend label — small, dim
+.cal-legend-label {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+}
+
+.cal-legend-item {
+  // spacing={4} set in TSX; valign=CENTER set in TSX
+}
+
+// ── CalendarSync row (moved to left column bottom) ───────────────────────────
+//
+// Sync glyph + "Synced Xm ago · N accounts" dim text.
+// No border-top — the column divider provides separation.
+
+// Sync check glyph — Nerd Font U+F00C ()
+.cal-sync-glyph {
+  font-family:  "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+  font-size:    10px;
+  color:        var(--green);
+  margin-right: 6px;
+}
+
+// "Synced Xm ago · N accounts" dim text
+.cal-sync-status {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+}
+
+// "+ New task" accent CTA
+.cal-new-task {
+  font-family:   var(--font-mono);
+  font-size:     11px;
+  color:         var(--accent);
+  padding:       2px 8px;
+  border-radius: var(--radius-inner);
+  background:    transparent;
+  transition:    background var(--t-base) ease;
+
+  &:hover {
+    background: color-mix(in oklab, var(--accent) 14%, transparent);
+  }
+}
+
+// ── Quick-add entry (calendar inline task input) ──────────────────────────────
+//
+// Appears at the top of the tasks list when "+ New task" is pressed.
+// 8px rhythm; accent border on focus. Monospace so typed NL tokens
+// (e.g. "tomorrow 3pm #work") read clearly.
+
+// Row container — no extra chrome; spacing set in TSX (spacing={2})
+.cal-add-row {}
+
+// The Gtk.Entry widget
+.cal-add-entry {
+  background:    color-mix(in oklab, var(--text) 6%, transparent);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-inner);
+  padding:       4px 8px;
+  font-family:   var(--font-mono);
+  font-size:     12px;
+  color:         var(--text);
+
+  // GtkText node inside Gtk.Entry — carries actual text styling
+  > text {
+    color:       var(--text);
+    font-family: var(--font-mono);
+    font-size:   12px;
+  }
+
+  &:focus-within {
+    border-color: var(--accent);
+  }
+
+  // The accent border above is the focus affordance — suppress the chunky
+  // global green focus-visible outline on the entry and its inner text node.
+  &:focus-visible,
+  &:focus,
+  > text:focus-visible,
+  > text:focus {
+    outline: none;
+  }
+}
+
+// Live preview label below the entry — dim, small
+.cal-add-preview {
+  font-family: var(--font-mono);
+  font-size:   10px;
+  color:       var(--dim);
+  padding:     2px 4px;
+}
+
+// Motion gate — quick-add / edit entry focus transition
+.motion-off .cal-add-entry,
+.motion-off .cal-edit-entry {
+  transition: none;
+}
+
+// ── Task edit entry ───────────────────────────────────────────────────────────
+// Inherits .cal-add-entry chrome (applied together in TSX). No additional styles
+// needed — the same transparent bg + accent border-on-focus applies. Defined
+// here as a hook for overrides if the look diverges later.
+.cal-edit-entry {}
+
+// ── Task context menu (right-click popover) ───────────────────────────────────
+//
+// Pattern mirrors popover.volume-osd > contents (see above). The popover widget
+// gets class "cal-task-menu-popover" in TSX; its native > contents node carries
+// the background/border. The inner box (.cal-task-menu) holds the menu items.
+
+popover.cal-task-menu-popover > contents {
+  background:    var(--mantle);
+  border:        1px solid var(--bar-border);
+  border-radius: var(--radius-inner);
+  padding:       4px;
+  color:         var(--text);
+  font-family:   var(--font-mono);
+  font-size:     12px;
+}
+
+popover.cal-task-menu-popover > arrow {
+  background: var(--mantle);
+  border:     1px solid var(--bar-border);
+}
+
+// Inner box — the popover content container
+.cal-task-menu {
+  min-width: 120px;
+}
+
+// Menu item buttons
+.cal-task-menu-item {
+  padding:       4px 10px;
+  border-radius: var(--radius-inner);
+  background:    transparent;
+  border:        none;
+  box-shadow:    none;
+  color:         var(--text);
+  font-family:   var(--font-mono);
+  font-size:     12px;
+  // Suppress Adwaita focus ring inside the popover
+  &:focus-visible { outline: none; }
+
+  &:hover {
+    background: color-mix(in oklab, var(--text) 8%, transparent);
+  }
+}
+
+// Destructive "Delete" item — red tint
+.cal-task-menu-item.danger {
+  color: var(--red);
+
+  &:hover {
+    background: color-mix(in oklab, var(--red) 16%, transparent);
+  }
+}
+
+// Motion gate — no transition inside the menu buttons
+.motion-off .cal-task-menu-item {
+  transition: none;
+}
+
+// ── Pending-delete confirm trash button ───────────────────────────────────────
+//
+// Appears on the RIGHT of the task row when pendingDeleteId === task.id.
+// The label child uses Nerd Font for the trash glyph (U+F1F8 "").
+// The meta label is hidden while this is visible (mutually exclusive in TSX).
+
+.cal-task-trash {
+  // Small enough to fit the row's natural height (so the pill doesn't grow
+  // when the trash appears).
+  min-width:     20px;
+  min-height:    18px;
+  padding:       0 5px;
+  border-radius: var(--radius-inner);
+  // Red background by DEFAULT (not only on hover) so it reads as destructive
+  // the moment it appears.
+  background:    color-mix(in oklab, var(--red) 24%, transparent);
+  border:        none;
+  box-shadow:    none;
+  color:         var(--red);
+  transition:    background var(--t-base) ease;
+
+  // Suppress focus ring — the button is interaction-only, not keyboard-navigated
+  &:focus-visible { outline: none; }
+
+  &:hover  { background: color-mix(in oklab, var(--red) 38%, transparent); }
+  &:active { background: color-mix(in oklab, var(--red) 50%, transparent); }
+
+  label {
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+    font-size:   11px;
+    color:       var(--red);
+  }
+}
+
+// Motion gate — no transitions on trash confirm button
+.motion-off .cal-task-trash {
+  transition: none;
+}
+
+// Motion gate — calendar CTA + badge transitions
+.motion-off .cal-today-badge,
+.motion-off .cal-new-task {
+  transition: none;
 }
 
 // ── Keyframe animations ───────────────────────────────────────────────────────

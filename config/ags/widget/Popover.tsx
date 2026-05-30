@@ -21,9 +21,14 @@ type Props = {
   margins: [number, number, number, number] // [top, right, bottom, left]
   accessibleName: string
   children: JSX.Element
+  // Optional extra class on the positioned container. Pass "popover-bare" when
+  // the content supplies its OWN card surface (e.g. the calendar, whose pill +
+  // card each have their own background) so the container itself stays
+  // transparent and only the wallpaper shows behind the gaps.
+  cssClass?: string
 }
 
-export default function Popover({ name, halign, valign, margins, accessibleName, children }: Props) {
+export default function Popover({ name, halign, valign, margins, accessibleName, children, cssClass }: Props) {
   const [top, right, bottom, left] = margins
 
   const anchorAll =
@@ -74,9 +79,17 @@ export default function Popover({ name, halign, valign, margins, accessibleName,
         }}
       >
         <box
-          cssClasses={["popover"]}
+          cssClasses={cssClass ? ["popover", cssClass] : ["popover"]}
           halign={halign}
           valign={valign}
+          // The scrim is a horizontal box; a child needs explicit hexpand for
+          // halign to actually position it (without it the box packs the child
+          // to the start, and any hexpand propagated up from the content makes
+          // placement inconsistent). hexpand+vexpand=true gives the box full
+          // allocation so halign/valign are authoritative. Same fix as the
+          // launcher card. (CENTER → centered, END → right edge, etc.)
+          hexpand={true}
+          vexpand={true}
           marginTop={top}
           marginEnd={right}
           marginBottom={bottom}

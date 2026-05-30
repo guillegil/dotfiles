@@ -28,18 +28,17 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <ActiveWindow />
         </box>
 
-        {/* Center section — center child (REQ-CL-01..04) */}
-        <box $type="center" cssClasses={["bar-section"]} spacing={4}>
-          <Clock />
-        </box>
+        {/* Center section — empty (clock moved to the far right) */}
+        <box $type="center" cssClasses={["bar-section"]} />
 
-        {/* Right section — end child */}
+        {/* Right section — end child. Clock pinned to the far right. */}
         <box $type="end" cssClasses={["bar-section"]} spacing={4}>
           <Mic />
           <Volume />
           <Network />
           <Battery />
           <NotificationsBell />
+          <Clock />
         </box>
       </centerbox>
     </BarShell>

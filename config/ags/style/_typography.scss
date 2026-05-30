@@ -1,11 +1,14 @@
 // _typography.scss — font system tokens
 // Bar chips, numerals, data labels → --font-mono (JetBrains Mono)
 // Popover prose, calendar labels → --font-sans (IBM Plex Sans)
+// macOS-style display (bar clock)  → --font-display (Inter)
 
 // GTK4 does not support :root — use universal selector (same as _tokens.scss)
 * {
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
   --font-sans: "IBM Plex Sans", "Noto Sans", sans-serif;
+  // Inter ≈ SF Pro — requires the inter-font package (in packages/pacman.txt).
+  --font-display: "Inter", "Cantarell", "Noto Sans", sans-serif;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;

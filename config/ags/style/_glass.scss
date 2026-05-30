@@ -30,3 +30,13 @@
   box-shadow:    0 20px 60px -16px rgba(0, 0, 0, 0.7);
   font-family:   var(--font-mono);
 }
+
+// Bare container: the content supplies its own card surface(s) (e.g. the
+// calendar = floating pill + cal-card). The container paints nothing, so only
+// the wallpaper shows in the gaps (behind/around the pill).
+.popover.popover-bare {
+  background:    transparent;
+  border:        none;
+  border-radius: 0;
+  box-shadow:    none;
+}
