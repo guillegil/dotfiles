@@ -94,6 +94,13 @@ Relationship to the other two memory layers:
 
 > What we thought → what's true → why. Newest first.
 
+- (2026-05-30) **ui-ux-pro-max in build slices** — *Thought:* injecting the
+  derived `design-with-ui-ux-pro-max.md` reference into build sub-agents
+  satisfied the "always use ui-ux-pro-max for design work" rule. *True:* the
+  rule means running the **skill itself** (`search.py`) on the specific
+  component during the build, not just a distilled reference. *Fix:* when
+  delegating any UI build slice, instruct the sub-agent to run ui-ux-pro-max
+  for that component, and audit the result against its rules before finishing.
 - (2026-05-30) **Launcher width** — *Thought:* the card stretched because of
   `hexpand`. *True:* a GTK box sizes to its widest child's natural width; the
   real culprit was the RECENT row (8 un-truncated chips → 1178px). Fixed by
