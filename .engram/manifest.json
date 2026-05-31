@@ -40,6 +40,14 @@
       "sessions": 0,
       "memories": 1,
       "prompts": 0
+    },
+    {
+      "id": "a3160631",
+      "created_by": "guille",
+      "created_at": "2026-05-31T08:58:23Z",
+      "sessions": 1,
+      "memories": 2,
+      "prompts": 0
     }
   ]
 }
